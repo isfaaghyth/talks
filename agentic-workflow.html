@@ -1,0 +1,721 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Architecting an Agentic Workflow for Mobile Development</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:      #EAE9E7;
+    --panel:   #FFFFFF;
+    --panel-2: #FBF6EF;
+    --line:    #E5DCCE;
+    --ink:     #2A241D;
+    --ink-dim: #726A5D;
+    --ink-soft:#A79C89;
+    --clay:    #2E7D4F;
+    --clay-soft:#CFE6D6;
+    --teal:    #3E6B63;
+    --teal-soft:#CFE0DB;
+    --serif: 'Source Serif 4', serif;
+    --sans:  'Inter', sans-serif;
+    --mono:  'JetBrains Mono', monospace;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{ height:100%; background:var(--bg); color:var(--ink); font-family:var(--sans); overflow:hidden; }
+
+  /* ---------- stage ---------- */
+  .stage{ position:relative; width:100%; height:100%; z-index:2; cursor:pointer; }
+  .slide{
+    position:absolute; inset:0; display:flex; flex-direction:column;
+    padding: 56px 100px 46px; opacity:0; visibility:hidden;
+    transform: translateY(12px); transition: opacity .4s ease, transform .4s ease, visibility .4s;
+  }
+  .slide.active{ opacity:1; visibility:visible; transform:translateY(0); }
+
+  .eyebrow{
+    font-family:var(--mono); font-size:12px; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--clay); display:flex; align-items:center; gap:10px; margin-bottom:16px;
+  }
+  .eyebrow .idx{ color:var(--ink-soft); }
+  .eyebrow::after{ content:''; height:1px; flex:1; background:var(--line); }
+
+  h1.title-hero{ font-family:var(--serif); font-weight:700; font-size:clamp(32px,4vw,56px); line-height:1.12; letter-spacing:-.01em; max-width:17ch; color:var(--ink); }
+  h2.slide-title{ font-family:var(--serif); font-weight:700; font-size:clamp(26px,2.9vw,40px); line-height:1.2; letter-spacing:-.005em; margin-bottom:20px; max-width:24ch; color:var(--ink); }
+  .accent{ color:var(--clay); }
+  .accent-teal{ color:var(--teal); }
+
+  .body-copy{ font-size:16.5px; line-height:1.6; color:var(--ink-dim); max-width:58ch; }
+  .slide-body{ flex:1; display:flex; flex-direction:column; justify-content:center; min-height:0; }
+
+  code, .code{ font-family:var(--mono); background:var(--panel-2); border:1px solid var(--line); padding:2px 8px; border-radius:5px; font-size:.9em; color:var(--teal); }
+
+  .grid2{ display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  .grid3{ display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
+  .grid4{ display:grid; grid-template-columns:repeat(4,1fr); gap:12px; }
+  .grid4 .card.tool{ align-items:center; text-align:center; padding:16px 12px; }
+  .grid4 .card.tool .icon{ margin:0 auto 6px; }
+  .grid4 .card.tool h3{ font-size:14px; margin:0; }
+
+  .mini-flow{ display:flex; align-items:center; justify-content:center; gap:14px; flex-wrap:wrap; margin-bottom:20px; }
+  .flow-arrow{ font-family:var(--mono); color:var(--ink-soft); font-size:17px; }
+
+  .card{ background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:19px 22px; }
+  .card h3{ font-family:var(--serif); font-weight:600; font-size:17px; margin-bottom:6px; color:var(--ink); }
+  .card p{ font-size:14px; line-height:1.5; color:var(--ink-dim); }
+  .card .tag{ font-family:var(--mono); font-size:10px; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-soft); margin-bottom:8px; display:block; }
+
+  .icon{ width:26px; height:26px; color:var(--clay); margin-bottom:9px; }
+  .icon svg{ width:100%; height:100%; fill:none; stroke:currentColor; stroke-width:1.5; stroke-linecap:round; stroke-linejoin:round; }
+  .card.tool{ display:flex; flex-direction:column; }
+  .row-label{ font-family:var(--mono); font-size:10.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-soft); margin:16px 0 9px; }
+  .row-label:first-child{ margin-top:0; }
+
+  ul.plain{ list-style:none; }
+  ul.plain li{ padding-left:20px; position:relative; margin-bottom:9px; color:var(--ink-dim); font-size:14px; line-height:1.5; }
+  ul.plain li::before{ content:'—'; position:absolute; left:0; color:var(--clay); font-family:var(--mono); }
+
+  .steps{ display:flex; flex-direction:column; }
+  .step-row{ display:flex; gap:16px; padding:10px 0; border-bottom:1px solid var(--line); }
+  .step-row:last-child{ border-bottom:none; }
+  .step-num{ font-family:var(--mono); font-size:12px; color:var(--clay); width:26px; flex-shrink:0; padding-top:2px; }
+  .step-txt h4{ font-family:var(--serif); font-weight:600; font-size:14px; margin-bottom:2px; }
+  .step-txt p{ font-size:13.5px; color:var(--ink-dim); line-height:1.5; }
+
+  .footer-bar{ position:absolute; bottom:0; left:0; right:0; padding:14px 100px; display:flex; align-items:center; justify-content:space-between; font-family:var(--mono); font-size:10.5px; color:var(--ink-soft); z-index:6; cursor:default; }
+  .footer-bar .prog{ display:flex; align-items:center; gap:10px; }
+  .footer-bar .bar{ width:140px; height:2px; background:var(--line); position:relative; border-radius:2px; overflow:hidden; }
+  .footer-bar .bar span{ position:absolute; left:0; top:0; bottom:0; background:var(--clay); transition:width .4s ease; }
+  .nav-btns{ display:flex; gap:8px; }
+  .nav-btns button{ width:30px; height:30px; border-radius:50%; border:1px solid var(--line); background:var(--panel); color:var(--ink-dim); cursor:pointer; font-family:var(--mono); font-size:12.5px; display:flex; align-items:center; justify-content:center; transition:.2s; }
+  .nav-btns button:hover{ border-color:var(--clay); color:var(--clay); }
+
+  .kicker-link{ font-family:var(--mono); font-size:13.5px; color:var(--teal); text-decoration:none; border-bottom:1px dashed rgba(62,107,99,.4); padding-bottom:2px; cursor:pointer; }
+
+  .name-block{ margin-top:auto; }
+  .name-block .name{ font-family:var(--serif); font-weight:700; font-size:20px; }
+  .name-block .role{ color:var(--ink-dim); font-size:14px; margin-top:4px; }
+
+  /* reveal (step-controlled) */
+  .reveal{ opacity:0; transform:translateY(8px); transition:opacity .4s ease, transform .4s ease; pointer-events:none; }
+  .reveal.show{ opacity:1; transform:translateY(0); pointer-events:auto; }
+  @media (prefers-reduced-motion: reduce){ .reveal{ transition:none; } }
+
+  /* ---- outline slide ---- */
+  .outline-list{ display:grid; grid-template-columns:1fr 1fr; gap:0 32px; }
+  .outline-item{ display:flex; gap:12px; padding:9px 0; border-bottom:1px solid var(--line); align-items:baseline; }
+  .outline-item .n{ font-family:var(--mono); font-size:12.5px; color:var(--clay); width:20px; flex-shrink:0; }
+  .outline-item .t{ font-family:var(--serif); font-size:15px; font-weight:600; }
+  .outline-item .d{ font-size:12.5px; color:var(--ink-dim); margin-left:4px; }
+
+  /* ---- background diagram ---- */
+  .bgdiagram{ width:100%; max-width:620px; color:var(--ink); }
+  .bgdiagram .node-box{ fill:var(--panel); stroke:var(--ink-soft); stroke-width:1.4; }
+  .bgdiagram .node-box.center{ stroke:var(--clay); }
+  .bgdiagram .node-title{ font-family:var(--serif); font-weight:600; font-size:16px; fill:var(--ink); }
+  .bgdiagram .node-sub{ font-family:var(--mono); font-size:10px; fill:var(--ink-dim); }
+  .bgdiagram .loop-arc{ fill:none; stroke:var(--teal); stroke-width:2.2; }
+  .bgdiagram .loop-head{ fill:var(--teal); }
+  .bgdiagram .conn{ stroke:var(--ink-soft); stroke-width:1.4; }
+  .bgdiagram .stage-caption{ font-family:var(--mono); font-size:11px; fill:var(--teal); }
+  .bgdiagram .outer-box{ fill:none; stroke:var(--clay); stroke-width:1.4; stroke-dasharray:4 4; }
+  .bgdiagram .outer-label{ font-family:var(--mono); font-size:11px; letter-spacing:.1em; fill:var(--clay); }
+  .bg-captions{ display:flex; flex-direction:column; gap:7px; margin-top:16px; }
+  .bg-captions .cap{ font-size:13.5px; color:var(--ink-dim); display:flex; gap:10px; }
+  .bg-captions .cap b{ font-family:var(--mono); font-size:11px; color:var(--ink); width:130px; flex-shrink:0; letter-spacing:.04em; }
+  .hint{ font-family:var(--mono); font-size:11px; color:var(--ink-soft); margin-top:16px; }
+
+  /* ---- compare (trace) ---- */
+  .trace-wrap{ display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+  .trace-col{ background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:20px 22px; }
+  .trace-col h4{ font-family:var(--mono); font-size:11.5px; letter-spacing:.1em; text-transform:uppercase; margin-bottom:4px; }
+  .trace-col.left h4{ color:var(--ink-soft); }
+  .trace-col.right h4{ color:var(--teal); }
+  .trace-col .lede{ font-size:13px; color:var(--ink-dim); margin-bottom:14px; }
+  .trace-line{ display:flex; align-items:center; gap:10px; padding:7px 0; font-size:13.5px; }
+  .trace-line .who{ font-family:var(--mono); font-size:9.5px; padding:3px 7px; border-radius:5px; flex-shrink:0; width:44px; text-align:center; }
+  .trace-line.human .who{ background:var(--clay-soft); color:#1F5C38; }
+  .trace-line.agent .who{ background:var(--teal-soft); color:var(--teal); }
+  .trace-loop-note{ margin-top:13px; padding-top:11px; border-top:1px dashed var(--line); font-size:12.5px; color:var(--ink-dim); font-style:italic; }
+
+  /* ---- pipeline flow ---- */
+  .pipeline{ display:flex; flex-direction:column; align-items:center; gap:0; }
+  .pl-node{ font-family:var(--mono); font-size:13px; padding:10px 17px; border-radius:10px; text-align:center; max-width:440px; }
+  .pl-node.human{ background:var(--clay-soft); color:#1F5C38; border:1px solid var(--clay); }
+  .pl-node.system{ background:var(--panel); color:var(--ink); border:1px solid var(--line); }
+  .pl-connector{ width:1.4px; height:15px; background:var(--ink-soft); }
+  .pl-connector.arrow{ position:relative; }
+  .pl-connector.arrow::after{ content:'▾'; position:absolute; left:50%; bottom:-9px; transform:translateX(-50%); color:var(--ink-soft); font-size:9px; }
+  .pl-orchestrator-row{ display:flex; align-items:center; justify-content:center; gap:10px; flex-wrap:wrap; }
+  .pl-side.dashed{ font-family:var(--mono); font-size:10px; text-align:center; color:var(--ink-dim); border:1px dashed var(--ink-soft); border-radius:10px; padding:8px 12px; background:var(--panel-2); line-height:1.4; }
+  .pl-side.dashed span{ color:var(--ink-soft); font-size:9px; }
+  .pl-dash-connector{ width:22px; height:0; border-top:1.4px dashed var(--ink-soft); flex-shrink:0; }
+  .pl-lanes{ display:grid; grid-template-columns:repeat(3,1fr); gap:13px; width:100%; max-width:640px; margin:5px 0; }
+  .pl-lane{ background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:12px 14px; }
+  .pl-lane .lane-title{ font-family:var(--serif); font-weight:600; font-size:14px; margin-bottom:8px; }
+  .pl-lane .lane-tools{ display:flex; flex-wrap:wrap; gap:5px; }
+  .pl-lane .lane-tools .chip{ display:flex; align-items:center; gap:4px; font-size:9.5px; padding:3px 7px; }
+  .pl-lane .lane-tools .chip svg{ width:10px; height:10px; }
+  .pl-skill{ font-family:var(--mono); color:var(--teal); }
+
+  /* ---- ghiath repo slides ---- */
+  .repo-banner{ background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:16px 19px; margin-bottom:15px; }
+  .repo-banner p{ font-size:14px; color:var(--ink-dim); line-height:1.5; }
+  .tree{ font-family:var(--mono); font-size:13.5px; line-height:1.85; color:var(--ink); background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:18px 22px; white-space:pre; overflow:auto; }
+  .tree .c{ color:var(--ink-dim); }
+  .tree .g{ color:var(--clay); }
+
+  /* ---- cognitive core flow diagram ---- */
+  .core-loop-note{ margin-top:14px; padding-top:12px; border-top:1px dashed var(--line); font-size:12.5px; color:var(--ink-dim); font-style:italic; text-align:center; }
+
+  /* ---- thanks / closing ---- */
+  .closing{ display:flex; flex-direction:column; align-items:flex-start; justify-content:center; height:100%; }
+
+  @media (max-width: 900px){
+    .slide{ padding:38px 22px 74px; }
+    .grid2, .grid3, .grid4, .trace-wrap, .outline-list, .pl-lanes{ grid-template-columns:1fr; }
+    .footer-bar{ padding:12px 22px; } .footer-bar .bar{ width:64px; }
+  }
+</style>
+</head>
+<body>
+
+  <main class="stage" id="stage">
+
+    <!-- TITLE -->
+    <section class="slide active" data-title="Title">
+      <div class="slide-body">
+        <h1 class="title-hero">Architecting an <span class="accent">Agentic Workflow</span> for Mobile Development</h1>
+        <p class="body-copy" style="margin-top:18px;">How loops, tools, and a shared memory turned day-to-day Android work into an orchestrated system of agents.</p>
+      </div>
+      <div class="name-block">
+        <div class="name">Muh Isfhani Ghiath</div>
+        <div class="role">GDE Android</div>
+      </div>
+    </section>
+
+    <!-- 01 OUTLINE -->
+    <section class="slide" data-title="Outline">
+      <div class="eyebrow"><span class="idx">01 / 18</span> OUTLINE</div>
+      <div class="slide-body">
+        <h2 class="slide-title">What we'll <span class="accent">walk through</span></h2>
+        <div class="outline-list">
+          <div class="outline-item"><span class="n">02</span><span class="t">Background</span><span class="d">agent, agentic, agentic workflow</span></div>
+          <div class="outline-item"><span class="n">03</span><span class="t">Compare</span><span class="d">prompt vs loop engineering</span></div>
+          <div class="outline-item"><span class="n">04</span><span class="t">Tools</span><span class="d">the stack behind the loop</span></div>
+          <div class="outline-item"><span class="n">05</span><span class="t">Setup Agents</span><span class="d">mobile / frontend / backend</span></div>
+          <div class="outline-item"><span class="n">06</span><span class="t">The Pipeline</span><span class="d">entry to finish, agent by agent</span></div>
+          <div class="outline-item"><span class="n">07</span><span class="t">Predefined Skills</span><span class="d">slash-command playbooks</span></div>
+          <div class="outline-item"><span class="n">08</span><span class="t">Worktree & Board</span><span class="d">running agents in parallel</span></div>
+          <div class="outline-item"><span class="n">09</span><span class="t">What is ghiath</span><span class="d">the skeleton behind this talk</span></div>
+          <div class="outline-item"><span class="n">10</span><span class="t">Web First</span><span class="d">validate before you build mobile</span></div>
+          <div class="outline-item"><span class="n">11</span><span class="t">Technical Flow</span><span class="d">how a task enters the system</span></div>
+          <div class="outline-item"><span class="n">12</span><span class="t">Cognitive Core</span><span class="d">Obsidian, CouchDB, Qdrant</span></div>
+          <div class="outline-item"><span class="n">13</span><span class="t">Isolation Layer</span><span class="d">containers per agent</span></div>
+          <div class="outline-item"><span class="n">14</span><span class="t">n8n Add-on</span><span class="d">automation without reasoning</span></div>
+          <div class="outline-item"><span class="n">15</span><span class="t">Repo Flow</span><span class="d">from clone to your own pipeline</span></div>
+          <div class="outline-item"><span class="n">16</span><span class="t">Getting Started</span><span class="d">local vs self-hosted setup</span></div>
+          <div class="outline-item"><span class="n">17</span><span class="t">Use Case</span><span class="d">live orchestration demo</span></div>
+          <div class="outline-item"><span class="n">18</span><span class="t">Conclusion</span><span class="d">what actually matters</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 02 BACKGROUND -->
+    <section class="slide" data-title="Background" data-steps="2">
+      <div class="eyebrow"><span class="idx">02 / 18</span> BACKGROUND</div>
+      <div class="slide-body">
+        <h2 class="slide-title">One diagram, <span class="accent-teal">three definitions</span></h2>
+        <svg class="bgdiagram" viewBox="0 0 680 220" xmlns="http://www.w3.org/2000/svg">
+          <g>
+            <rect class="node-box center" x="270" y="80" width="140" height="66" rx="12"/>
+            <text class="node-title" x="340" y="108" text-anchor="middle">Agent</text>
+            <text class="node-sub" x="340" y="128" text-anchor="middle">LLM + tools + goal</text>
+          </g>
+          <g class="reveal" data-step="1">
+            <path class="loop-arc" d="M410,88 A38,38 0 1 1 402,140"/>
+            <polygon class="loop-head" points="402,140 391,133 398,147"/>
+            <text class="stage-caption" x="430" y="70">plan → act → observe → revise</text>
+          </g>
+          <g class="reveal" data-step="2">
+            <rect class="node-box" x="50" y="80" width="140" height="66" rx="12"/>
+            <text class="node-title" x="120" y="108" text-anchor="middle" style="font-size:14px">Agent</text>
+            <text class="node-sub" x="120" y="128" text-anchor="middle">skill: /new-project</text>
+            <rect class="node-box" x="490" y="80" width="140" height="66" rx="12"/>
+            <text class="node-title" x="560" y="108" text-anchor="middle" style="font-size:14px">Agent</text>
+            <text class="node-sub" x="560" y="128" text-anchor="middle">skill: /open-pr-loop</text>
+            <line class="conn" x1="190" y1="113" x2="268" y2="113"/>
+            <line class="conn" x1="412" y1="113" x2="488" y2="113"/>
+            <rect class="outer-box" x="24" y="24" width="632" height="172" rx="18"/>
+            <text class="outer-label" x="340" y="18" text-anchor="middle">AGENTIC WORKFLOW</text>
+          </g>
+        </svg>
+        <div class="bg-captions">
+          <div class="cap"><b>AGENT</b>An LLM wired to tools, memory, and a goal — it decides what to do next.</div>
+          <div class="cap reveal" data-step="1"><b>AGENTIC</b>The system plans, acts, observes the result, and revises — on repeat.</div>
+          <div class="cap reveal" data-step="2"><b>AGENTIC WORKFLOW</b>Several agents and skills chained across a real, multi-step task.</div>
+        </div>
+        <div class="hint">click or press next to build the diagram</div>
+      </div>
+    </section>
+
+    <!-- 03 COMPARE -->
+    <section class="slide" data-title="Compare">
+      <div class="eyebrow"><span class="idx">03 / 18</span> COMPARE</div>
+      <h2 class="slide-title">Same bug, <span class="accent">two ways to close the loop</span></h2>
+      <div class="slide-body">
+        <p class="body-copy" style="margin-bottom:14px;">Scenario: a Kotlin Multiplatform build is red. Who does the looping — you, or the agent?</p>
+        <div class="trace-wrap">
+          <div class="trace-col left">
+            <h4>Normal Prompt</h4>
+            <div class="lede">You are the loop.</div>
+            <div class="trace-line human"><span class="who">you</span> ask for a fix</div>
+            <div class="trace-line human"><span class="who">you</span> paste the build error</div>
+            <div class="trace-line human"><span class="who">you</span> apply the suggested patch</div>
+            <div class="trace-line human"><span class="who">you</span> rebuild, see it's still red</div>
+            <div class="trace-loop-note">Repeat manually, from the top, each time it fails.</div>
+          </div>
+          <div class="trace-col right">
+            <h4>Loop Engineering</h4>
+            <div class="lede">The agent is the loop.</div>
+            <div class="trace-line human"><span class="who">you</span> state the goal once</div>
+            <div class="trace-line agent"><span class="who">agent</span> runs the build, reads the error</div>
+            <div class="trace-line agent"><span class="who">agent</span> edits the code, rebuilds</div>
+            <div class="trace-line agent"><span class="who">agent</span> repeats — until green</div>
+            <div class="trace-loop-note">You reappear once, to review the opened PR.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 04 TOOLS -->
+    <section class="slide" data-title="Tools">
+      <div class="eyebrow"><span class="idx">04 / 18</span> TOOLING</div>
+      <div class="slide-body">
+        <h2 class="slide-title">The stack <span class="accent-teal">behind the loop</span></h2>
+        <div class="row-label">Agent core</div>
+        <div class="grid3">
+          <div class="card tool">
+            <div class="icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="2.2"/><circle cx="5" cy="18" r="2.2"/><circle cx="19" cy="18" r="2.2"/><path d="M12 7.2 6.3 16.2M12 7.2l5.7 9M7.2 18h9.6"/></svg></div>
+            <h3>hermes-agent</h3><p>Runs the plan → act → observe loop for every agent.</p>
+          </div>
+          <div class="card tool">
+            <div class="icon"><svg viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6z"/><path d="M15 3v4h4"/><circle cx="12" cy="14" r="1.3"/><circle cx="9" cy="17" r="1.1"/><circle cx="15" cy="17" r="1.1"/><path d="M12 14 9 17M12 14l3 3"/></svg></div>
+            <h3>Obsidian</h3><p>A synced vault agents read and write as shared memory.</p>
+          </div>
+          <div class="card tool">
+            <div class="icon"><svg viewBox="0 0 24 24"><rect x="4" y="9" width="16" height="6" rx="1.3"/><path d="M8 9V6M16 9V6M8 15v3M16 15v3"/></svg></div>
+            <h3>keirouter</h3><p>Routes each agent's model calls by cost and capability.</p>
+          </div>
+        </div>
+        <div class="row-label">Ecosystem &amp; ops</div>
+        <div class="grid3">
+          <div class="card tool">
+            <div class="icon"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 9h8M8 13h8M8 17h4"/></svg></div>
+            <h3>Basecamp</h3><p>The shared queue agents pick work from.</p>
+          </div>
+          <div class="card tool">
+            <div class="icon"><svg viewBox="0 0 24 24"><path d="M12 5c5 0 8.5 5 8.5 7s-3.5 7-8.5 7-8.5-5-8.5-7 3.5-7 8.5-7z"/><circle cx="12" cy="12" r="2.3"/></svg></div>
+            <h3>Sentry</h3><p>Error monitoring across mobile and backend.</p>
+          </div>
+          <div class="card tool">
+            <div class="icon"><svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="7" ry="2.5"/><path d="M5 6v12c0 1.4 3.1 2.6 7 2.6s7-1.2 7-2.6V6"/><path d="M5 12c0 1.4 3.1 2.6 7 2.6s7-1.2 7-2.6"/></svg></div>
+            <h3>Supabase</h3><p>The database the backend agent reads and writes.</p>
+          </div>
+          <div class="card tool">
+            <div class="icon"><svg viewBox="0 0 24 24"><path d="M12 3c1 4-3 5-3 9a5 5 0 0010 0c0-2-1-3-1-3s0 2-1.5 2.2C17.8 8 15 6 15 3c-1 1.5-2 2.5-2 4-1-.8-1-2.5-1-4z"/></svg></div>
+            <h3>Firebase</h3><p>Auth, crash reporting, and remote config for the app.</p>
+          </div>
+          <div class="card tool">
+            <div class="icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 3v2.4M12 18.6V21M21 12h-2.4M5.4 12H3M18.4 5.6l-1.7 1.7M7.3 16.7l-1.7 1.7M18.4 18.4l-1.7-1.7M7.3 7.3 5.6 5.6"/></svg></div>
+            <h3>Bitrise</h3><p>CI that builds, signs, and ships the app.</p>
+          </div>
+          <div class="card tool">
+            <div class="icon"><svg viewBox="0 0 24 24"><circle cx="7" cy="6" r="2"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="12" r="2"/><path d="M7 8v8M9 6h4a4 4 0 014 4"/></svg></div>
+            <h3>GitHub</h3><p>Where every agent's loop ends — an opened PR.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 05 SETUP AGENTS -->
+    <section class="slide" data-title="Setup Agents">
+      <div class="eyebrow"><span class="idx">05 / 18</span> AGENT PROFILES</div>
+      <div class="slide-body">
+        <h2 class="slide-title">Three agents, three clear <span class="accent">areas of ownership</span></h2>
+        <div class="grid3">
+          <div class="card"><span class="tag">Client · Kotlin</span><h3>mobile-dev</h3><p>Android/KMP — Compose UI, platform code, build config.</p></div>
+          <div class="card"><span class="tag">Client · Web</span><h3>frontend-dev</h3><p>Dashboard and web surfaces, consistent with mobile.</p></div>
+          <div class="card"><span class="tag">Server</span><h3>backend-dev</h3><p>APIs and data models the client agents depend on.</p></div>
+        </div>
+        <p class="body-copy" style="margin-top:16px;">Scoped context, not the whole repo — fast loops, contained mistakes.</p>
+      </div>
+    </section>
+
+    <!-- 06 PIPELINE -->
+    <section class="slide" data-title="The Pipeline" data-steps="4">
+      <div class="eyebrow"><span class="idx">06 / 18</span> ENTRY TO FINISH</div>
+      <div class="slide-body">
+        <h2 class="slide-title">I show up <span class="accent">twice</span> — the rest runs itself</h2>
+        <div class="pipeline">
+          <div class="pl-node human">① You define <b>what</b> to build</div>
+
+          <div class="pl-connector arrow reveal" data-step="1"></div>
+          <div class="pl-orchestrator-row reveal" data-step="1">
+            <div class="pl-side dashed">Obsidian<br><span>cognitive core</span></div>
+            <div class="pl-dash-connector"></div>
+            <div class="pl-node system">hermes-agent orchestrates · scaffolds via <span class="pl-skill">/new-project</span></div>
+            <div class="pl-dash-connector"></div>
+            <div class="pl-side dashed">Basecamp<br><span>story &amp; task board</span></div>
+          </div>
+
+          <div class="pl-connector arrow reveal" data-step="2"></div>
+          <div class="pl-lanes reveal" data-step="2">
+            <div class="pl-lane">
+              <div class="lane-title">mobile-dev</div>
+              <div class="lane-tools">
+                <span class="chip pl-skill">/kmp-build</span>
+                <span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="3"/><path d="M12 3v2.4M12 18.6V21M21 12h-2.4M5.4 12H3"/></svg>Bitrise</span>
+                <span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3c1 4-3 5-3 9a5 5 0 0010 0c0-2-1-3-1-3s0 2-1.5 2.2C17.8 8 15 6 15 3c-1 1.5-2 2.5-2 4-1-.8-1-2.5-1-4z"/></svg>Firebase</span>
+              </div>
+            </div>
+            <div class="pl-lane">
+              <div class="lane-title">frontend-dev</div>
+              <div class="lane-tools">
+                <span class="chip">build &amp; lint</span>
+                <span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 5c5 0 8.5 5 8.5 7s-3.5 7-8.5 7-8.5-5-8.5-7 3.5-7 8.5-7z"/><circle cx="12" cy="12" r="2.3"/></svg>Sentry</span>
+              </div>
+            </div>
+            <div class="pl-lane">
+              <div class="lane-title">backend-dev</div>
+              <div class="lane-tools">
+                <span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><ellipse cx="12" cy="6" rx="7" ry="2.5"/><path d="M5 6v12c0 1.4 3.1 2.6 7 2.6s7-1.2 7-2.6V6"/></svg>Supabase</span>
+                <span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 5c5 0 8.5 5 8.5 7s-3.5 7-8.5 7-8.5-5-8.5-7 3.5-7 8.5-7z"/><circle cx="12" cy="12" r="2.3"/></svg>Sentry</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="pl-connector arrow reveal" data-step="3"></div>
+          <div class="pl-node system reveal" data-step="3"><span class="pl-skill">/open-pr-loop</span> — commit, push, open PR <span style="color:var(--ink-soft)">· background: <span class="pl-skill">/self-improve</span></span></div>
+
+          <div class="pl-connector arrow reveal" data-step="4"></div>
+          <div class="pl-node human reveal" data-step="4">② You review the PR on GitHub &amp; merge</div>
+        </div>
+        <div class="hint">click or press next to trace the pipeline</div>
+      </div>
+    </section>
+
+    <!-- 07 SKILLS -->
+    <section class="slide" data-title="Predefined Skills">
+      <div class="eyebrow"><span class="idx">07 / 18</span> PREDEFINED SKILLS</div>
+      <div class="slide-body">
+        <h2 class="slide-title">Reusable, <span class="accent-teal">slash-command</span> playbooks</h2>
+        <div class="grid2">
+          <div class="card"><span class="tag">Bootstrap</span><h3><code>/new-project</code></h3><p>Scaffolds a fresh module from the team's conventions.</p></div>
+          <div class="card"><span class="tag">Build</span><h3><code>/kmp-build</code></h3><p>Runs the KMP build loop, fixing failures on its own.</p></div>
+          <div class="card"><span class="tag">Ship</span><h3><code>/open-pr-loop</code></h3><p>Local branch to an opened, review-ready PR.</p></div>
+          <div class="card"><span class="tag">Iterate</span><h3><code>/self-improve</code></h3><p>Reviews its own recent runs and edits itself.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 08 WORKTREE + BOARD -->
+    <section class="slide" data-title="Worktree & Board">
+      <div class="eyebrow"><span class="idx">08 / 18</span> PARALLEL EXECUTION</div>
+      <div class="slide-body">
+        <h2 class="slide-title">Git worktree + a task board keep agents from <span class="accent">colliding</span></h2>
+        <div class="grid2">
+          <div class="card"><span class="tag">Isolation</span><h3>git worktree per agent</h3><p>Each agent works its own branch in its own directory off the same repo — safe to run in parallel.</p></div>
+          <div class="card"><span class="tag">Coordination</span><h3>Basecamp as the task board</h3><p>A shared queue to pick up, update, and hand off work.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 09 WHAT IS GHIATH -->
+    <section class="slide" data-title="What is ghiath">
+      <div class="eyebrow"><span class="idx">09 / 18</span> THE GHIATH REPO</div>
+      <div class="slide-body">
+        <h2 class="slide-title">What <span class="accent-teal">ghiath</span> actually is</h2>
+        <p class="body-copy" style="margin-bottom:14px;">An open skeleton repo — a ready-made scaffold that wires agent profiles, predefined skills, shared memory, and an LLM gateway into one place you can point at your own project.</p>
+        <div class="tree"><span class="c"># conceptual layout — swap for your real folder names</span>
+ghiath/
+├─ <span class="g">agents/</span>        <span class="c"># mobile-dev, frontend-dev, backend-dev profiles</span>
+├─ <span class="g">skills/</span>        <span class="c"># /new-project, /kmp-build, /open-pr-loop, /self-improve</span>
+├─ <span class="g">memory/</span>        <span class="c"># Obsidian vault adapter — the cognitive core</span>
+├─ <span class="g">gateway/</span>       <span class="c"># keirouter config — model routing</span>
+└─ <span class="g">hermes.config</span>  <span class="c"># orchestration entry point</span></div>
+      </div>
+    </section>
+
+    <!-- 10 WHY WEB FIRST -->
+    <section class="slide" data-title="Web First">
+      <div class="eyebrow"><span class="idx">10 / 18</span> VALIDATION FIRST</div>
+      <div class="slide-body">
+        <h2 class="slide-title">Why validate with <span class="accent">web</span> before mobile</h2>
+        <p class="body-copy" style="margin-bottom:14px;">Mobile builds, tests, and distribution are expensive — so the frontend-dev agent proves an idea on web first, cheaply, before mobile-dev commits to it.</p>
+        <div class="grid2">
+          <div class="card">
+            <div class="icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+            <span class="tag">Expensive</span>
+            <h3>Mobile round-trip</h3>
+            <p>Build → device test → Bitrise CI → store review. Every loop costs real minutes.</p>
+          </div>
+          <div class="card">
+            <div class="icon"><svg viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg></div>
+            <span class="tag">Cheap</span>
+            <h3>Web round-trip</h3>
+            <p>Edit → hot reload → click through. A loop that costs seconds.</p>
+          </div>
+        </div>
+        <p class="body-copy" style="margin-top:14px;">Validate the flow and UX on web, then hand the confirmed design to <code>mobile-dev</code>.</p>
+      </div>
+    </section>
+
+    <!-- 11 TECHNICAL FLOW -->
+    <section class="slide" data-title="Technical Flow">
+      <div class="eyebrow"><span class="idx">11 / 18</span> TECHNICAL FLOW</div>
+      <div class="slide-body">
+        <h2 class="slide-title">How a task <span class="accent-teal">actually</span> reaches hermes-agent</h2>
+        <div class="card" style="border-style:dashed;">
+          <span class="tag">Add your real flow here</span>
+          <p class="body-copy" style="margin-top:4px;">Drop in the actual trigger source and the real snippet from your <code>ghiath</code> repo here, so this slide reflects what's genuinely running instead of a guess.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 12 COGNITIVE CORE -->
+    <section class="slide" data-title="Cognitive Core">
+      <div class="eyebrow"><span class="idx">12 / 18</span> COGNITIVE CORE</div>
+      <div class="slide-body">
+        <h2 class="slide-title">Memory has <span class="accent">three layers</span></h2>
+        <div class="pipeline">
+          <div class="pl-node human">You ask a question or hand off a task</div>
+          <div class="pl-connector arrow"></div>
+          <div class="pl-node system">Obsidian — the vault holding notes on this</div>
+          <div class="pl-connector arrow"></div>
+          <div class="pl-node system">CouchDB syncs that vault to every agent</div>
+          <div class="pl-connector arrow"></div>
+          <div class="pl-node system">Qdrant finds the most relevant notes — semantic, not keyword, search</div>
+          <div class="pl-connector arrow"></div>
+          <div class="pl-node system">Agent uses that context to act on your task</div>
+        </div>
+        <div class="core-loop-note">↺ what the agent learns gets written back to Obsidian, ready for next time.</div>
+      </div>
+    </section>
+
+    <!-- 13 ISOLATION LAYER -->
+    <section class="slide" data-title="Isolation Layer">
+      <div class="eyebrow"><span class="idx">13 / 18</span> ISOLATION LAYER</div>
+      <div class="slide-body">
+        <h2 class="slide-title">One more layer: <span class="accent-teal">containers</span></h2>
+        <p class="body-copy" style="margin-bottom:12px;">Git worktree isolates code. Docker isolates runtime — each service gets its own dependencies, environment, and blast radius.</p>
+        <div class="grid4">
+          <div class="card tool"><div class="icon"><svg viewBox="0 0 24 24"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M12 3v9M4 7.5l8 4.5 8-4.5"/></svg></div><h3>mobile-dev</h3></div>
+          <div class="card tool"><div class="icon"><svg viewBox="0 0 24 24"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M12 3v9M4 7.5l8 4.5 8-4.5"/></svg></div><h3>frontend-dev</h3></div>
+          <div class="card tool"><div class="icon"><svg viewBox="0 0 24 24"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M12 3v9M4 7.5l8 4.5 8-4.5"/></svg></div><h3>backend-dev</h3></div>
+          <div class="card tool"><div class="icon"><svg viewBox="0 0 24 24"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M12 3v9M4 7.5l8 4.5 8-4.5"/></svg></div><h3>keirouter</h3></div>
+          <div class="card tool"><div class="icon"><svg viewBox="0 0 24 24"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M12 3v9M4 7.5l8 4.5 8-4.5"/></svg></div><h3>CouchDB</h3></div>
+          <div class="card tool"><div class="icon"><svg viewBox="0 0 24 24"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M12 3v9M4 7.5l8 4.5 8-4.5"/></svg></div><h3>Qdrant</h3></div>
+          <div class="card tool"><div class="icon"><svg viewBox="0 0 24 24"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M12 3v9M4 7.5l8 4.5 8-4.5"/></svg></div><h3>n8n</h3></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 14 N8N ADDON -->
+    <section class="slide" data-title="n8n Add-on">
+      <div class="eyebrow"><span class="idx">14 / 18</span> ADD-ON AUTOMATION</div>
+      <div class="slide-body">
+        <h2 class="slide-title">n8n — automation when <span class="accent">reasoning isn't needed</span></h2>
+        <div class="grid2">
+          <div class="card">
+            <span class="tag">Needs reasoning</span><h3>hermes-agent</h3>
+            <ul class="plain" style="margin-top:8px;">
+              <li>Fix a failing build</li>
+              <li>Review and revise code</li>
+              <li>Plan out a new feature</li>
+            </ul>
+          </div>
+          <div class="card">
+            <span class="tag">No reasoning needed</span><h3>n8n</h3>
+            <ul class="plain" style="margin-top:8px;">
+              <li>Nightly vault backup</li>
+              <li>Notify Telegram when a PR merges</li>
+              <li>Sync a Basecamp ticket's status</li>
+            </ul>
+          </div>
+        </div>
+        <p class="body-copy" style="margin-top:14px;">n8n sits beside the agent stack for plumbing that's deterministic, not decision-making.</p>
+      </div>
+    </section>
+
+    <!-- 15 REPO FLOW -->
+    <section class="slide" data-title="Repo Flow">
+      <div class="eyebrow"><span class="idx">15 / 18</span> REPO FLOW</div>
+      <div class="slide-body">
+        <h2 class="slide-title">From clone to <span class="accent">your own pipeline</span></h2>
+        <div class="steps">
+          <div class="step-row"><div class="step-num">01</div><div class="step-txt"><h4>Clone <code>ghiath</code></h4><p>Start from the skeleton instead of wiring an agent runtime from scratch.</p></div></div>
+          <div class="step-row"><div class="step-num">02</div><div class="step-txt"><h4>Define profiles in <code>agents/</code></h4><p>Describe each agent's scope — mobile, frontend, backend — and its boundaries.</p></div></div>
+          <div class="step-row"><div class="step-num">03</div><div class="step-txt"><h4>Point <code>memory/</code> at your vault</h4><p>Connect your Obsidian vault so every agent shares the same cognitive core.</p></div></div>
+          <div class="step-row"><div class="step-num">04</div><div class="step-txt"><h4>Configure <code>gateway/</code></h4><p>Add your model keys to keirouter and choose routing per agent.</p></div></div>
+          <div class="step-row"><div class="step-num">05</div><div class="step-txt"><h4>Run a skill to verify the loop</h4><p>Try <code>/new-project</code> and confirm the plan → act → observe cycle runs end to end.</p></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 11 GETTING STARTED -->
+    <section class="slide" data-title="Getting Started">
+      <div class="eyebrow"><span class="idx">16 / 18</span> GETTING STARTED</div>
+      <div class="slide-body">
+        <h2 class="slide-title">Run it <span class="accent-teal">locally, or self-hosted</span></h2>
+        <div class="repo-banner">
+          <p>Repo: <a class="kicker-link" href="https://github.com/isfaaghyth/ghiath" target="_blank" rel="noopener">github.com/isfaaghyth/ghiath</a></p>
+        </div>
+        <div class="grid2">
+          <div class="card">
+            <span class="tag">Local</span><h3>Run it on your machine</h3>
+            <div class="steps" style="margin-top:6px;">
+              <div class="step-row"><div class="step-num">01</div><div class="step-txt"><p>Clone the repo and install dependencies.</p></div></div>
+              <div class="step-row"><div class="step-num">02</div><div class="step-txt"><p>Point <code>hermes-agent</code> at a local Obsidian vault as memory.</p></div></div>
+              <div class="step-row"><div class="step-num">03</div><div class="step-txt"><p>Set your model keys and run through <code>keirouter</code> locally.</p></div></div>
+              <div class="step-row"><div class="step-num">04</div><div class="step-txt"><p>Register agents, then try <code>/new-project</code>.</p></div></div>
+            </div>
+          </div>
+          <div class="card">
+            <span class="tag">Remote / VPS</span><h3>Run it self-hosted</h3>
+            <div class="steps" style="margin-top:6px;">
+              <div class="step-row"><div class="step-num">01</div><div class="step-txt"><p>Provision a VPS; install Caddy as the reverse proxy.</p></div></div>
+              <div class="step-row"><div class="step-num">02</div><div class="step-txt"><p>Stand up CouchDB and Qdrant for sync and vector memory.</p></div></div>
+              <div class="step-row"><div class="step-num">03</div><div class="step-txt"><p>Sync Obsidian via LiveSync so all agents share one vault.</p></div></div>
+              <div class="step-row"><div class="step-num">04</div><div class="step-txt"><p>Run n8n for scheduled or event-triggered agent jobs.</p></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 12 USE CASE -->
+    <section class="slide" data-title="Use Case">
+      <div class="eyebrow"><span class="idx">17 / 18</span> LIVE DEMO</div>
+      <div class="slide-body">
+        <h2 class="slide-title">Now, let's <span class="accent">orchestrate it live</span></h2>
+        <div class="card" style="border-style:dashed;">
+          <span class="tag">Coming up</span>
+          <p class="body-copy" style="margin-top:4px;">A real task, handed to the pipeline from spec to opened PR — <code>mobile-dev</code>, a predefined skill, and the worktree + board working together in real time.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 13 CONCLUSION -->
+    <section class="slide" data-title="Conclusion">
+      <div class="eyebrow"><span class="idx">18 / 18</span> CONCLUSION</div>
+      <div class="slide-body">
+        <h2 class="slide-title">The workflow is the product, <span class="accent-teal">not the prompt</span></h2>
+        <ul class="plain" style="max-width:60ch;">
+          <li>An agent alone is just a smarter autocomplete — the loop is what makes it useful.</li>
+          <li>Shared memory, scoped agents, and reusable skills turn one-off prompting into a repeatable system.</li>
+          <li>Start small: one agent, one skill, one worktree — then let the pipeline grow.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- THANKS -->
+    <section class="slide" data-title="Thanks">
+      <div class="eyebrow"><span class="idx">·</span> CLOSING</div>
+      <div class="closing">
+        <h1 class="title-hero">Thanks.</h1>
+        <p class="body-copy" style="margin-top:16px;">Muh Isfhani Ghiath — GDE Android</p>
+        <p class="body-copy" style="margin-top:4px;"><a class="kicker-link" href="https://github.com/isfaaghyth/ghiath" target="_blank" rel="noopener">github.com/isfaaghyth/ghiath</a></p>
+      </div>
+    </section>
+
+  </main>
+
+  <div class="footer-bar">
+    <div class="prog">
+      <span id="slideLabel">Title</span>
+      <div class="bar"><span id="progFill"></span></div>
+      <span id="slideCount">01 / 20</span>
+    </div>
+    <div class="nav-btns">
+      <button id="prevBtn" aria-label="Previous slide">&#8592;</button>
+      <button id="nextBtn" aria-label="Next slide">&#8594;</button>
+    </div>
+  </div>
+
+<script>
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const total = slides.length;
+  let current = 0;
+  let currentStep = 0;
+
+  const label = document.getElementById('slideLabel');
+  const count = document.getElementById('slideCount');
+  const fill = document.getElementById('progFill');
+
+  function stepsFor(slide){ return parseInt(slide.dataset.steps || '0', 10); }
+
+  function applySteps(){
+    const activeSlide = slides[current];
+    activeSlide.querySelectorAll('[data-step]').forEach(el=>{
+      const s = parseInt(el.dataset.step, 10);
+      el.classList.toggle('show', s <= currentStep);
+    });
+  }
+
+  function render(){
+    slides.forEach((s,i)=> s.classList.toggle('active', i===current));
+    applySteps();
+    label.textContent = slides[current].dataset.title;
+    count.textContent = String(current+1).padStart(2,'0') + ' / ' + String(total).padStart(2,'0');
+    fill.style.width = ((current+1)/total*100) + '%';
+  }
+
+  function advance(){
+    const maxStep = stepsFor(slides[current]);
+    if(currentStep < maxStep){ currentStep++; applySteps(); }
+    else if(current < total-1){ current++; currentStep = 0; render(); }
+  }
+
+  function retreat(){
+    if(currentStep > 0){ currentStep--; applySteps(); }
+    else if(current > 0){ current--; currentStep = stepsFor(slides[current]); render(); }
+  }
+
+  function jumpTo(i){
+    current = Math.max(0, Math.min(total-1, i));
+    currentStep = stepsFor(slides[current]);
+    render();
+  }
+
+  document.getElementById('prevBtn').addEventListener('click', (e)=>{ e.stopPropagation(); retreat(); });
+  document.getElementById('nextBtn').addEventListener('click', (e)=>{ e.stopPropagation(); advance(); });
+
+  document.getElementById('stage').addEventListener('click', (e)=>{
+    if(e.target.closest('a')) return;
+    advance();
+  });
+
+  document.addEventListener('keydown', (e)=>{
+    if(['ArrowRight','ArrowDown',' ','PageDown'].includes(e.key)){ e.preventDefault(); advance(); }
+    if(['ArrowLeft','ArrowUp','PageUp'].includes(e.key)){ e.preventDefault(); retreat(); }
+    if(e.key === 'Home'){ jumpTo(0); }
+    if(e.key === 'End'){ jumpTo(total-1); }
+  });
+
+  let touchX = null;
+  document.addEventListener('touchstart', e=>{ touchX = e.touches[0].clientX; }, {passive:true});
+  document.addEventListener('touchend', e=>{
+    if(touchX === null) return;
+    const dx = e.changedTouches[0].clientX - touchX;
+    if(Math.abs(dx) > 50){ dx < 0 ? advance() : retreat(); }
+    touchX = null;
+  }, {passive:true});
+
+  render();
+</script>
+</body>
+</html>
