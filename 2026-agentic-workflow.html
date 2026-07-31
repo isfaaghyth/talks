@@ -1,0 +1,3086 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Architecting an Agentic Workflow for Mobile Development</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+            rel="stylesheet"
+        />
+        <style>
+            :root {
+                --bg: #ecebe8;
+                --panel: #ffffff;
+                --panel-2: #f7f2ea;
+                --line: #e3dac9;
+                --ink: #24211c;
+                --ink-dim: #5f5749;
+                --ink-soft: #a59a86;
+                --clay: #2c7148;
+                --clay-soft: #cfe6d6;
+                --teal: #3a6862;
+                --teal-soft: #cfe0db;
+                --plum: #7a4a5a;
+                --display: "Space Grotesk", sans-serif;
+                --sans: "Inter", sans-serif;
+                --mono: "JetBrains Mono", monospace;
+            }
+            * {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+            html,
+            body {
+                height: 100%;
+                background: var(--bg);
+                color: var(--ink);
+                font-family: var(--sans);
+                overflow: hidden;
+                -webkit-font-smoothing: antialiased;
+                text-rendering: optimizeLegibility;
+            }
+
+            /* ---------- stage ---------- */
+            .stage {
+                position: relative;
+                width: 100%;
+                height: 100%;
+                z-index: 2;
+                cursor: pointer;
+            }
+            .slide {
+                position: absolute;
+                inset: 0;
+                display: flex;
+                flex-direction: column;
+                padding: 64px 110px 64px;
+                opacity: 0;
+                visibility: hidden;
+                transform: translateY(12px);
+                transition:
+                    opacity 0.4s ease,
+                    transform 0.4s ease,
+                    visibility 0.4s;
+            }
+            .slide.active {
+                opacity: 1;
+                visibility: visible;
+                transform: translateY(0);
+            }
+
+            .eyebrow {
+                font-family: var(--mono);
+                font-size: 13px;
+                letter-spacing: 0.16em;
+                text-transform: uppercase;
+                color: var(--clay);
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                margin-bottom: 22px;
+                font-weight: 500;
+            }
+            .eyebrow .idx {
+                color: var(--ink-soft);
+            }
+            .eyebrow::after {
+                content: "";
+                height: 1px;
+                flex: 1;
+                background: var(--line);
+            }
+
+            h1.title-hero {
+                font-family: var(--display);
+                font-weight: 700;
+                font-size: clamp(40px, 5vw, 72px);
+                line-height: 1.05;
+                letter-spacing: -0.025em;
+                max-width: 18ch;
+                color: var(--ink);
+            }
+            h2.slide-title {
+                font-family: var(--display);
+                font-weight: 600;
+                font-size: clamp(32px, 3.4vw, 50px);
+                line-height: 1.1;
+                letter-spacing: -0.02em;
+                margin-bottom: 26px;
+                max-width: 22ch;
+                color: var(--ink);
+            }
+            .accent {
+                color: var(--clay);
+            }
+            .accent-teal {
+                color: var(--teal);
+            }
+            .accent-plum {
+                color: var(--plum);
+            }
+
+            .body-copy {
+                font-size: 19px;
+                line-height: 1.6;
+                color: var(--ink-dim);
+                max-width: 60ch;
+                font-weight: 400;
+            }
+            .slide-body {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                min-height: 0;
+            }
+
+            code,
+            .code {
+                font-family: var(--mono);
+                background: var(--panel-2);
+                border: 1px solid var(--line);
+                padding: 2px 7px;
+                border-radius: 5px;
+                font-size: 0.88em;
+                color: var(--teal);
+                font-weight: 500;
+            }
+
+            /* ---------- code blocks ---------- */
+            .codeblock {
+                font-family: var(--mono);
+                font-size: 15.5px;
+                line-height: 1.7;
+                color: var(--ink);
+                background: var(--panel);
+                border: 1px solid var(--line);
+                border-radius: 12px;
+                overflow: hidden;
+            }
+            .codeblock .cb-head {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                padding: 10px 16px;
+                border-bottom: 1px solid var(--line);
+                background: var(--panel-2);
+                font-family: var(--mono);
+                font-size: 12px;
+                letter-spacing: 0.04em;
+                color: var(--ink-soft);
+            }
+            .codeblock .cb-head .dot {
+                width: 10px;
+                height: 10px;
+                border-radius: 50%;
+                background: var(--line);
+            }
+            .codeblock .cb-head .dot:nth-child(2) {
+                background: var(--clay-soft);
+            }
+            .codeblock .cb-head .dot:nth-child(3) {
+                background: var(--teal-soft);
+            }
+            .codeblock .cb-head .file {
+                margin-left: 6px;
+                color: var(--ink-dim);
+            }
+            .codeblock pre {
+                margin: 0;
+                padding: 16px 20px;
+                overflow: auto;
+                white-space: pre;
+            }
+            .codeblock .c {
+                color: var(--ink-soft);
+            } /* comment */
+            .codeblock .k {
+                color: var(--clay);
+                font-weight: 600;
+            } /* keyword / key */
+            .codeblock .s {
+                color: var(--teal);
+            } /* string */
+            .codeblock .f {
+                color: #1f5c38;
+            } /* function / call */
+            .codeblock .m {
+                color: var(--plum);
+            } /* markup attr / mark */
+            .codeblock.tight pre {
+                padding: 13px 18px;
+                font-size: 14.5px;
+            }
+
+            .grid2 {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 18px;
+            }
+            .grid3 {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 16px;
+            }
+            .grid4 {
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 14px;
+            }
+            .grid4 .card.tool {
+                align-items: center;
+                text-align: center;
+                padding: 18px 12px;
+            }
+            .grid4 .card.tool .icon {
+                margin: 0 auto 8px;
+            }
+            .grid4 .card.tool h3 {
+                font-size: 15px;
+                margin: 0;
+            }
+
+            .mini-flow {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 14px;
+                flex-wrap: wrap;
+                margin-bottom: 22px;
+            }
+            .flow-arrow {
+                font-family: var(--mono);
+                color: var(--ink-soft);
+                font-size: 18px;
+            }
+
+            .card {
+                background: var(--panel);
+                border: 1px solid var(--line);
+                border-radius: 14px;
+                padding: 22px 24px;
+            }
+            .card h3 {
+                font-family: var(--display);
+                font-weight: 600;
+                font-size: 20px;
+                margin-bottom: 8px;
+                color: var(--ink);
+                letter-spacing: -0.01em;
+            }
+            .card p {
+                font-size: 15.5px;
+                line-height: 1.55;
+                color: var(--ink-dim);
+            }
+            .card .tag {
+                font-family: var(--mono);
+                font-size: 11px;
+                letter-spacing: 0.1em;
+                text-transform: uppercase;
+                color: var(--ink-soft);
+                margin-bottom: 10px;
+                display: block;
+                font-weight: 500;
+            }
+
+            .icon {
+                width: 28px;
+                height: 28px;
+                color: var(--clay);
+                margin-bottom: 10px;
+            }
+            .icon svg {
+                width: 100%;
+                height: 100%;
+                fill: none;
+                stroke: currentColor;
+                stroke-width: 1.5;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+            }
+            .card.tool {
+                display: flex;
+                flex-direction: column;
+            }
+            .row-label {
+                font-family: var(--mono);
+                font-size: 11.5px;
+                letter-spacing: 0.16em;
+                text-transform: uppercase;
+                color: var(--ink-soft);
+                margin: 20px 0 11px;
+                font-weight: 500;
+            }
+            .row-label:first-child {
+                margin-top: 0;
+            }
+
+            ul.plain {
+                list-style: none;
+            }
+            ul.plain li {
+                padding-left: 22px;
+                position: relative;
+                margin-bottom: 11px;
+                color: var(--ink-dim);
+                font-size: 16px;
+                line-height: 1.55;
+            }
+            ul.plain li::before {
+                content: "—";
+                position: absolute;
+                left: 0;
+                color: var(--clay);
+                font-family: var(--mono);
+            }
+
+            .steps {
+                display: flex;
+                flex-direction: column;
+            }
+            .step-row {
+                display: flex;
+                gap: 16px;
+                padding: 12px 0;
+                border-bottom: 1px solid var(--line);
+            }
+            .step-row:last-child {
+                border-bottom: none;
+            }
+            .step-num {
+                font-family: var(--mono);
+                font-size: 13px;
+                color: var(--clay);
+                width: 28px;
+                flex-shrink: 0;
+                padding-top: 2px;
+                font-weight: 600;
+            }
+            .step-txt h4 {
+                font-family: var(--display);
+                font-weight: 600;
+                font-size: 16.5px;
+                margin-bottom: 3px;
+                color: var(--ink);
+            }
+            .step-txt p {
+                font-size: 15px;
+                color: var(--ink-dim);
+                line-height: 1.55;
+            }
+
+            .footer-bar {
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                padding: 16px 110px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                font-family: var(--mono);
+                font-size: 11.5px;
+                color: var(--ink-soft);
+                z-index: 6;
+                cursor: default;
+                font-weight: 500;
+            }
+            .footer-bar .prog {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+            }
+            .footer-bar .bar {
+                width: 150px;
+                height: 2px;
+                background: var(--line);
+                position: relative;
+                border-radius: 2px;
+                overflow: hidden;
+            }
+            .footer-bar .bar span {
+                position: absolute;
+                left: 0;
+                top: 0;
+                bottom: 0;
+                background: var(--clay);
+                transition: width 0.4s ease;
+            }
+            .nav-btns {
+                display: flex;
+                gap: 8px;
+            }
+            .nav-btns button {
+                width: 32px;
+                height: 32px;
+                border-radius: 50%;
+                border: 1px solid var(--line);
+                background: var(--panel);
+                color: var(--ink-dim);
+                cursor: pointer;
+                font-family: var(--mono);
+                font-size: 13px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: 0.2s;
+            }
+            .nav-btns button:hover {
+                border-color: var(--clay);
+                color: var(--clay);
+            }
+
+            .kicker-link {
+                font-family: var(--mono);
+                font-size: 14.5px;
+                color: var(--teal);
+                text-decoration: none;
+                border-bottom: 1px dashed rgba(58, 104, 98, 0.4);
+                padding-bottom: 2px;
+                cursor: pointer;
+                font-weight: 500;
+            }
+
+            .name-block {
+                margin-top: auto;
+            }
+            .name-block .name {
+                font-family: var(--display);
+                font-weight: 700;
+                font-size: 24px;
+                letter-spacing: -0.01em;
+            }
+            .name-block .role {
+                color: var(--ink-dim);
+                font-size: 15.5px;
+                margin-top: 5px;
+            }
+
+            /* reveal (step-controlled) */
+            .reveal {
+                opacity: 0;
+                transform: translateY(8px);
+                transition:
+                    opacity 0.4s ease,
+                    transform 0.4s ease;
+                pointer-events: none;
+            }
+            .reveal.show {
+                opacity: 1;
+                transform: translateY(0);
+                pointer-events: auto;
+            }
+            @media (prefers-reduced-motion: reduce) {
+                .reveal {
+                    transition: none;
+                }
+            }
+
+            /* ---- outline slide ---- */
+            .outline-list {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 0 36px;
+            }
+            .outline-item {
+                display: flex;
+                gap: 14px;
+                padding: 11px 0;
+                border-bottom: 1px solid var(--line);
+                align-items: baseline;
+            }
+            .outline-item .n {
+                font-family: var(--mono);
+                font-size: 13.5px;
+                color: var(--clay);
+                width: 22px;
+                flex-shrink: 0;
+                font-weight: 600;
+            }
+            .outline-item .t {
+                font-family: var(--display);
+                font-size: 17px;
+                font-weight: 600;
+                color: var(--ink);
+            }
+            .outline-item .d {
+                font-size: 14px;
+                color: var(--ink-dim);
+                margin-left: 6px;
+            }
+
+            /* ---- background diagram ---- */
+            .bgdiagram {
+                width: 100%;
+                max-width: 820px;
+                color: var(--ink);
+            }
+            .bgdiagram .node-box {
+                fill: var(--panel);
+                stroke: var(--ink-soft);
+                stroke-width: 1.4;
+            }
+            .bgdiagram .node-box.center {
+                stroke: var(--clay);
+            }
+            .bgdiagram .node-title {
+                font-family: var(--display);
+                font-weight: 600;
+                font-size: 16px;
+                fill: var(--ink);
+            }
+            .bgdiagram .node-sub {
+                font-family: var(--mono);
+                font-size: 10px;
+                fill: var(--ink-dim);
+            }
+            .bgdiagram .loop-arc {
+                fill: none;
+                stroke: var(--teal);
+                stroke-width: 2.2;
+            }
+            .bgdiagram .loop-head {
+                fill: var(--teal);
+            }
+            .bgdiagram .conn {
+                stroke: var(--ink-soft);
+                stroke-width: 1.4;
+            }
+            .bgdiagram .stage-caption {
+                font-family: var(--mono);
+                font-size: 11px;
+                fill: var(--teal);
+            }
+            .bgdiagram .outer-box {
+                fill: none;
+                stroke: var(--clay);
+                stroke-width: 1.4;
+                stroke-dasharray: 4 4;
+            }
+            .bgdiagram .outer-label {
+                font-family: var(--mono);
+                font-size: 11px;
+                letter-spacing: 0.1em;
+                fill: var(--clay);
+            }
+            .bg-captions {
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+                margin-top: 18px;
+            }
+            .bg-captions .cap {
+                font-size: 15px;
+                color: var(--ink-dim);
+                display: flex;
+                gap: 12px;
+                line-height: 1.5;
+            }
+            .bg-captions .cap b {
+                font-family: var(--mono);
+                font-size: 11.5px;
+                color: var(--ink);
+                width: 150px;
+                flex-shrink: 0;
+                letter-spacing: 0.04em;
+                font-weight: 600;
+            }
+            .hint {
+                font-family: var(--mono);
+                font-size: 12px;
+                color: var(--ink-soft);
+                margin-top: 18px;
+            }
+
+            /* ---- compare (trace) ---- */
+            .trace-wrap {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 20px;
+            }
+            .trace-col {
+                background: var(--panel);
+                border: 1px solid var(--line);
+                border-radius: 14px;
+                padding: 22px 24px;
+            }
+            .trace-col h4 {
+                font-family: var(--mono);
+                font-size: 12px;
+                letter-spacing: 0.1em;
+                text-transform: uppercase;
+                margin-bottom: 6px;
+                font-weight: 600;
+            }
+            .trace-col.left h4 {
+                color: var(--ink-soft);
+            }
+            .trace-col.right h4 {
+                color: var(--teal);
+            }
+            .trace-col .lede {
+                font-size: 14.5px;
+                color: var(--ink-dim);
+                margin-bottom: 16px;
+            }
+            .trace-line {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                padding: 8px 0;
+                font-size: 15px;
+            }
+            .trace-line .who {
+                font-family: var(--mono);
+                font-size: 10px;
+                padding: 3px 7px;
+                border-radius: 5px;
+                flex-shrink: 0;
+                width: 48px;
+                text-align: center;
+                font-weight: 600;
+            }
+            .trace-line.human .who {
+                background: var(--clay-soft);
+                color: #1f5c38;
+            }
+            .trace-line.agent .who {
+                background: var(--teal-soft);
+                color: var(--teal);
+            }
+            .trace-loop-note {
+                margin-top: 14px;
+                padding-top: 12px;
+                border-top: 1px dashed var(--line);
+                font-size: 14px;
+                color: var(--ink-dim);
+                font-style: italic;
+            }
+
+            /* ---- pipeline flow ---- */
+            .pipeline {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 0;
+            }
+            .pl-node {
+                font-family: var(--mono);
+                font-size: 14px;
+                padding: 11px 18px;
+                border-radius: 10px;
+                text-align: center;
+                max-width: 480px;
+            }
+            .pl-node.human {
+                background: var(--clay-soft);
+                color: #1f5c38;
+                border: 1px solid var(--clay);
+                font-weight: 600;
+            }
+            .pl-node.system {
+                background: var(--panel);
+                color: var(--ink);
+                border: 1px solid var(--line);
+            }
+            .pl-connector {
+                width: 1.4px;
+                height: 15px;
+                background: var(--ink-soft);
+            }
+            .pl-connector.arrow {
+                position: relative;
+            }
+            .pl-connector.arrow::after {
+                content: "▾";
+                position: absolute;
+                left: 50%;
+                bottom: -9px;
+                transform: translateX(-50%);
+                color: var(--ink-soft);
+                font-size: 9px;
+            }
+            .pl-orchestrator-row {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 10px;
+                flex-wrap: wrap;
+            }
+            .pl-side.dashed {
+                font-family: var(--mono);
+                font-size: 10.5px;
+                text-align: center;
+                color: var(--ink-dim);
+                border: 1px dashed var(--ink-soft);
+                border-radius: 10px;
+                padding: 9px 13px;
+                background: var(--panel-2);
+                line-height: 1.4;
+            }
+            .pl-side.dashed span {
+                color: var(--ink-soft);
+                font-size: 9.5px;
+            }
+            .pl-dash-connector {
+                width: 22px;
+                height: 0;
+                border-top: 1.4px dashed var(--ink-soft);
+                flex-shrink: 0;
+            }
+            .pl-lanes {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 14px;
+                width: 100%;
+                max-width: 680px;
+                margin: 6px 0;
+            }
+            .pl-lane {
+                background: var(--panel);
+                border: 1px solid var(--line);
+                border-radius: 10px;
+                padding: 13px 15px;
+            }
+            .pl-lane .lane-title {
+                font-family: var(--display);
+                font-weight: 600;
+                font-size: 15px;
+                margin-bottom: 9px;
+                color: var(--ink);
+            }
+            .pl-lane .lane-tools {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 5px;
+            }
+            .pl-lane .lane-tools .chip {
+                display: flex;
+                align-items: center;
+                gap: 4px;
+                font-size: 10.5px;
+                padding: 3px 7px;
+            }
+            .pl-lane .lane-tools .chip svg {
+                width: 10px;
+                height: 10px;
+            }
+            .pl-skill {
+                font-family: var(--mono);
+                color: var(--teal);
+                font-weight: 600;
+            }
+
+            /* ---- tree / repo layout ---- */
+            .tree {
+                font-family: var(--mono);
+                font-size: 14px;
+                line-height: 1.85;
+                color: var(--ink);
+                background: var(--panel);
+                border: 1px solid var(--line);
+                border-radius: 12px;
+                padding: 18px 22px;
+                white-space: pre;
+                overflow: auto;
+            }
+            .tree .c {
+                color: var(--ink-soft);
+            }
+            .tree .g {
+                color: var(--clay);
+                font-weight: 600;
+            }
+            .tree .t {
+                color: var(--teal);
+                font-weight: 600;
+            }
+
+            /* ---- cognitive core flow diagram ---- */
+            .core-loop-note {
+                margin-top: 16px;
+                padding-top: 13px;
+                border-top: 1px dashed var(--line);
+                font-size: 14px;
+                color: var(--ink-dim);
+                font-style: italic;
+                text-align: center;
+            }
+
+            .pillbar {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 8px;
+                margin-top: 4px;
+            }
+            .pill {
+                font-family: var(--mono);
+                font-size: 12px;
+                padding: 5px 11px;
+                border-radius: 999px;
+                background: var(--panel-2);
+                border: 1px solid var(--line);
+                color: var(--ink-dim);
+            }
+            .pill.on {
+                background: var(--clay-soft);
+                border-color: var(--clay);
+                color: #1f5c38;
+                font-weight: 600;
+            }
+            .pill.teal {
+                background: var(--teal-soft);
+                border-color: var(--teal);
+                color: var(--teal);
+                font-weight: 600;
+            }
+
+            /* ---- compare: yellow "you" chip pattern ---- */
+            .trace-line.human .who {
+                background: repeating-linear-gradient(
+                    135deg,
+                    #fde9a8 0,
+                    #fde9a8 4px,
+                    #f6d678 4px,
+                    #f6d678 8px
+                );
+                color: #7a5a00;
+                border: 1px solid #e8c24a;
+            }
+
+            /* ---- slide 04: favicon-on-the-left service cards ---- */
+            .svc {
+                display: flex;
+                gap: 14px;
+                align-items: flex-start;
+            }
+            .svc .favicon {
+                width: 34px;
+                height: 34px;
+                flex-shrink: 0;
+                border-radius: 8px;
+                background: var(--panel-2);
+                border: 1px solid var(--line);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: var(--clay);
+            }
+            .svc .favicon svg {
+                width: 19px;
+                height: 19px;
+                fill: none;
+                stroke: currentColor;
+                stroke-width: 1.6;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+            }
+            .svc .favicon.teal {
+                color: var(--teal);
+            }
+            .svc .favicon.plum {
+                color: var(--plum);
+            }
+            .svc-body h3 {
+                margin-bottom: 3px;
+            }
+
+            /* ---- slide 06: cron-logic diagram (right column) ---- */
+            .tick-diagram {
+                background: var(--panel);
+                border: 1px solid var(--line);
+                border-radius: 14px;
+                padding: 20px 18px;
+                display: flex;
+                flex-direction: column;
+                gap: 4px;
+                font-size: 14px;
+            }
+            .tick-diagram .tk-head {
+                font-family: var(--mono);
+                font-size: 11px;
+                letter-spacing: 0.1em;
+                text-transform: uppercase;
+                color: var(--ink-soft);
+                margin-bottom: 6px;
+                font-weight: 600;
+            }
+            .tk-node {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                padding: 9px 12px;
+                border-radius: 9px;
+                background: var(--panel-2);
+                border: 1px solid var(--line);
+                color: var(--ink);
+            }
+            .tk-node .tk-i {
+                font-family: var(--mono);
+                font-size: 11px;
+                color: var(--clay);
+                width: 22px;
+                flex-shrink: 0;
+                font-weight: 700;
+            }
+            .tk-node .tk-t {
+                font-size: 13.5px;
+                line-height: 1.35;
+            }
+            .tk-node .tk-t b {
+                font-family: var(--mono);
+                font-size: 11.5px;
+                color: var(--teal);
+                font-weight: 600;
+            }
+            .tk-node.fire {
+                background: var(--clay-soft);
+                border-color: var(--clay);
+            }
+            .tk-node.fire .tk-i {
+                color: #1f5c38;
+            }
+            .tk-node.report {
+                background: var(--teal-soft);
+                border-color: var(--teal);
+            }
+            .tk-node.report .tk-i {
+                color: var(--teal);
+            }
+            .tk-node.err {
+                background: #fbe9e3;
+                border-color: #d98a6a;
+            }
+            .tk-node.err .tk-i {
+                color: #b04a26;
+            }
+            .tk-conn {
+                width: 1.4px;
+                height: 11px;
+                background: var(--ink-soft);
+                margin: 0 0 0 33px;
+            }
+
+            /* ---- slide 07: agent diagram with person icons ---- */
+            .agent-diagram {
+                background: var(--panel);
+                border: 1px solid var(--line);
+                border-radius: 14px;
+                padding: 22px 18px 18px;
+            }
+            .agent-diagram .ad-label {
+                font-family: var(--mono);
+                font-size: 11px;
+                letter-spacing: 0.1em;
+                text-transform: uppercase;
+                color: var(--ink-soft);
+                margin-bottom: 14px;
+                font-weight: 600;
+            }
+            .ad-stage {
+                display: flex;
+                align-items: center;
+                gap: 14px;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            .ad-person {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 6px;
+                min-width: 92px;
+            }
+            .ad-person .ad-ico {
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                background: var(--clay-soft);
+                border: 1.5px solid var(--clay);
+                color: #1f5c38;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .ad-person .ad-ico svg {
+                width: 22px;
+                height: 22px;
+                fill: none;
+                stroke: currentColor;
+                stroke-width: 1.6;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+            }
+            .ad-person.eng .ad-ico {
+                background: var(--teal-soft);
+                border-color: var(--teal);
+                color: var(--teal);
+                width: 48px;
+                height: 48px;
+            }
+            .ad-person.eng .ad-ico svg {
+                width: 26px;
+                height: 26px;
+            }
+            .ad-person .ad-name {
+                font-family: var(--mono);
+                font-size: 12px;
+                font-weight: 600;
+                color: var(--ink);
+            }
+            .ad-person .ad-role {
+                font-size: 10.5px;
+                color: var(--ink-soft);
+            }
+            .ad-fork {
+                font-family: var(--mono);
+                color: var(--ink-soft);
+                font-size: 18px;
+            }
+            .ad-more {
+                font-family: var(--mono);
+                font-size: 11px;
+                color: var(--ink-soft);
+                text-align: center;
+                margin-top: 12px;
+                padding-top: 11px;
+                border-top: 1px dashed var(--line);
+            }
+            .ad-more b {
+                color: var(--clay);
+            }
+
+            /* ---- slide 09: cognitive core redesign ---- */
+            .core-grid {
+                display: grid;
+                grid-template-columns: 1.15fr 1fr;
+                gap: 20px;
+                align-items: stretch;
+            }
+            .core-diagram {
+                background: var(--panel);
+                border: 1px solid var(--line);
+                border-radius: 14px;
+                padding: 16px;
+            }
+            .core-diagram svg {
+                width: 100%;
+                height: auto;
+                display: block;
+            }
+            .core-diagram .cd-node {
+                fill: var(--panel);
+                stroke: var(--ink-soft);
+                stroke-width: 1.4;
+            }
+            .core-diagram .cd-node.write {
+                fill: var(--panel-2);
+            }
+            .core-diagram .cd-node.agent {
+                stroke: var(--clay);
+            }
+            .core-diagram .cd-node.qdrant {
+                stroke: var(--teal);
+            }
+            .core-diagram .cd-title {
+                font-family: var(--display);
+                font-weight: 600;
+                font-size: 13px;
+                fill: var(--ink);
+            }
+            .core-diagram .cd-sub {
+                font-family: var(--mono);
+                font-size: 9.5px;
+                fill: var(--ink-dim);
+            }
+            .core-diagram .cd-arr {
+                stroke: var(--ink-soft);
+                stroke-width: 1.4;
+                fill: none;
+                marker-end: url(#cd-arrow);
+            }
+            .core-diagram .cd-arr.write {
+                stroke: var(--clay);
+                stroke-dasharray: 4 3;
+            }
+            .core-diagram .cd-arr.embed {
+                stroke: var(--teal);
+            }
+            .core-diagram .cd-lbl {
+                font-family: var(--mono);
+                font-size: 9.5px;
+                fill: var(--ink-soft);
+            }
+            .why-card {
+                background: var(--panel);
+                border: 1px solid var(--line);
+                border-radius: 12px;
+                padding: 16px 18px;
+            }
+            .why-card h4 {
+                font-family: var(--display);
+                font-weight: 600;
+                font-size: 16px;
+                margin-bottom: 6px;
+                color: var(--ink);
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+            .why-card h4 .wdot {
+                width: 9px;
+                height: 9px;
+                border-radius: 50%;
+                flex-shrink: 0;
+            }
+            .why-card p {
+                font-size: 13.5px;
+                line-height: 1.5;
+                color: var(--ink-dim);
+            }
+            .why-list {
+                display: flex;
+                flex-direction: column;
+                gap: 11px;
+            }
+
+            /* ---- slide 14: chat mockup with looping animation ---- */
+            .chat-mock {
+                background: var(--panel);
+                border: 1px solid var(--line);
+                border-radius: 18px;
+                overflow: hidden;
+                display: flex;
+                flex-direction: column;
+                height: 100%;
+                min-height: 360px;
+            }
+            .chat-head {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                padding: 12px 16px;
+                background: var(--panel-2);
+                border-bottom: 1px solid var(--line);
+            }
+            .chat-head .ch-av {
+                width: 30px;
+                height: 30px;
+                border-radius: 50%;
+                background: var(--teal-soft);
+                border: 1.5px solid var(--teal);
+                color: var(--teal);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-family: var(--mono);
+                font-size: 13px;
+                font-weight: 700;
+            }
+            .chat-head .ch-name {
+                font-family: var(--display);
+                font-weight: 600;
+                font-size: 15px;
+            }
+            .chat-head .ch-status {
+                font-family: var(--mono);
+                font-size: 10.5px;
+                color: var(--ink-soft);
+                margin-left: auto;
+            }
+            .chat-head .ch-status::before {
+                content: "";
+                display: inline-block;
+                width: 7px;
+                height: 7px;
+                border-radius: 50%;
+                background: var(--clay);
+                margin-right: 5px;
+                vertical-align: middle;
+            }
+            .chat-body {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+                padding: 16px;
+                overflow: hidden;
+                justify-content: flex-end;
+            }
+            .bubble {
+                max-width: 82%;
+                padding: 10px 14px;
+                border-radius: 16px;
+                font-size: 14px;
+                line-height: 1.4;
+                opacity: 0;
+                border: 1px solid var(--line);
+            }
+            .bubble.user {
+                align-self: flex-end;
+                background: repeating-linear-gradient(
+                    135deg,
+                    #fde9a8 0,
+                    #fde9a8 4px,
+                    #f6d678 4px,
+                    #f6d678 8px
+                );
+                color: #5a4300;
+                border-color: #e8c24a;
+                border-bottom-right-radius: 5px;
+                font-weight: 500;
+            }
+            .bubble.agent {
+                align-self: flex-start;
+                background: var(--panel-2);
+                color: var(--ink);
+                border-bottom-left-radius: 5px;
+            }
+            .bubble.agent .att {
+                display: inline-flex;
+                align-items: center;
+                gap: 5px;
+                font-family: var(--mono);
+                font-size: 11.5px;
+                color: var(--teal);
+                font-weight: 600;
+                margin-top: 5px;
+                padding-top: 5px;
+                border-top: 1px dashed var(--line);
+            }
+            .bubble.agent .att svg {
+                width: 12px;
+                height: 12px;
+                fill: none;
+                stroke: currentColor;
+                stroke-width: 1.7;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+            }
+            .bubble.agent .ab {
+                display: inline-block;
+                font-family: var(--mono);
+                font-size: 10px;
+                font-weight: 700;
+                letter-spacing: 0.04em;
+                padding: 2px 7px;
+                border-radius: 5px;
+                margin-bottom: 5px;
+            }
+            .bubble.agent.eng-counter .ab {
+                background: var(--teal-soft);
+                color: var(--teal);
+                border: 1px solid var(--teal);
+            }
+            .bubble.agent.eng-todolist .ab {
+                background: #f0e0e4;
+                color: var(--plum);
+                border: 1px solid var(--plum);
+            }
+            .bubble.b1 { animation: chatS1 9s infinite ease-in-out; }
+            .bubble.b2 { animation: chatS2 9s infinite ease-in-out; }
+            .bubble.b3 { animation: chatS3 9s infinite ease-in-out; }
+            .bubble.b4 { animation: chatS4 9s infinite ease-in-out; }
+            .bubble.b5 { animation: chatS5 9s infinite ease-in-out; }
+            .bubble.b6 { animation: chatS6 9s infinite ease-in-out; }
+            /* each bubble fades in once, stays stacked, then all reset together at the loop end */
+            @keyframes chatS1 {
+                0% { opacity: 0; transform: translateY(8px) scale(0.96); }
+                4% { opacity: 1; transform: none; }
+                90% { opacity: 1; transform: none; }
+                100% { opacity: 0; transform: translateY(-3px); }
+            }
+            @keyframes chatS2 {
+                0%, 11% { opacity: 0; transform: translateY(8px) scale(0.96); }
+                15% { opacity: 1; transform: none; }
+                90% { opacity: 1; transform: none; }
+                100% { opacity: 0; transform: translateY(-3px); }
+            }
+            @keyframes chatS3 {
+                0%, 22% { opacity: 0; transform: translateY(8px) scale(0.96); }
+                26% { opacity: 1; transform: none; }
+                90% { opacity: 1; transform: none; }
+                100% { opacity: 0; transform: translateY(-3px); }
+            }
+            @keyframes chatS4 {
+                0%, 33% { opacity: 0; transform: translateY(8px) scale(0.96); }
+                37% { opacity: 1; transform: none; }
+                90% { opacity: 1; transform: none; }
+                100% { opacity: 0; transform: translateY(-3px); }
+            }
+            @keyframes chatS5 {
+                0%, 44% { opacity: 0; transform: translateY(8px) scale(0.96); }
+                48% { opacity: 1; transform: none; }
+                90% { opacity: 1; transform: none; }
+                100% { opacity: 0; transform: translateY(-3px); }
+            }
+            @keyframes chatS6 {
+                0%, 55% { opacity: 0; transform: translateY(8px) scale(0.96); }
+                59% { opacity: 1; transform: none; }
+                90% { opacity: 1; transform: none; }
+                100% { opacity: 0; transform: translateY(-3px); }
+            }
+            @media (prefers-reduced-motion: reduce) {
+                .bubble { animation: none; opacity: 1; }
+            }
+
+            /* ---- thanks / closing ---- */
+            .closing {
+                display: flex;
+                flex-direction: column;
+                align-items: flex-start;
+                justify-content: center;
+                height: 100%;
+            }
+            .contact-list {
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+                margin-top: 22px;
+            }
+            .contact-list .c-item {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                font-size: 16px;
+                color: var(--ink-dim);
+            }
+            .contact-list .c-ico {
+                width: 20px;
+                height: 20px;
+                color: var(--clay);
+                flex-shrink: 0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .contact-list .c-ico svg {
+                width: 18px;
+                height: 18px;
+                fill: none;
+                stroke: currentColor;
+                stroke-width: 1.6;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+            }
+            .contact-list a {
+                color: var(--teal);
+                text-decoration: none;
+                border-bottom: 1px dashed rgba(58, 104, 98, 0.4);
+                padding-bottom: 2px;
+                font-family: var(--mono);
+                font-size: 15px;
+            }
+            .contact-list a:hover {
+                color: var(--clay);
+            }
+
+            /* ---- slide 01: simplified single-column outline ---- */
+            .outline-simple {
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+                max-width: 46ch;
+            }
+            .outline-simple .o-item {
+                display: flex;
+                gap: 18px;
+                align-items: baseline;
+                padding: 13px 0;
+                border-bottom: 1px solid var(--line);
+            }
+            .outline-simple .o-item:last-child {
+                border-bottom: none;
+            }
+            .outline-simple .o-n {
+                font-family: var(--mono);
+                font-size: 14px;
+                color: var(--clay);
+                width: 30px;
+                flex-shrink: 0;
+                font-weight: 600;
+            }
+            .outline-simple .o-t {
+                font-family: var(--display);
+                font-size: 22px;
+                font-weight: 600;
+                letter-spacing: -0.01em;
+                color: var(--ink);
+            }
+
+            /* ---- slide 02: wider bg diagram wrapper ---- */
+            .bg-wrap {
+                width: 100%;
+                padding: 8px 20%;
+                box-sizing: border-box;
+            }
+            .bg-wrap .bgdiagram {
+                max-width: 100%;
+            }
+
+            /* ---- slide 06: bare cron diagram (no card) ---- */
+            .tick-diagram.bare {
+                background: transparent;
+                border: none;
+                padding: 0;
+                display: flex;
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .tick-diagram.bare .tk-head {
+                margin-bottom: 14px;
+            }
+            .tick-diagram.bare .tk-conn {
+                margin-left: 33px;
+            }
+
+            /* ---- slide 07: bare agent diagram (no card) ---- */
+            .agent-diagram.bare {
+                background: transparent;
+                border: none;
+                padding: 0;
+            }
+            .agent-diagram.bare .ad-stage {
+                align-items: flex-end;
+            }
+            .ad-person.bare {
+                position: relative;
+                padding: 12px 8px 8px;
+                border-radius: 14px;
+                border: 1.5px dashed transparent;
+            }
+            .ad-person.bare::after {
+                content: "isolated";
+                position: absolute;
+                bottom: -2px;
+                left: 50%;
+                transform: translateX(-50%);
+                font-family: var(--mono);
+                font-size: 9px;
+                letter-spacing: 0.1em;
+                text-transform: uppercase;
+                color: var(--ink-soft);
+                background: var(--bg);
+                padding: 0 5px;
+            }
+            .ad-person.bare.show {
+                border-color: var(--teal);
+            }
+
+            /* ---- slide 09: animated flow + why spacing fix ---- */
+            .core-grid.tight {
+                align-items: start;
+                gap: 24px;
+            }
+            .why-list.tight {
+                justify-content: flex-start;
+            }
+            .core-diagram svg g.reveal,
+            .core-diagram g.reveal {
+                transition: opacity 0.5s ease;
+            }
+
+            /* ---- slide 14: bare chat (no container) + telegram icon ---- */
+            .chat-mock.bare {
+                background: transparent;
+                border: none;
+                border-radius: 0;
+                min-height: 320px;
+            }
+            .chat-mock.bare .chat-head {
+                background: transparent;
+                border: none;
+                padding: 0 0 12px;
+            }
+            .chat-mock.bare .chat-body {
+                padding: 0;
+                gap: 12px;
+            }
+            .chat-mock.bare .bubble {
+                font-size: 16px;
+                padding: 12px 16px;
+            }
+            .tg-icon {
+                width: 34px;
+                height: 34px;
+                color: var(--teal);
+                margin-right: 4px;
+                vertical-align: middle;
+                display: inline-block;
+            }
+            .tg-icon svg {
+                width: 100%;
+                height: 100%;
+                fill: currentColor;
+            }
+            .title-with-icon {
+                display: flex;
+                align-items: center;
+                gap: 14px;
+                flex-wrap: wrap;
+            }
+            .title-with-icon h2 {
+                margin-bottom: 0;
+            }
+
+            /* ---- google stitch slide ---- */
+            .stitch-flow {
+                display: flex;
+                align-items: center;
+                gap: 16px;
+                flex-wrap: wrap;
+                margin: 6px 0 18px;
+            }
+            .stitch-flow .sf-node {
+                font-family: var(--mono);
+                font-size: 14px;
+                padding: 11px 16px;
+                border-radius: 10px;
+                background: var(--panel);
+                border: 1px solid var(--line);
+                color: var(--ink);
+            }
+            .stitch-flow .sf-node.start {
+                background: var(--teal-soft);
+                border-color: var(--teal);
+                color: var(--teal);
+                font-weight: 600;
+            }
+            .stitch-flow .sf-node.end {
+                background: var(--clay-soft);
+                border-color: var(--clay);
+                color: #1f5c38;
+                font-weight: 600;
+            }
+
+            /* ---- title slide: badges + avatar + android logo ---- */
+            .badges {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                margin-bottom: 22px;
+                flex-wrap: wrap;
+            }
+            .badge {
+                display: inline-flex;
+                align-items: center;
+                gap: 7px;
+                font-family: var(--mono);
+                font-size: 12px;
+                font-weight: 600;
+                letter-spacing: 0.04em;
+                padding: 6px 13px;
+                border-radius: 999px;
+                background: var(--panel);
+                border: 1px solid var(--line);
+                color: var(--ink);
+            }
+            .badge.io {
+                background: var(--clay-soft);
+                border-color: var(--clay);
+                color: #1f5c38;
+            }
+            .badge img {
+                width: 18px;
+                height: 18px;
+                object-fit: contain;
+            }
+            .android-logo {
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+            }
+            .android-logo img {
+                width: 22px;
+                height: 22px;
+                object-fit: contain;
+                vertical-align: middle;
+            }
+            .name-row {
+                display: flex;
+                align-items: center;
+                gap: 16px;
+            }
+            .avatar {
+                width: 56px;
+                height: 56px;
+                border-radius: 50%;
+                object-fit: cover;
+                border: 2px solid var(--line);
+                flex-shrink: 0;
+            }
+
+            /* ---- image-based icons (real logos) ---- */
+            .favicon.img,
+            .icon.img,
+            .tg-icon.img {
+                overflow: hidden;
+            }
+            .favicon.img img,
+            .icon.img img,
+            .tg-icon.img img {
+                width: 100%;
+                height: 100%;
+                object-fit: contain;
+            }
+
+            /* ---- slide 10: responsive wide mobile-first cards ---- */
+            .mfirst {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 14px;
+            }
+            .mfirst .mfirst-card {
+                flex: 1 1 320px;
+                min-width: 260px;
+            }
+            .favicon.img.square img {
+                object-fit: contain;
+            }
+
+            /* ---- slide 02: spec-driven vibecoding cycle ---- */
+            .vibe-cycle {
+                display: flex;
+                align-items: stretch;
+                gap: 0;
+                flex-wrap: nowrap;
+                justify-content: center;
+                margin-bottom: 8px;
+            }
+            .vc-node {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                text-align: center;
+                padding: 10px 12px;
+                border: 1px solid var(--line);
+                border-radius: 10px;
+                background: var(--panel);
+                min-width: 0;
+                flex: 0 1 auto;
+            }
+            .vc-node .vc-t {
+                font-family: var(--display);
+                font-weight: 600;
+                font-size: 13px;
+                line-height: 1.15;
+                color: var(--ink);
+            }
+            .vc-node .vc-s {
+                font-family: var(--mono);
+                font-size: 9.5px;
+                color: var(--ink-soft);
+                margin-top: 3px;
+                line-height: 1.2;
+            }
+            .vc-node.loop {
+                background: var(--teal-soft);
+                border-color: var(--teal);
+            }
+            .vc-node.loop .vc-t {
+                color: var(--teal);
+            }
+            .vc-node.loop .vc-sub {
+                font-family: var(--mono);
+                font-size: 9px;
+                color: var(--teal);
+                margin-top: 3px;
+                font-weight: 600;
+            }
+            .vc-arrow {
+                display: flex;
+                align-items: center;
+                color: var(--ink-soft);
+                font-family: var(--mono);
+                font-size: 14px;
+                padding: 0 4px;
+            }
+            .vc-iterate {
+                width: 100%;
+                text-align: center;
+                font-family: var(--mono);
+                font-size: 10px;
+                color: var(--ink-soft);
+                margin-top: 2px;
+                letter-spacing: 0.04em;
+            }
+            .vc-zoom {
+                text-align: center;
+                font-family: var(--mono);
+                font-size: 11px;
+                color: var(--clay);
+                margin: 6px 0 2px;
+            }
+
+            /* ---- slide 07: agent tree ---- */
+            .atree {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                margin-top: 6px;
+            }
+            .ar-root {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 4px;
+            }
+            .ar-trunk,
+            .ar-drop {
+                width: 2px;
+                background: var(--ink-soft);
+            }
+            .ar-trunk { height: 20px; }
+            .ar-bar {
+                position: relative;
+                display: flex;
+                justify-content: center;
+                gap: 30px;
+                width: 100%;
+                padding-top: 0;
+            }
+            .ar-bar::before {
+                content: "";
+                position: absolute;
+                top: 0;
+                left: 22%;
+                right: 22%;
+                height: 2px;
+                background: var(--ink-soft);
+            }
+            .ar-col {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                position: relative;
+            }
+            .ar-col .ar-drop { height: 16px; }
+            .ar-person {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 4px;
+                padding: 8px 6px 6px;
+                border-radius: 12px;
+                border: 1.5px dashed transparent;
+                min-width: 84px;
+            }
+            .ar-person .ap-ico {
+                width: 34px;
+                height: 34px;
+                border-radius: 50%;
+                background: var(--clay-soft);
+                border: 1.5px solid var(--clay);
+                color: #1f5c38;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .ar-person.root .ap-ico {
+                background: var(--teal-soft);
+                border-color: var(--teal);
+                color: var(--teal);
+                width: 40px;
+                height: 40px;
+            }
+            .ar-person .ap-ico svg {
+                width: 19px;
+                height: 19px;
+                fill: none;
+                stroke: currentColor;
+                stroke-width: 1.6;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+            }
+            .ar-person.root .ap-ico svg {
+                width: 22px;
+                height: 22px;
+            }
+            .ar-person .ap-name {
+                font-family: var(--mono);
+                font-size: 11.5px;
+                font-weight: 600;
+                color: var(--ink);
+            }
+            .ar-person .ap-role {
+                font-size: 9.5px;
+                color: var(--ink-soft);
+            }
+            .ar-person.bare.show {
+                border-color: var(--teal);
+            }
+            .ar-more {
+                font-family: var(--mono);
+                font-size: 11px;
+                color: var(--ink-soft);
+                text-align: center;
+                margin-top: 12px;
+                padding-top: 10px;
+                border-top: 1px dashed var(--line);
+                width: 100%;
+            }
+            .ar-more b { color: var(--clay); }
+
+            /* ---- sponsor slide ---- */
+            .sponsor {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 20px;
+                min-height: 0;
+            }
+            .sponsor img {
+                max-width: 100%;
+                max-height: 100%;
+                width: 100%;
+                object-fit: cover;
+                border-radius: 14px;
+                border: 1px solid var(--line);
+                flex: 1 1 auto;
+                min-height: 0;
+            }
+            .sponsor-link {
+                display: inline-flex;
+                align-items: center;
+                gap: 12px;
+                font-family: var(--display);
+                font-weight: 700;
+                font-size: 30px;
+                letter-spacing: -0.01em;
+                padding: 12px 26px;
+                border-radius: 999px;
+                background: var(--clay-soft);
+                border: 2px solid var(--clay);
+                color: #1f5c38;
+                text-decoration: none;
+                flex-shrink: 0;
+            }
+            .sponsor-link .sl-ico {
+                font-family: var(--mono);
+                font-size: 18px;
+                color: var(--clay);
+            }
+
+            @media (max-width: 900px) {
+                .slide {
+                    padding: 42px 26px 80px;
+                }
+                .grid2,
+                .grid3,
+                .grid4,
+                .trace-wrap,
+                .outline-list,
+                .pl-lanes {
+                    grid-template-columns: 1fr;
+                }
+                .footer-bar {
+                    padding: 14px 26px;
+                }
+                .footer-bar .bar {
+                    width: 64px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <main class="stage" id="stage">
+            <!-- TITLE -->
+            <section class="slide active" data-title="Title">
+                <div class="slide-body">
+                    <div class="badges">
+                        <span class="badge io">Google I/O Extended</span>
+                        <span class="badge"><img src="https://gdgindia.dev/gdg-logo.png" alt="GDG" />GDG Jakarta</span>
+                    </div>
+                    <h1 class="title-hero">
+                        Architecting an
+                        <span class="accent">Agentic Workflow</span> for Mobile
+                        Development
+                    </h1>
+                    <p class="body-copy" style="margin-top: 22px">
+                        An agentic workflow for
+                        <span class="accent">autonomous engineering loops</span>
+                        for
+                        <span class="android-logo">
+                            <img src="https://developer.android.com/static/images/brand/android-head_3D.png" alt="Android" />
+                        </span>
+                        <span class="accent-teal">Android</span>.
+                    </p>
+                </div>
+                <div class="name-block">
+                    <div class="name-row">
+                        <img class="avatar" src="https://avatars.githubusercontent.com/u/6775159?v=4" alt="Muh Isfhani Ghiath" />
+                        <div>
+                            <div class="name">Muh Isfhani Ghiath</div>
+                            <div class="role">GDE Android</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 01 OUTLINE -->
+            <section class="slide" data-title="Outline">
+                <div class="eyebrow">
+                    <span class="idx">01 / 19</span> OUTLINE
+                </div>
+                <div class="slide-body">
+                    <h2 class="slide-title">
+                        <span class="accent">Outline</span>
+                    </h2>
+                    <div class="outline-simple">
+                        <div class="o-item"><span class="o-n">01</span><span class="o-t">Overview</span></div>
+                        <div class="o-item"><span class="o-n">02</span><span class="o-t">Agentic</span></div>
+                        <div class="o-item"><span class="o-n">03</span><span class="o-t">Workflow</span></div>
+                        <div class="o-item"><span class="o-n">04</span><span class="o-t">How-to</span></div>
+                        <div class="o-item"><span class="o-n">05</span><span class="o-t">Demo</span></div>
+                        <div class="o-item"><span class="o-n">06</span><span class="o-t">Conclusion</span></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 02 BACKGROUND -->
+            <section class="slide" data-title="Background" data-steps="2">
+                <div class="eyebrow">
+                    <span class="idx">02 / 19</span> BACKGROUND
+                </div>
+                <div class="slide-body">
+                    <h2 class="slide-title">
+                        <span class="accent">Normal prompt</span>,
+                        <span class="accent-teal">Agentic</span>, Loops
+                    </h2>
+                    <div class="vibe-cycle">
+                        <div class="vc-node"><span class="vc-t">prompt</span><span class="vc-s">the brief</span></div>
+                        <span class="vc-arrow">→</span>
+                        <div class="vc-node"><span class="vc-t">specs</span><span class="vc-s">what &amp; why</span></div>
+                        <span class="vc-arrow">→</span>
+                        <div class="vc-node"><span class="vc-t">arch &amp; scaffolding</span><span class="vc-s">structure</span></div>
+                        <span class="vc-arrow">→</span>
+                        <div class="vc-node loop">
+                            <span class="vc-t">vibecoding loops</span>
+                            <span class="vc-sub">implementation ⇄ tests</span>
+                        </div>
+                        <span class="vc-arrow">→</span>
+                        <div class="vc-node"><span class="vc-t">validation</span><span class="vc-s">does it work?</span></div>
+                        <span class="vc-arrow">→</span>
+                        <div class="vc-node"><span class="vc-t">refine &amp; iterate</span><span class="vc-s">loop back</span></div>
+                    </div>
+                    <div class="vc-zoom">↓ zoom into the loop</div>
+                    <div class="bg-wrap" style="padding: 4px 16%;">
+                        <svg
+                            class="bgdiagram"
+                            viewBox="0 0 1000 300"
+                            xmlns="http://www.w3.org/2000/svg"
+                        >
+                            <g>
+                                <rect class="node-box center" x="420" y="116" width="160" height="74" rx="13" />
+                                <text class="node-title" x="500" y="148" text-anchor="middle">Agent</text>
+                                <text class="node-sub" x="500" y="170" text-anchor="middle">LLM + tools + goal</text>
+                            </g>
+                            <g class="reveal" data-step="1">
+                                <path class="loop-arc" d="M580,124 A44,44 0 1 1 572,182" />
+                                <polygon class="loop-head" points="572,182 560,174 568,190" />
+                                <text class="stage-caption" x="600" y="104">plan → act → observe → revise</text>
+                            </g>
+                            <g class="reveal" data-step="2">
+                                <rect class="node-box" x="70" y="116" width="160" height="74" rx="13" />
+                                <text class="node-title" x="150" y="148" text-anchor="middle" style="font-size: 15px">Agent</text>
+                                <text class="node-sub" x="150" y="170" text-anchor="middle">skill: /do-A</text>
+                                <rect class="node-box" x="770" y="116" width="160" height="74" rx="13" />
+                                <text class="node-title" x="850" y="148" text-anchor="middle" style="font-size: 15px">Agent</text>
+                                <text class="node-sub" x="850" y="170" text-anchor="middle">skill: /do-B</text>
+                                <line class="conn" x1="230" y1="153" x2="416" y2="153" />
+                                <line class="conn" x1="584" y1="153" x2="766" y2="153" />
+                                <rect class="outer-box" x="30" y="40" width="940" height="220" rx="20" />
+                                <text class="outer-label" x="500" y="32" text-anchor="middle">LOOPS</text>
+                            </g>
+                        </svg>
+                    </div>
+                    <div class="bg-captions" style="margin-top: 10px">
+                        <div class="cap">
+                            <b>NORMAL PROMPT</b>The whole cycle, driven by hand — you are the loop.
+                        </div>
+                        <div class="cap reveal" data-step="1">
+                            <b>AGENTIC</b>Zoom in: the system plans, acts, observes, revises — on repeat.
+                        </div>
+                        <div class="cap reveal" data-step="2">
+                            <b>LOOPS</b>Several agents and skills chained across the task.
+                        </div>
+                    </div>
+                    <div class="hint">click or press next to zoom into the loop</div>
+                </div>
+            </section>
+
+            <!-- 03 COMPARE -->
+            <section class="slide" data-title="Compare" data-steps="2">
+                <div class="eyebrow">
+                    <span class="idx">03 / 19</span> COMPARE
+                </div>
+                <h2 class="slide-title">
+                    <span class="accent">Difference</span>
+                </h2>
+                <div class="slide-body">
+                    <p class="body-copy" style="margin-bottom: 16px">
+                        You want an Android counter app built. Who does the
+                        looping — you, or the agent?
+                    </p>
+                    <div class="trace-wrap">
+                        <div class="trace-col left reveal" data-step="1">
+                            <h4>Normal Prompt</h4>
+                            <div class="lede">You are the loop.</div>
+                            <div class="trace-line human"><span class="who">you</span> ask for the code</div>
+                            <div class="trace-line human"><span class="who">you</span> re-paste the requirements</div>
+                            <div class="trace-line human"><span class="who">you</span> apply the patch, fix errors</div>
+                            <div class="trace-line human"><span class="who">you</span> rebuild, it's still red</div>
+                            <div class="trace-loop-note">Repeat manually, from the top, each time it fails.</div>
+                        </div>
+                        <div class="trace-col right reveal" data-step="2">
+                            <h4>Loop Engineering</h4>
+                            <div class="lede">The agent is the loop.</div>
+                            <div class="trace-line human"><span class="who">you</span> message the bot: "build a counterapp"</div>
+                            <div class="trace-line agent"><span class="who">agent</span> scaffolds the project, builds it</div>
+                            <div class="trace-line agent"><span class="who">agent</span> reads build errors, fixes itself</div>
+                            <div class="trace-line agent"><span class="who">agent</span> ships the APK back to the chat</div>
+                            <div class="trace-loop-note">You reappear once, to install the APK.</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 04 WHAT IS PANG -->
+            <section class="slide" data-title="What is pang" data-steps="3">
+                <div class="eyebrow">
+                    <span class="idx">04 / 19</span> THE ENGINEERING INSTANCE
+                </div>
+                <div class="slide-body">
+                    <h2 class="slide-title">
+                        🦉 <span class="accent-teal">pang</span> — An agentic workflow for engineering loops
+                    </h2>
+                    <p class="body-copy" style="margin-bottom: 18px">
+                        A self-hosted, agentic software-engineering system. You
+                        describe a project in a note; an
+                        <span class="accent">engineer</span> agent picks it up,
+                        confirms the platform with you over Telegram, scaffolds a
+                        real codebase, and builds it. It runs alongside a personal
+                        <code>ghiath</code> assistant and shares nothing with it
+                        but the LLM gateway.
+                    </p>
+                    <div class="grid3">
+                        <div class="card svc reveal" data-step="1">
+                            <div class="favicon plum">
+                                <svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="2.2" /><circle cx="5" cy="18" r="2.2" /><circle cx="19" cy="18" r="2.2" /><path d="M12 7.2 6.3 16.2M12 7.2l5.7 9M7.2 18h9.6" /></svg>
+                            </div>
+                            <div class="svc-body">
+                                <span class="tag">Orchestrator</span>
+                                <h3>hermes-agent</h3>
+                                <p>A long-lived <code>engineer</code> agent that spawns per-project <code>eng-&lt;name&gt;</code> build agents.</p>
+                            </div>
+                        </div>
+                        <div class="card svc reveal" data-step="2">
+                            <div class="favicon img">
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/2023_Obsidian_logo.svg/960px-2023_Obsidian_logo.svg.png" alt="Obsidian" />
+                            </div>
+                            <div class="svc-body">
+                                <span class="tag">Cognitive core</span>
+                                <h3>Obsidian vault</h3>
+                                <p>Plain Markdown — projects, decisions, task logs. Vendor-agnostic, synced to every device.</p>
+                            </div>
+                        </div>
+                        <div class="card svc reveal" data-step="3">
+                            <div class="favicon teal">
+                                <svg viewBox="0 0 24 24"><rect x="4" y="9" width="16" height="6" rx="1.3" /><path d="M8 9V6M16 9V6M8 15v3M16 15v3" /></svg>
+                            </div>
+                            <div class="svc-body">
+                                <span class="tag">LLM gateway</span>
+                                <h3>KeiRouter</h3>
+                                <p>The one place provider keys live. Swap models in one spot; agents never hold keys.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 05 HOW IT WORKS -->
+            <section class="slide" data-title="How it works" data-steps="3">
+                <div class="eyebrow">
+                    <span class="idx">05 / 19</span> HOW IT WORKS
+                </div>
+                <div class="slide-body">
+                    <div class="title-with-icon">
+                        <span class="tg-icon img" style="color: var(--clay); width: 30px; height: 30px;">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/2023_Obsidian_logo.svg/960px-2023_Obsidian_logo.svg.png" alt="Obsidian" />
+                        </span>
+                        <h2 class="slide-title">
+                            <span class="accent-teal">Obsidian vault</span> observable for tasks, no webhook
+                        </h2>
+                    </div>
+                    <p class="body-copy" style="margin-bottom: 16px">
+                        There is no webhook. hermes agents have no HTTP endpoint —
+                        their gateway is a Telegram poller. So the trigger is a
+                        frontmatter field in a Markdown note, watched by a cron
+                        tick.
+                    </p>
+                    <div class="codeblock">
+                        <div class="cb-head">
+                            <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+                            <span class="file">~/ippang/vault-project/timerapp/00-context.md</span>
+                        </div>
+                        <pre>---
+<span class="k">project:</span> <span class="s">timerapp</span>
+<span class="k">instance:</span> <span class="s">ippang</span>            <span class="c"># never 'ghiath' — tags the note</span>
+<span class="k">platform:</span> <span class="s">mobile</span>          <span class="c"># web | mobile | backend</span>
+<span class="k">status:</span> <span class="m">backlog</span>           <span class="c"># -> in-progress FIRES provisioning</span>
+<span class="k">created:</span> <span class="s">2026-07-30T09:12:00+0700</span>
+---</pre>
+                    </div>
+                    <div class="mini-flow reveal" data-step="1" style="margin-top: 20px; margin-bottom: 0">
+                        <span class="pill on">edit status → in-progress</span>
+                        <span class="flow-arrow">→</span>
+                        <span class="pill">cron tick (60s)</span>
+                        <span class="flow-arrow">→</span>
+                        <span class="pill teal">hermes -p engineer -z</span>
+                        <span class="flow-arrow">→</span>
+                        <span class="pill on">confirm over Telegram</span>
+                    </div>
+                    <p class="body-copy reveal" data-step="2" style="margin-top: 16px; font-size: 15.5px">
+                        The tick is debounced by a state file, so editing the note
+                        body never re-fires — only a
+                        <code>backlog → in-progress</code> transition does. The
+                        engineer then confirms the platform and delegates the
+                        build to an isolated <code>eng-timerapp</code> agent.
+                    </p>
+                </div>
+            </section>
+
+            <!-- 06 THE TRIGGER -->
+            <section class="slide" data-title="The Trigger" data-steps="4">
+                <div class="eyebrow">
+                    <span class="idx">06 / 19</span> THE TRIGGER
+                </div>
+                <div class="slide-body">
+                    <h2 class="slide-title">
+                        Engineering Loops with
+                        <span class="accent-teal">project-tick</span>
+                    </h2>
+                    <p class="body-copy" style="margin-bottom: 14px">
+                        Registered with <code>hermes cron</code> in
+                        <code>--no-agent</code> mode: the script itself decides
+                        whether to spawn, and its stdout is delivered to Telegram.
+                    </p>
+                    <div class="grid2" style="align-items: stretch">
+                        <div class="codeblock">
+                            <div class="cb-head">
+                                <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+                                <span class="file">_instance/hermes-cron/project-tick.py</span>
+                            </div>
+                            <pre><span class="c"># runs every minute: hermes cron '* * * * *' --no-agent \</span>
+<span class="c">#   --script project-tick.py --deliver telegram --name ippang-projects</span>
+
+<span class="k">for</span> note <span class="k">in</span> vault.<span class="f">glob</span>(<span class="s">"*/00-context.md"</span>):
+    fm = <span class="f">parse_fm</span>(note.<span class="f">read_text</span>())[<span class="s">"fm"</span>]
+
+    <span class="k">if</span> fm[<span class="s">"instance"</span>] != <span class="s">"ippang"</span>:   <span class="c"># isolation guard</span>
+        <span class="k">continue</span>
+
+    <span class="c"># 1. ingestion: backlog -> in-progress fires the engineer</span>
+    <span class="k">if</span> fm[<span class="s">"status"</span>] == <span class="s">"in-progress"</span> <span class="k">and not</span> already_dispatched:
+        <span class="f">spawn</span>(<span class="s">"engineer"</span>, brief)      <span class="c"># hermes -p engineer -z ...</span>
+
+    <span class="c"># 2. reporting: a terminal status -> one line to Telegram</span>
+    <span class="k">if</span> fm[<span class="s">"status"</span>] <span class="k">in</span> TERMINAL:
+        <span class="f">print</span>(<span class="s">f"[{project}] {status}"</span>)  <span class="c"># stdout -> chat</span></pre>
+                        </div>
+                        <div class="tick-diagram bare">
+                            <div class="tk-head">cron logic · click to step</div>
+                            <div class="tk-node">
+                                <span class="tk-i">01</span>
+                                <span class="tk-t">scan vault for <b>*/00-context.md</b> every 60s</span>
+                            </div>
+                            <div class="tk-conn reveal" data-step="1"></div>
+                            <div class="tk-node reveal" data-step="1">
+                                <span class="tk-i">02</span>
+                                <span class="tk-t">guard: <b>instance == "ippang"</b>? else skip</span>
+                            </div>
+                            <div class="tk-conn reveal" data-step="2"></div>
+                            <div class="tk-node fire reveal" data-step="2">
+                                <span class="tk-i">03</span>
+                                <span class="tk-t">status <b>backlog → in-progress</b> → spawn <b>engineer</b></span>
+                            </div>
+                            <div class="tk-conn reveal" data-step="3"></div>
+                            <div class="tk-node report reveal" data-step="3">
+                                <span class="tk-i">04</span>
+                                <span class="tk-t">terminal status → <b>print</b> → delivered to Telegram</span>
+                            </div>
+                            <div class="tk-conn reveal" data-step="4"></div>
+                            <div class="tk-node err reveal" data-step="4">
+                                <span class="tk-i">05</span>
+                                <span class="tk-t">3 failed spawns → note flagged <b>status: error</b></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 07 THE ENGINEER -->
+            <section class="slide" data-title="The Engineer" data-steps="4">
+                <div class="eyebrow">
+                    <span class="idx">07 / 19</span> THE ENGINEER AGENT
+                </div>
+                <div class="slide-body">
+                    <h2 class="slide-title">
+                        One orchestrator,
+                        <span class="accent">many builders</span>
+                    </h2>
+                    <div class="grid2">
+                        <div>
+                            <p class="body-copy" style="margin-bottom: 14px">
+                                The <code>engineer</code> profile is long-lived.
+                                Its <code>SOUL.md</code> is plain prose: read the
+                                note, confirm the platform over Telegram, then
+                                provision and delegate. The real coding is done
+                                by fresh, scoped <code>eng-&lt;name&gt;</code>
+                                agents — one per build.
+                            </p>
+                            <div class="agent-diagram bare">
+                                <div class="ad-label">orchestrator → builders · click to spawn</div>
+                                <div class="atree">
+                                    <div class="ar-person root">
+                                        <div class="ap-ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" /><path d="M4 21c0-4 4-6 8-6s8 2 8 6" /></svg></div>
+                                        <span class="ap-name">engineer</span>
+                                        <span class="ap-role">orchestrator</span>
+                                    </div>
+                                    <div class="ar-trunk reveal" data-step="1"></div>
+                                    <div class="ar-bar reveal" data-step="1">
+                                        <div class="ar-col reveal" data-step="1">
+                                            <div class="ar-drop"></div>
+                                            <div class="ar-person bare show reveal" data-step="1">
+                                                <div class="ap-ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" /><path d="M4 21c0-4 4-6 8-6s8 2 8 6" /></svg></div>
+                                                <span class="ap-name">eng-timerapp</span>
+                                                <span class="ap-role">android</span>
+                                            </div>
+                                        </div>
+                                        <div class="ar-col reveal" data-step="2">
+                                            <div class="ar-drop"></div>
+                                            <div class="ar-person bare show reveal" data-step="2">
+                                                <div class="ap-ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" /><path d="M4 21c0-4 4-6 8-6s8 2 8 6" /></svg></div>
+                                                <span class="ap-name">eng-counterapp</span>
+                                                <span class="ap-role">android</span>
+                                            </div>
+                                        </div>
+                                        <div class="ar-col reveal" data-step="3">
+                                            <div class="ar-drop"></div>
+                                            <div class="ar-person bare show reveal" data-step="3">
+                                                <div class="ap-ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" /><path d="M4 21c0-4 4-6 8-6s8 2 8 6" /></svg></div>
+                                                <span class="ap-name">eng-notesapp</span>
+                                                <span class="ap-role">web</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="ar-more reveal" data-step="4">+ <b>as many eng-&lt;name&gt;</b> as the current builds need — each scoped to its own dir &amp; vault subtree, isolated from the others</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="codeblock tight">
+                            <div class="cb-head">
+                                <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+                                <span class="file">engineer, after you confirm "Android"</span>
+                            </div>
+                            <pre><span class="c"># 1. create the project: dir, vault subtree, eng-timerapp</span>
+~/ippang/_instance/scripts/<span class="f">new-project.sh</span> timerapp android
+
+<span class="c"># 2. scaffold a Jetpack Compose starter + gradle wrapper</span>
+~/ippang/_instance/scripts/<span class="f">scaffold.sh</span> timerapp android \
+    --i-confirm-mobile-cost
+
+<span class="c"># 3. delegate the build to the scoped project agent</span>
+hermes -p eng-timerapp -z <span class="s">"build assembleDebug"</span>
+
+<span class="c"># 4. keep the note's status truthful as you go</span>
+<span class="c">#    backlog -> in-progress -> prototype-review -> deployed</span></pre>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 08 ANDROID FIRST -->
+            <section class="slide" data-title="Android First">
+                <div class="eyebrow">
+                    <span class="idx">08 / 19</span> ANDROID FIRST
+                </div>
+                <div class="slide-body">
+                    <h2 class="slide-title">
+                        <span class="accent">Android-first</span>, with android-cli
+                    </h2>
+                    <div class="grid2">
+                        <div class="codeblock tight">
+                            <div class="cb-head">
+                                <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+                                <span class="file">verified end-to-end</span>
+                            </div>
+                            <pre><span class="c"># 1. create the project + isolated agent</span>
+./scripts/<span class="f">new-project.sh</span> helloworld android
+
+<span class="c"># 2. scaffold Compose + generate the wrapper</span>
+./scripts/<span class="f">scaffold.sh</span> helloworld android \
+    --i-confirm-mobile-cost
+
+<span class="c"># 3. build it</span>
+<span class="k">cd</span> ~/ippang/helloworld
+./gradlew assembleDebug
+<span class="c"># -> BUILD SUCCESSFUL</span>
+<span class="c"># -> app/build/outputs/apk/debug/app-debug.apk</span></pre>
+                        </div>
+                        <div>
+                            <p class="body-copy" style="margin-bottom: 16px">
+                                The bundled <code>android-dev</code> skill seeds
+                                AGP&nbsp;8.7, Kotlin&nbsp;2.0, Compose,
+                                compileSdk&nbsp;35, and a working Gradle wrapper —
+                                no Android Studio required.
+                            </p>
+                            <div class="tree" style="font-size: 12.5px; line-height: 1.7">
+~/ippang/helloworld/
+├─ <span class="g">gradlew</span>
+├─ <span class="g">gradle/libs.versions.toml</span>
+├─ <span class="g">local.properties</span> <span class="c"># sdk.dir</span>
+└─ <span class="t">app/</span>
+   ├─ build.gradle.kts
+   └─ <span class="t">src/main/</span>
+      ├─ AndroidManifest.xml
+      ├─ <span class="g">java/id/ghiath/…/MainActivity.kt</span>
+      └─ res/values/strings.xml</div>
+                            <p class="body-copy" style="margin-top: 14px; font-size: 15px">
+                                Install on a real phone over Wi-Fi —
+                                <code>adb connect &lt;ip&gt;:5555 &amp;&amp; ./gradlew installDebug</code>.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 09 COGNITIVE CORE -->
+            <section class="slide" data-title="Cognitive Core" data-steps="5">
+                <div class="eyebrow">
+                    <span class="idx">09 / 19</span> COGNITIVE CORE
+                </div>
+                <div class="slide-body">
+                    <h2 class="slide-title">
+                        Why retain a
+                        <span class="accent">cognitive core</span>
+                    </h2>
+                    <div class="core-grid tight">
+                        <div class="core-diagram">
+                            <svg viewBox="0 0 440 300" xmlns="http://www.w3.org/2000/svg">
+                                <defs>
+                                    <marker id="cd-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                                        <path d="M0 0 L10 5 L0 10 z" fill="context-stroke" />
+                                    </marker>
+                                </defs>
+                                <!-- 1. agent (entry) -->
+                                <g class="reveal" data-step="1">
+                                    <rect class="cd-node agent" x="16" y="225" width="110" height="56" rx="10" />
+                                    <text class="cd-title" x="71" y="249" text-anchor="middle">Agent</text>
+                                    <text class="cd-sub" x="71" y="264" text-anchor="middle">grounds next step</text>
+                                </g>
+                                <!-- 2. obsidian vault (center) -->
+                                <g class="reveal" data-step="2">
+                                    <rect class="cd-node write" x="165" y="110" width="110" height="58" rx="10" />
+                                    <text class="cd-title" x="220" y="134" text-anchor="middle">Obsidian vault</text>
+                                    <text class="cd-sub" x="220" y="150" text-anchor="middle">Markdown on disk</text>
+                                </g>
+                                <!-- 3. couchdb + vault->couch sync -->
+                                <g class="reveal" data-step="3">
+                                    <rect class="cd-node" x="300" y="110" width="120" height="58" rx="10" />
+                                    <text class="cd-title" x="360" y="134" text-anchor="middle">CouchDB</text>
+                                    <text class="cd-sub" x="360" y="150" text-anchor="middle">replication store</text>
+                                    <line class="cd-arr" x1="275" y1="139" x2="296" y2="139" />
+                                    <text class="cd-lbl" x="286" y="132" text-anchor="middle">sync</text>
+                                </g>
+                                <!-- 4. devices + couch->devices replicate -->
+                                <g class="reveal" data-step="4">
+                                    <rect class="cd-node" x="300" y="16" width="120" height="46" rx="10" />
+                                    <text class="cd-title" x="360" y="36" text-anchor="middle">Your devices</text>
+                                    <text class="cd-sub" x="360" y="50" text-anchor="middle">phone · Mac</text>
+                                    <line class="cd-arr" x1="360" y1="110" x2="360" y2="66" />
+                                    <text class="cd-lbl" x="372" y="90">replicate</text>
+                                </g>
+                                <!-- 5. qdrant + embed + recall + write-back loop -->
+                                <g class="reveal" data-step="5">
+                                    <rect class="cd-node qdrant" x="165" y="225" width="120" height="52" rx="10" />
+                                    <text class="cd-title" x="225" y="247" text-anchor="middle">Qdrant</text>
+                                    <text class="cd-sub" x="225" y="262" text-anchor="middle">vector index</text>
+                                    <line class="cd-arr embed" x1="220" y1="168" x2="222" y2="221" />
+                                    <text class="cd-lbl" x="232" y="198">embed</text>
+                                    <line class="cd-arr embed" x1="163" y1="251" x2="130" y2="253" />
+                                    <text class="cd-lbl" x="100" y="244">recall</text>
+                                    <path class="cd-arr write" d="M71 225 C 60 190, 90 170, 165 150" />
+                                    <text class="cd-lbl" x="48" y="195" fill="#2c7148">write back</text>
+                                </g>
+                            </svg>
+                            <div class="core-loop-note" style="margin-top: 8px">
+                                ↺ what the agent learns is written back to Obsidian, re-indexed, and recalled next time — the loop compounds.
+                            </div>
+                        </div>
+                        <div class="why-list tight">
+                            <div class="why-card reveal" data-step="2">
+                                <h4><span class="wdot" style="background: var(--clay)"></span>Why Obsidian</h4>
+                                <p>Plain Markdown on disk — readable by humans and agents, owned by you, no SaaS lock-in. The agent reads and writes it directly as memory.</p>
+                            </div>
+                            <div class="why-card reveal" data-step="3">
+                                <h4><span class="wdot" style="background: var(--teal)"></span>Why CouchDB</h4>
+                                <p>LiveSync replicates the vault to every device over your own server — a note edited on the phone reaches the agent, conflict-tolerant, instantly.</p>
+                            </div>
+                            <div class="why-card reveal" data-step="5">
+                                <h4><span class="wdot" style="background: var(--plum)"></span>Why Qdrant</h4>
+                                <p>Embeds every note into a vector index, so the agent recalls by meaning, not keywords — context that scales as the vault grows.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 10 THE STACK -->
+            <section class="slide" data-title="The Stack">
+                <div class="eyebrow">
+                    <span class="idx">10 / 19</span> TOOLING
+                </div>
+                <div class="slide-body">
+                    <h2 class="slide-title">
+                        The stack
+                        <span class="accent-teal">behind the loop</span>
+                    </h2>
+                    <div class="row-label">Mobile first</div>
+                    <div class="mfirst">
+                        <div class="card svc mfirst-card">
+                            <div class="favicon img" style="color: #3DDC84;">
+                                <img src="https://developer.android.com/static/images/brand/android-head_3D.png" alt="Android" />
+                            </div>
+                            <div class="svc-body">
+                                <span class="tag">Platform</span>
+                                <h3>Android</h3>
+                                <p>Jetpack Compose, AGP, the Android SDK — the default build target.</p>
+                            </div>
+                        </div>
+                        <div class="card svc mfirst-card">
+                            <div class="favicon img" style="color: #7F52FF;">
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Kotlin_icon_%282021-present%29.svg/960px-Kotlin_icon_%282021-present%29.svg.png?_=20210505134836" alt="Kotlin" />
+                            </div>
+                            <div class="svc-body">
+                                <span class="tag">Language</span>
+                                <h3>Kotlin</h3>
+                                <p>Coroutines, KMP, multiplatform — the language every agent writes in.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row-label">Agent core</div>
+                    <div class="grid3">
+                        <div class="card tool">
+                            <div class="icon img">
+                                <img src="https://cdn.jsdelivr.net/gh/selfhst/icons/png/hermes-agent.png" alt="hermes-agent" />
+                            </div>
+                            <h3>hermes-agent</h3>
+                            <p>Runs the plan → act → observe loop for every agent.</p>
+                        </div>
+                        <div class="card tool">
+                            <div class="icon img">
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/2023_Obsidian_logo.svg/960px-2023_Obsidian_logo.svg.png" alt="Obsidian" />
+                            </div>
+                            <h3>Obsidian + LiveSync</h3>
+                            <p>A synced vault agents read and write as shared memory.</p>
+                        </div>
+                        <div class="card tool">
+                            <div class="icon img">
+                                <img src="https://keirouter.app/static/keirouter-logo-04204f6aad1ed463a88256b5dc86b0fd.png" alt="keirouter" />
+                            </div>
+                            <h3>keirouter</h3>
+                            <p>The one LLM gateway — swap models/providers in one place.</p>
+                        </div>
+                    </div>
+                    <div class="row-label">Project integrations <span style="text-transform: none; letter-spacing: 0; font-family: var(--sans); color: var(--ink-soft); font-size: 13px">— what the build agents reach for</span></div>
+                    <div class="grid4">
+                        <div class="card tool">
+                            <div class="icon">
+                                <svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2" /><path d="M8 9h8M8 13h8M8 17h4" /></svg>
+                            </div>
+                            <h3>Basecamp</h3>
+                        </div>
+                        <div class="card tool">
+                            <div class="icon">
+                                <svg viewBox="0 0 24 24"><path d="M12 5c5 0 8.5 5 8.5 7s-3.5 7-8.5 7-8.5-5-8.5-7 3.5-7 8.5-7z" /><circle cx="12" cy="12" r="2.3" /></svg>
+                            </div>
+                            <h3>Sentry</h3>
+                        </div>
+                        <div class="card tool">
+                            <div class="icon">
+                                <svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="7" ry="2.5" /><path d="M5 6v12c0 1.4 3.1 2.6 7 2.6s7-1.2 7-2.6V6" /><path d="M5 12c0 1.4 3.1 2.6 7 2.6s7-1.2 7-2.6" /></svg>
+                            </div>
+                            <h3>Supabase</h3>
+                        </div>
+                        <div class="card tool">
+                            <div class="icon">
+                                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3" /><path d="M12 3v2.4M12 18.6V21M21 12h-2.4M5.4 12H3M18.4 5.6l-1.7 1.7M7.3 16.7l-1.7 1.7M18.4 18.4l-1.7-1.7M7.3 7.3 5.6 5.6" /></svg>
+                            </div>
+                            <h3>Bitrise CI</h3>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 11 GOOGLE STITCH -->
+            <section class="slide" data-title="Google Stitch" data-steps="3">
+                <div class="eyebrow">
+                    <span class="idx">11 / 19</span> DESIGN COLLABORATION
+                </div>
+                <div class="slide-body">
+                    <h2 class="slide-title">
+                        <span class="accent-teal">Google Stitch</span> — the design before the code
+                    </h2>
+                    <p class="body-copy" style="margin-bottom: 14px">
+                        Before the agent writes a line of Kotlin, Google Stitch
+                        generates the <span class="accent">skeleton design</span>
+                        — screens, layout, and a basic
+                        <span class="accent-teal">design system</span> (colors,
+                        type, spacing). The engineer feeds that into the scaffold,
+                        so the Compose UI is grounded in a real design, not a
+                        guess.
+                    </p>
+                    <div class="stitch-flow">
+                        <span class="sf-node start">Google Stitch</span>
+                        <span class="flow-arrow reveal" data-step="1">→</span>
+                        <span class="sf-node reveal" data-step="1">skeleton screens</span>
+                        <span class="flow-arrow reveal" data-step="2">→</span>
+                        <span class="sf-node reveal" data-step="2">design system (tokens)</span>
+                        <span class="flow-arrow reveal" data-step="3">→</span>
+                        <span class="sf-node end reveal" data-step="3">engineer scaffold → Compose UI</span>
+                    </div>
+                    <div class="grid2" style="margin-top: 6px">
+                        <div class="card">
+                            <span class="tag">What Stitch gives</span>
+                            <h3>Skeleton + design system</h3>
+                            <p>Screen layouts and a basic token set — colors, typography, spacing — the visual contract the build agent codes against.</p>
+                        </div>
+                        <div class="card">
+                            <span class="tag">What the agent does</span>
+                            <h3>Scaffold to match</h3>
+                            <p>The <code>android-dev</code> skill consumes the Stitch output and emits Compose theme + screens, so design and code stay in lockstep.</p>
+                        </div>
+                    </div>
+                    <p class="body-copy" style="margin-top: 14px; font-size: 15px">
+                        A nod to today's host — built with Stitch in mind, and
+                        demoed live from the Google office.
+                    </p>
+                </div>
+            </section>
+
+            <!-- 12 N8N ADDON -->
+            <section class="slide" data-title="n8n Add-on">
+                <div class="eyebrow">
+                    <span class="idx">12 / 19</span> ADD-ON AUTOMATION
+                </div>
+                <div class="slide-body">
+                    <h2 class="slide-title">
+                        n8n — when
+                        <span class="accent">reasoning isn't needed</span>
+                    </h2>
+                    <div class="grid2">
+                        <div class="card">
+                            <span class="tag">Needs reasoning</span>
+                            <h3>hermes-agent</h3>
+                            <ul class="plain" style="margin-top: 8px">
+                                <li>Fix a failing Gradle build</li>
+                                <li>Decide the platform from a vague brief</li>
+                                <li>Plan and scaffold a new feature</li>
+                            </ul>
+                        </div>
+                        <div class="card">
+                            <span class="tag">No reasoning needed</span>
+                            <h3>n8n</h3>
+                            <ul class="plain" style="margin-top: 8px">
+                                <li>Nightly vault backup</li>
+                                <li>Mirror a note's status to Basecamp</li>
+                                <li>Notify Telegram when a PR merges</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <p class="body-copy" style="margin-top: 16px">
+                        n8n sits beside the agent stack for plumbing that's
+                        deterministic, not decision-making. It's an opt-in add-on
+                        — nothing in the loop depends on it.
+                    </p>
+                </div>
+            </section>
+
+            <!-- 13 SELF-HOSTING -->
+            <section class="slide" data-title="Self-Hosting">
+                <div class="eyebrow">
+                    <span class="idx">13 / 19</span> SELF-HOSTING
+                </div>
+                <div class="slide-body">
+                    <h2 class="slide-title">
+                        Run it on your
+                        <span class="accent">own VPS</span>
+                    </h2>
+                    <p class="body-copy" style="margin-bottom: 14px">
+                        The server design runs ippang as a second, isolated
+                        instance next to a personal <code>ghiath</code>, sharing
+                        only keirouter and one Caddy reverse proxy. Three scripts
+                        guard the existing instance.
+                    </p>
+                    <div class="codeblock">
+                        <div class="cb-head">
+                            <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+                            <span class="file">on the VPS — ~/ippang/_instance</span>
+                        </div>
+                        <pre><span class="c"># 1. prove no port / name / DB collision with the live instance</span>
+./scripts/<span class="f">preflight.sh</span>
+
+<span class="c"># 2. provision alongside, never replacing — own CouchDB, Qdrant,</span>
+<span class="c">#    n8n, ntfy, own compose project + private network</span>
+./scripts/<span class="f">provision.sh</span>
+
+<span class="c"># 3. validate, including a "personal instance intact" section</span>
+./scripts/<span class="f">validate.sh</span></pre>
+                    </div>
+                    <div class="grid3" style="margin-top: 16px">
+                        <div class="card">
+                            <span class="tag">Ingress</span>
+                            <h3>Caddy</h3>
+                            <p>One shared reverse proxy, automatic HTTPS, namespaced domains <code>*.work.ghiath.id</code>.</p>
+                        </div>
+                        <div class="card">
+                            <span class="tag">Sync</span>
+                            <h3>LiveSync bridge</h3>
+                            <p>Wires the on-disk vault to CouchDB so devices stay in sync.</p>
+                        </div>
+                        <div class="card">
+                            <span class="tag">Recall</span>
+                            <h3>Qdrant indexer</h3>
+                            <p>Watches the vault and embeds new notes for semantic search.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 14 CHAT GATEWAY -->
+            <section class="slide" data-title="Chat Gateway">
+                <div class="eyebrow">
+                    <span class="idx">14 / 19</span> CHAT GATEWAY
+                </div>
+                <div class="slide-body">
+                    <div class="title-with-icon">
+                        <span class="tg-icon">
+                            <svg viewBox="0 0 24 24"><path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71l-4.14-3.05-1.99 1.93c-.23.23-.42.42-.83.42z"/></svg>
+                        </span>
+                        <h2 class="slide-title">
+                            <span class="accent-teal">Telegram</span> is the interface
+                        </h2>
+                    </div>
+                    <div class="grid2" style="align-items: stretch">
+                        <div>
+                            <p class="body-copy" style="margin-bottom: 12px; font-size: 15.5px">
+                                hermes agents are Telegram long-pollers — there is
+                                no HTTP endpoint to call. So the chat
+                                <em>is</em> the gateway: you drive the loop by
+                                messaging the bot, and the cron tick reports back
+                                to the same chat.
+                            </p>
+                            <div class="codeblock tight">
+                                <div class="cb-head">
+                                    <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+                                    <span class="file">getting started with the gateway</span>
+                                </div>
+                                <pre><span class="c"># 1. install + start the gateway</span>
+PORT=8646 hermes -p engineer gateway install --force --start-now
+
+<span class="c"># 2. the cron tick reports to the chat</span>
+hermes cron create <span class="s">'* * * * *'</span> --no-agent \
+    --script project-tick.py --deliver telegram --name ippang-projects
+
+<span class="c"># 3. lock it down (config.yaml):</span>
+<span class="c">#    platforms.telegram.allowed_chats: [your-id]</span>
+
+<span class="c"># 4. ship builds back as a document:</span>
+~/ippang/_instance/scripts/<span class="f">deliver.sh</span> app-debug.apk</pre>
+                            </div>
+                        </div>
+                        <div class="chat-mock bare">
+                            <div class="chat-head">
+                                <div class="ch-av">e</div>
+                                <div class="ch-name">engineer</div>
+                                <div class="ch-status">online</div>
+                            </div>
+                            <div class="chat-body">
+                                <div class="bubble user b1">build counterapp</div>
+                                <div class="bubble agent eng-counter b2">
+                                    <span class="ab">eng-counter</span>
+                                    Building now…
+                                </div>
+                                <div class="bubble agent eng-counter b3">
+                                    <span class="ab">eng-counter</span>
+                                    Build succeeded — download APK
+                                    <span class="att">
+                                        <svg viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V8z" /><path d="M14 3v5h5M9 14h6M9 17h4" /></svg>
+                                        counterapp-debug.apk
+                                    </span>
+                                </div>
+                                <div class="bubble user b4">build todolist app</div>
+                                <div class="bubble agent eng-todolist b5">
+                                    <span class="ab">eng-todolist</span>
+                                    Building now…
+                                </div>
+                                <div class="bubble agent eng-todolist b6">
+                                    <span class="ab">eng-todolist</span>
+                                    Build succeeded — download APK
+                                    <span class="att">
+                                        <svg viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V8z" /><path d="M14 3v5h5M9 14h6M9 17h4" /></svg>
+                                        todolist-debug.apk
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 15 REPO LAYOUT -->
+            <section class="slide" data-title="Repo Layout">
+                <div class="eyebrow">
+                    <span class="idx">15 / 19</span> REPO LAYOUT
+                </div>
+                <div class="slide-body">
+                    <h2 class="slide-title">
+                        <span class="accent">Inside the projects</span>
+                    </h2>
+                    <div class="tree">
+<span class="c"># the overlay — instance config, scripts, souls</span>
+ippang/
+├─ <span class="t">_instance/</span>
+│  ├─ <span class="g">agents.conf</span>          <span class="c"># engineer + project profiles, ports, isolation</span>
+│  ├─ <span class="g">docker-compose.yml</span>    <span class="c"># server stack (shares Caddy + keirouter)</span>
+│  ├─ <span class="g">docker-compose.local.yml</span>  <span class="c"># standalone local trial</span>
+│  ├─ <span class="g">RUNBOOK.md</span>           <span class="c"># step-by-step server deploy</span>
+│  ├─ <span class="g">scripts/</span>             <span class="c"># bootstrap, new-project, scaffold, tick…</span>
+│  ├─ <span class="g">hermes-cron/</span>         <span class="c"># project-tick.py — the trigger</span>
+│  ├─ <span class="g">skills/android-dev/</span>  <span class="c"># the Android/KMP build skill</span>
+│  └─ <span class="g">souls/</span>               <span class="c"># engineer + per-project personas</span>
+├─ <span class="t">vault-project/</span>        <span class="c"># the engineering vault (gitignored)</span>
+│  ├─ _templates/        <span class="c"># 00-context, 10-architecture, 20-task-log…</span>
+│  └─ &lt;project&gt;/00-context.md
+├─ <span class="t">&lt;project&gt;/</span>            <span class="c"># one real codebase per project</span>
+└─ <span class="t">_shared/</span>              <span class="c"># android-sdk, tooling every project reuses</span>
+                    </div>
+                    <p class="body-copy" style="margin-top: 14px; font-size: 15px">
+                        Every <code>vault*/</code> and project folder is
+                        gitignored — no note or secret is ever pushed.
+                    </p>
+                </div>
+            </section>
+
+            <!-- 16 GETTING STARTED -->
+            <section class="slide" data-title="Getting Started">
+                <div class="eyebrow">
+                    <span class="idx">16 / 19</span> GETTING STARTED
+                </div>
+                <div class="slide-body">
+                    <h2 class="slide-title">
+                        Try the loop
+                        <span class="accent-teal">locally, first</span>
+                    </h2>
+                    <div class="grid2">
+                        <div>
+                            <p class="body-copy" style="margin-bottom: 14px">
+                                Stand up the whole stack on your Mac and run the
+                                loop end-to-end before touching a server. One
+                                idempotent script brings up CouchDB, Qdrant, n8n,
+                                ntfy, keirouter, the LiveSync bridge, the indexer,
+                                and configures the engineer profile.
+                            </p>
+                            <div class="steps">
+                                <div class="step-row">
+                                    <div class="step-num">01</div>
+                                    <div class="step-txt"><h4>Bootstrap</h4><p>One command — generates local secrets, builds containers, seeds the vault + soul.</p></div>
+                                </div>
+                                <div class="step-row">
+                                    <div class="step-num">02</div>
+                                    <div class="step-txt"><h4>Give it a model</h4><p>Point at Anthropic directly, or add a key to the local keirouter.</p></div>
+                                </div>
+                                <div class="step-row">
+                                    <div class="step-num">03</div>
+                                    <div class="step-txt"><h4>Fire the trigger</h4><p>Write a backlog note, flip it to <code>in-progress</code>, watch it dispatch.</p></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="codeblock tight">
+                            <div class="cb-head">
+                                <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+                                <span class="file">local trial</span>
+                            </div>
+                            <pre><span class="c"># the instance lives at ~/ippang</span>
+git clone &lt;repo&gt; ~/ippang
+<span class="k">cd</span> ~/ippang/_instance
+
+<span class="c"># 1. bring up the stack + engineer profile</span>
+./scripts/<span class="f">bootstrap-local.sh</span>
+
+<span class="c"># 2. give the engineer a model (shortcut: Anthropic)</span>
+hermes -p engineer config set model.provider  anthropic
+hermes -p engineer config set model.default   claude-opus-4-8
+hermes -p engineer config set model.api_key   <span class="m">&lt;key&gt;</span>
+
+<span class="c"># 3. verify, then drive one iteration by hand</span>
+hermes -p engineer -z <span class="s">"reply with one word: ok"</span>
+./scripts/<span class="f">try-local.sh</span> myidea</pre>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 17 BEYOND ANDROID -->
+            <section class="slide" data-title="Beyond Android">
+                <div class="eyebrow">
+                    <span class="idx">17 / 19</span> AN ECOSYSTEM
+                </div>
+                <div class="slide-body">
+                    <h2 class="slide-title">
+                        Not just
+                        <span class="accent">Android</span>
+                    </h2>
+                    <p class="body-copy" style="margin-bottom: 16px">
+                        <span class="accent-teal">pang</span> is an ecosystem for
+                        product builders — ship the backend, the database, and
+                        the web, then iterate fast on Android.
+                    </p>
+                    <div class="grid2">
+                        <div class="card svc">
+                            <div class="favicon img" style="color: #7F52FF;">
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Kotlin_icon_%282021-present%29.svg/960px-Kotlin_icon_%282021-present%29.svg.png?_=20210505134836" alt="Kotlin" />
+                            </div>
+                            <div class="svc-body">
+                                <span class="tag">Shared code</span>
+                                <h3>Kotlin Multiplatform</h3>
+                                <p>One codebase across Android, iOS, web — the same eng-&lt;name&gt; agent targets them.</p>
+                            </div>
+                        </div>
+                        <div class="card svc">
+                            <div class="favicon" style="color: var(--plum);">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="14" rx="3" /><path d="M5 11h14M8 14h.01M16 14h.01M7 17l-2 4M17 17l2 4" /><circle cx="9" cy="14" r="0.6" /><circle cx="15" cy="14" r="0.6" /></svg>
+                            </div>
+                            <div class="svc-body">
+                                <span class="tag">Backend</span>
+                                <h3>Railway</h3>
+                                <p>Deploy the API services the mobile app talks to — provisioned alongside the build.</p>
+                            </div>
+                        </div>
+                        <div class="card svc">
+                            <div class="favicon img" style="color: #3ECF8E;">
+                                <img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/webp/supabase.webp" alt="Supabase" />
+                            </div>
+                            <div class="svc-body">
+                                <span class="tag">Database</span>
+                                <h3>Supabase</h3>
+                                <p>Postgres, auth, and storage for the product — the database the backend agent reads and writes.</p>
+                            </div>
+                        </div>
+                        <div class="card svc">
+                            <div class="favicon img" style="color: #F38020;">
+                                <img src="https://make-cxp-documentation.ams3.digitaloceanspaces.com/apps-center-icons/cloudflare.png" alt="Cloudflare" />
+                            </div>
+                            <div class="svc-body">
+                                <span class="tag">Static web</span>
+                                <h3>Cloudflare</h3>
+                                <p>Ship the landing page and project previews as static pages — fast, cheap, global.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="body-copy" style="margin-top: 14px; font-size: 15px">
+                        The whole product, from database to device — but the
+                        heart of the loop is still shipping
+                        <span class="accent">Android</span> and iterating fast.
+                    </p>
+                </div>
+            </section>
+
+            <!-- 18 LIVE DEMO -->
+            <section class="slide" data-title="Live Demo">
+                <div class="eyebrow">
+                    <span class="idx">18 / 19</span> LIVE DEMO
+                </div>
+                <div class="slide-body">
+                    <h2 class="slide-title">
+                        <span class="accent">Live Demo</span>
+                    </h2>
+                    <p class="body-copy" style="margin-top: 8px">
+                        Sharing my screen — a live walkthrough of the loop, from
+                        a note to a built APK.
+                    </p>
+                </div>
+            </section>
+
+            <!-- 19 CONCLUSION -->
+            <section class="slide" data-title="Conclusion">
+                <div class="eyebrow">
+                    <span class="idx">19 / 19</span> CONCLUSION
+                </div>
+                <div class="slide-body">
+                    <h2 class="slide-title">
+                        The workflow is the product,
+                        <span class="accent-teal">not the prompt</span>
+                    </h2>
+                    <ul class="plain" style="max-width: 62ch">
+                        <li>An agent alone is just a smarter autocomplete — the loop is what makes it useful.</li>
+                        <li>A note's <code>status</code> field, a cron tick, and a long-lived orchestrator turn one-off prompting into a repeatable system.</li>
+                        <li>Scope each build to its own agent and vault subtree — fast loops, contained mistakes.</li>
+                        <li>Start small: one note, one engineer, one APK — then let the pipeline grow.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- SPONSOR -->
+            <section class="slide" data-title="Sponsor">
+                <div class="eyebrow"><span class="idx">·</span> SPONSOR</div>
+                <div class="slide-body">
+                    <div class="sponsor">
+                        <img src="assets/2026-agentic-workflow-sponsor.png" alt="Sponsor" />
+                        <a class="sponsor-link" href="https://paas.id" target="_blank" rel="noopener">
+                            <span class="sl-ico">↗</span>paas.id
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- THANKS -->
+            <section class="slide" data-title="Thanks">
+                <div class="eyebrow"><span class="idx">·</span> CLOSING</div>
+                <div class="closing">
+                    <h1 class="title-hero">Thanks.</h1>
+                    <p class="body-copy" style="margin-top: 18px">
+                        Muh Isfhani Ghiath — GDE Android
+                    </p>
+                    <div class="contact-list">
+                        <div class="c-item">
+                            <span class="c-ico"><svg viewBox="0 0 24 24"><path d="M4 4h16v16H4z" /><path d="M4 4l8 7 8-7" /></svg></span>
+                            <a href="mailto:isfa@ghiath.id">isfa@ghiath.id</a>
+                        </div>
+                        <div class="c-item">
+                            <span class="c-ico"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="4" /><path d="M9 8v8M15 8v8" /><circle cx="9" cy="14.5" r="2.5" /><circle cx="15" cy="9.5" r="2.5" /></svg></span>
+                            <a href="https://www.linkedin.com/in/isfaaghyth" target="_blank" rel="noopener">@isfaaghyth</a>
+                            <span style="color: var(--ink-soft); font-size: 14px;">· LinkedIn</span>
+                        </div>
+                        <div class="c-item">
+                            <span class="c-ico"><svg viewBox="0 0 24 24"><path d="M3 3l7.5 10L3 21h2.5l6-7.5L17 21h4l-7.8-10.5L20.5 3H18l-5.7 7.2L7.5 3H3z" fill="currentColor" stroke="none" /></svg></span>
+                            <a href="https://x.com/isfaaghyth" target="_blank" rel="noopener">@isfaaghyth</a>
+                            <span style="color: var(--ink-soft); font-size: 14px;">· X / Twitter</span>
+                        </div>
+                        <div class="c-item">
+                            <span class="c-ico"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 002 19 8 8 0 01-2-19z" /><circle cx="12" cy="12" r="3" /></svg></span>
+                            <a href="https://github.com/isfaaghyth/pang" target="_blank" rel="noopener">github.com/isfaaghyth/pang</a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <div class="footer-bar">
+            <div class="prog">
+                <span id="slideLabel">Title</span>
+                <div class="bar"><span id="progFill"></span></div>
+                <span id="slideCount">01 / 22</span>
+            </div>
+            <div class="nav-btns">
+                <button id="prevBtn" aria-label="Previous slide">&#8592;</button>
+                <button id="nextBtn" aria-label="Next slide">&#8594;</button>
+            </div>
+        </div>
+
+        <script>
+            const slides = Array.from(document.querySelectorAll(".slide"));
+            const total = slides.length;
+            let current = 0;
+            let currentStep = 0;
+
+            const label = document.getElementById("slideLabel");
+            const count = document.getElementById("slideCount");
+            const fill = document.getElementById("progFill");
+
+            function stepsFor(slide) {
+                return parseInt(slide.dataset.steps || "0", 10);
+            }
+
+            function applySteps() {
+                const activeSlide = slides[current];
+                activeSlide.querySelectorAll("[data-step]").forEach((el) => {
+                    const s = parseInt(el.dataset.step, 10);
+                    el.classList.toggle("show", s <= currentStep);
+                });
+            }
+
+            function render() {
+                slides.forEach((s, i) => s.classList.toggle("active", i === current));
+                applySteps();
+                label.textContent = slides[current].dataset.title;
+                count.textContent = String(current + 1).padStart(2, "0") + " / " + String(total).padStart(2, "0");
+                fill.style.width = ((current + 1) / total) * 100 + "%";
+            }
+
+            function advance() {
+                const maxStep = stepsFor(slides[current]);
+                if (currentStep < maxStep) {
+                    currentStep++;
+                    applySteps();
+                } else if (current < total - 1) {
+                    current++;
+                    currentStep = 0;
+                    render();
+                }
+            }
+
+            function retreat() {
+                if (currentStep > 0) {
+                    currentStep--;
+                    applySteps();
+                } else if (current > 0) {
+                    current--;
+                    currentStep = stepsFor(slides[current]);
+                    render();
+                }
+            }
+
+            function jumpTo(i) {
+                current = Math.max(0, Math.min(total - 1, i));
+                currentStep = stepsFor(slides[current]);
+                render();
+            }
+
+            document.getElementById("prevBtn").addEventListener("click", (e) => { e.stopPropagation(); retreat(); });
+            document.getElementById("nextBtn").addEventListener("click", (e) => { e.stopPropagation(); advance(); });
+
+            document.getElementById("stage").addEventListener("click", (e) => {
+                if (e.target.closest("a")) return;
+                advance();
+            });
+
+            document.addEventListener("keydown", (e) => {
+                if (["ArrowRight", "ArrowDown", " ", "PageDown"].includes(e.key)) { e.preventDefault(); advance(); }
+                if (["ArrowLeft", "ArrowUp", "PageUp"].includes(e.key)) { e.preventDefault(); retreat(); }
+                if (e.key === "Home") jumpTo(0);
+                if (e.key === "End") jumpTo(total - 1);
+            });
+
+            let touchX = null;
+            document.addEventListener("touchstart", (e) => { touchX = e.touches[0].clientX; }, { passive: true });
+            document.addEventListener("touchend", (e) => {
+                if (touchX === null) return;
+                const dx = e.changedTouches[0].clientX - touchX;
+                if (Math.abs(dx) > 50) { dx < 0 ? advance() : retreat(); }
+                touchX = null;
+            }, { passive: true });
+
+            render();
+        </script>
+    </body>
+</html>
