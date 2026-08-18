@@ -1282,51 +1282,146 @@
                 color: var(--plum);
                 border: 1px solid var(--plum);
             }
-            .bubble.b1 { animation: chatS1 9s infinite ease-in-out; }
-            .bubble.b2 { animation: chatS2 9s infinite ease-in-out; }
-            .bubble.b3 { animation: chatS3 9s infinite ease-in-out; }
-            .bubble.b4 { animation: chatS4 9s infinite ease-in-out; }
-            .bubble.b5 { animation: chatS5 9s infinite ease-in-out; }
-            .bubble.b6 { animation: chatS6 9s infinite ease-in-out; }
+            .bubble.b1 {
+                animation: chatS1 9s infinite ease-in-out paused;
+            }
+            .bubble.b2 {
+                animation: chatS2 9s infinite ease-in-out paused;
+            }
+            .bubble.b3 {
+                animation: chatS3 9s infinite ease-in-out paused;
+            }
+            .bubble.b4 {
+                animation: chatS4 9s infinite ease-in-out paused;
+            }
+            .bubble.b5 {
+                animation: chatS5 9s infinite ease-in-out paused;
+            }
+            .bubble.b6 {
+                animation: chatS6 9s infinite ease-in-out paused;
+            }
+            .slide.active .bubble {
+                animation-play-state: running;
+            }
             /* each bubble fades in once, stays stacked, then all reset together at the loop end */
             @keyframes chatS1 {
-                0% { opacity: 0; transform: translateY(8px) scale(0.96); }
-                4% { opacity: 1; transform: none; }
-                90% { opacity: 1; transform: none; }
-                100% { opacity: 0; transform: translateY(-3px); }
+                0% {
+                    opacity: 0;
+                    transform: translateY(8px) scale(0.96);
+                }
+                4% {
+                    opacity: 1;
+                    transform: none;
+                }
+                90% {
+                    opacity: 1;
+                    transform: none;
+                }
+                100% {
+                    opacity: 0;
+                    transform: translateY(-3px);
+                }
             }
             @keyframes chatS2 {
-                0%, 11% { opacity: 0; transform: translateY(8px) scale(0.96); }
-                15% { opacity: 1; transform: none; }
-                90% { opacity: 1; transform: none; }
-                100% { opacity: 0; transform: translateY(-3px); }
+                0%,
+                11% {
+                    opacity: 0;
+                    transform: translateY(8px) scale(0.96);
+                }
+                15% {
+                    opacity: 1;
+                    transform: none;
+                }
+                90% {
+                    opacity: 1;
+                    transform: none;
+                }
+                100% {
+                    opacity: 0;
+                    transform: translateY(-3px);
+                }
             }
             @keyframes chatS3 {
-                0%, 22% { opacity: 0; transform: translateY(8px) scale(0.96); }
-                26% { opacity: 1; transform: none; }
-                90% { opacity: 1; transform: none; }
-                100% { opacity: 0; transform: translateY(-3px); }
+                0%,
+                22% {
+                    opacity: 0;
+                    transform: translateY(8px) scale(0.96);
+                }
+                26% {
+                    opacity: 1;
+                    transform: none;
+                }
+                90% {
+                    opacity: 1;
+                    transform: none;
+                }
+                100% {
+                    opacity: 0;
+                    transform: translateY(-3px);
+                }
             }
             @keyframes chatS4 {
-                0%, 33% { opacity: 0; transform: translateY(8px) scale(0.96); }
-                37% { opacity: 1; transform: none; }
-                90% { opacity: 1; transform: none; }
-                100% { opacity: 0; transform: translateY(-3px); }
+                0%,
+                33% {
+                    opacity: 0;
+                    transform: translateY(8px) scale(0.96);
+                }
+                37% {
+                    opacity: 1;
+                    transform: none;
+                }
+                90% {
+                    opacity: 1;
+                    transform: none;
+                }
+                100% {
+                    opacity: 0;
+                    transform: translateY(-3px);
+                }
             }
             @keyframes chatS5 {
-                0%, 44% { opacity: 0; transform: translateY(8px) scale(0.96); }
-                48% { opacity: 1; transform: none; }
-                90% { opacity: 1; transform: none; }
-                100% { opacity: 0; transform: translateY(-3px); }
+                0%,
+                44% {
+                    opacity: 0;
+                    transform: translateY(8px) scale(0.96);
+                }
+                48% {
+                    opacity: 1;
+                    transform: none;
+                }
+                90% {
+                    opacity: 1;
+                    transform: none;
+                }
+                100% {
+                    opacity: 0;
+                    transform: translateY(-3px);
+                }
             }
             @keyframes chatS6 {
-                0%, 55% { opacity: 0; transform: translateY(8px) scale(0.96); }
-                59% { opacity: 1; transform: none; }
-                90% { opacity: 1; transform: none; }
-                100% { opacity: 0; transform: translateY(-3px); }
+                0%,
+                55% {
+                    opacity: 0;
+                    transform: translateY(8px) scale(0.96);
+                }
+                59% {
+                    opacity: 1;
+                    transform: none;
+                }
+                90% {
+                    opacity: 1;
+                    transform: none;
+                }
+                100% {
+                    opacity: 0;
+                    transform: translateY(-3px);
+                }
             }
             @media (prefers-reduced-motion: reduce) {
-                .bubble { animation: none; opacity: 1; }
+                .bubble {
+                    animation: none;
+                    opacity: 1;
+                }
             }
 
             /* ---- thanks / closing ---- */
@@ -1736,7 +1831,9 @@
                 width: 2px;
                 background: var(--ink-soft);
             }
-            .ar-trunk { height: 20px; }
+            .ar-trunk {
+                height: 20px;
+            }
             .ar-bar {
                 position: relative;
                 display: flex;
@@ -1760,7 +1857,9 @@
                 align-items: center;
                 position: relative;
             }
-            .ar-col .ar-drop { height: 16px; }
+            .ar-col .ar-drop {
+                height: 16px;
+            }
             .ar-person {
                 display: flex;
                 flex-direction: column;
@@ -1825,7 +1924,154 @@
                 border-top: 1px dashed var(--line);
                 width: 100%;
             }
-            .ar-more b { color: var(--clay); }
+            .ar-more b {
+                color: var(--clay);
+            }
+
+            /* ---- slide 07: spawnable tester subagent (click eng-counterapp) ---- */
+            .ar-col.has-spawn {
+                cursor: pointer;
+            }
+            .ar-col.has-spawn .ar-person.bare.show {
+                transition:
+                    border-color 0.25s ease,
+                    background 0.25s ease;
+            }
+            .ar-col.has-spawn:hover .ar-person.bare.show {
+                border-color: var(--clay);
+            }
+            .ar-col.has-spawn .ap-hint {
+                font-family: var(--mono);
+                font-size: 8.5px;
+                color: var(--ink-soft);
+                margin-top: 3px;
+                letter-spacing: 0.02em;
+                opacity: 0.7;
+            }
+            .ar-sub {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                margin-top: 4px;
+                max-height: 0;
+                overflow: hidden;
+                opacity: 0;
+                transition:
+                    max-height 0.35s ease,
+                    opacity 0.3s ease,
+                    margin 0.3s ease;
+                pointer-events: none;
+            }
+            .ar-col.has-spawn.spawned .ar-sub {
+                max-height: 220px;
+                opacity: 1;
+                margin-top: 6px;
+                pointer-events: auto;
+            }
+            .ar-sub .ar-drop {
+                height: 14px;
+            }
+            .ar-sub .ar-person.tester .ap-ico {
+                background: #fbe8e0;
+                border-color: #c25a3a;
+                color: #c25a3a;
+            }
+            .ar-sub .ar-person.tester .ap-name {
+                color: #c25a3a;
+            }
+            .ar-sub .ar-person.tester {
+                border: 1.5px dashed #c25a3a;
+            }
+            .ar-sub .ar-note {
+                font-family: var(--mono);
+                font-size: 9px;
+                color: var(--ink-soft);
+                text-align: center;
+                max-width: 130px;
+                line-height: 1.45;
+                margin-top: 4px;
+            }
+
+            /* ---- slide 07b: why subagent matters ---- */
+            .why-sub {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 22px;
+                margin-top: 28px;
+            }
+            .why-sub .ws-card {
+                padding: 26px 22px 24px;
+                border-radius: 16px;
+                border: 1px solid var(--line);
+                background: var(--card);
+                display: flex;
+                flex-direction: column;
+                gap: 12px;
+            }
+            .why-sub .ws-emoji {
+                font-size: 38px;
+                line-height: 1;
+            }
+            .why-sub .ws-title {
+                font-family: var(--display);
+                font-weight: 700;
+                font-size: 21px;
+                letter-spacing: -0.01em;
+                color: var(--ink);
+            }
+            .why-sub .ws-body {
+                font-size: 14.5px;
+                line-height: 1.6;
+                color: var(--ink-soft);
+            }
+            .why-sub .ws-body code {
+                font-family: var(--mono);
+                font-size: 12.5px;
+                color: var(--teal);
+            }
+            @media (max-width: 900px) {
+                .why-sub {
+                    grid-template-columns: 1fr;
+                }
+            }
+
+            /* ---- guardrails slide ---- */
+            .guardrails {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 22px;
+                margin-top: 30px;
+            }
+            .gr-card {
+                padding: 26px 22px 24px;
+                border-radius: 16px;
+                border: 1px solid var(--line);
+                background: var(--card);
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+            }
+            .gr-card .gr-ico {
+                font-size: 34px;
+                line-height: 1;
+            }
+            .gr-card .gr-title {
+                font-family: var(--display);
+                font-weight: 700;
+                font-size: 20px;
+                letter-spacing: -0.01em;
+                color: var(--ink);
+            }
+            .gr-card .gr-sub {
+                font-size: 14.5px;
+                line-height: 1.6;
+                color: var(--ink-soft);
+            }
+            @media (max-width: 900px) {
+                .guardrails {
+                    grid-template-columns: 1fr;
+                }
+            }
 
             /* ---- sponsor slide ---- */
             .sponsor {
@@ -1896,8 +2142,7 @@
             <section class="slide active" data-title="Title">
                 <div class="slide-body">
                     <div class="badges">
-                        <span class="badge io">Google I/O Extended</span>
-                        <span class="badge"><img src="https://gdgindia.dev/gdg-logo.png" alt="GDG" />GDG Jakarta</span>
+                        <span class="badge io">Mobile DEV Generalist</span>
                     </div>
                     <h1 class="title-hero">
                         Architecting an
@@ -1909,17 +2154,24 @@
                         <span class="accent">autonomous engineering loops</span>
                         for
                         <span class="android-logo">
-                            <img src="https://developer.android.com/static/images/brand/android-head_3D.png" alt="Android" />
+                            <img
+                                src="https://developer.android.com/static/images/brand/android-head_3D.png"
+                                alt="Android"
+                            />
                         </span>
                         <span class="accent-teal">Android</span>.
                     </p>
                 </div>
                 <div class="name-block">
                     <div class="name-row">
-                        <img class="avatar" src="https://avatars.githubusercontent.com/u/6775159?v=4" alt="Muh Isfhani Ghiath" />
+                        <img
+                            class="avatar"
+                            src="https://avatars.githubusercontent.com/u/6775159?v=4"
+                            alt="Muh Isfhani Ghiath"
+                        />
                         <div>
                             <div class="name">Muh Isfhani Ghiath</div>
-                            <div class="role">GDE Android</div>
+                            <div class="role">GDE Android – Pengangguran</div>
                         </div>
                     </div>
                 </div>
@@ -1928,19 +2180,37 @@
             <!-- 01 OUTLINE -->
             <section class="slide" data-title="Outline">
                 <div class="eyebrow">
-                    <span class="idx">01 / 19</span> OUTLINE
+                    <span class="idx">01 / 20</span> OUTLINE
                 </div>
                 <div class="slide-body">
                     <h2 class="slide-title">
                         <span class="accent">Outline</span>
                     </h2>
                     <div class="outline-simple">
-                        <div class="o-item"><span class="o-n">01</span><span class="o-t">Overview</span></div>
-                        <div class="o-item"><span class="o-n">02</span><span class="o-t">Agentic</span></div>
-                        <div class="o-item"><span class="o-n">03</span><span class="o-t">Workflow</span></div>
-                        <div class="o-item"><span class="o-n">04</span><span class="o-t">How-to</span></div>
-                        <div class="o-item"><span class="o-n">05</span><span class="o-t">Demo</span></div>
-                        <div class="o-item"><span class="o-n">06</span><span class="o-t">Conclusion</span></div>
+                        <div class="o-item">
+                            <span class="o-n">01</span
+                            ><span class="o-t">Overview</span>
+                        </div>
+                        <div class="o-item">
+                            <span class="o-n">02</span
+                            ><span class="o-t">Agentic</span>
+                        </div>
+                        <div class="o-item">
+                            <span class="o-n">03</span
+                            ><span class="o-t">Workflow</span>
+                        </div>
+                        <div class="o-item">
+                            <span class="o-n">04</span
+                            ><span class="o-t">How-to</span>
+                        </div>
+                        <div class="o-item">
+                            <span class="o-n">05</span
+                            ><span class="o-t">Demo</span>
+                        </div>
+                        <div class="o-item">
+                            <span class="o-n">06</span
+                            ><span class="o-t">Conclusion</span>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -1948,7 +2218,7 @@
             <!-- 02 BACKGROUND -->
             <section class="slide" data-title="Background" data-steps="2">
                 <div class="eyebrow">
-                    <span class="idx">02 / 19</span> BACKGROUND
+                    <span class="idx">02 / 20</span> BACKGROUND
                 </div>
                 <div class="slide-body">
                     <h2 class="slide-title">
@@ -1956,71 +2226,190 @@
                         <span class="accent-teal">Agentic</span>, Loops
                     </h2>
                     <div class="vibe-cycle">
-                        <div class="vc-node"><span class="vc-t">prompt</span><span class="vc-s">the brief</span></div>
+                        <div class="vc-node">
+                            <span class="vc-t">prompt</span
+                            ><span class="vc-s">the brief</span>
+                        </div>
                         <span class="vc-arrow">→</span>
-                        <div class="vc-node"><span class="vc-t">specs</span><span class="vc-s">what &amp; why</span></div>
+                        <div class="vc-node">
+                            <span class="vc-t">specs</span
+                            ><span class="vc-s">what &amp; why</span>
+                        </div>
                         <span class="vc-arrow">→</span>
-                        <div class="vc-node"><span class="vc-t">arch &amp; scaffolding</span><span class="vc-s">structure</span></div>
+                        <div class="vc-node">
+                            <span class="vc-t">arch &amp; scaffolding</span
+                            ><span class="vc-s">structure</span>
+                        </div>
                         <span class="vc-arrow">→</span>
                         <div class="vc-node loop">
                             <span class="vc-t">vibecoding loops</span>
                             <span class="vc-sub">implementation ⇄ tests</span>
                         </div>
                         <span class="vc-arrow">→</span>
-                        <div class="vc-node"><span class="vc-t">validation</span><span class="vc-s">does it work?</span></div>
+                        <div class="vc-node">
+                            <span class="vc-t">validation</span
+                            ><span class="vc-s">does it work?</span>
+                        </div>
                         <span class="vc-arrow">→</span>
-                        <div class="vc-node"><span class="vc-t">refine &amp; iterate</span><span class="vc-s">loop back</span></div>
+                        <div class="vc-node">
+                            <span class="vc-t">refine &amp; iterate</span
+                            ><span class="vc-s">loop back</span>
+                        </div>
                     </div>
                     <div class="vc-zoom">↓ zoom into the loop</div>
-                    <div class="bg-wrap" style="padding: 4px 16%;">
+                    <div class="bg-wrap" style="padding: 4px 16%">
                         <svg
                             class="bgdiagram"
                             viewBox="0 0 1000 300"
                             xmlns="http://www.w3.org/2000/svg"
                         >
                             <g>
-                                <rect class="node-box center" x="420" y="116" width="160" height="74" rx="13" />
-                                <text class="node-title" x="500" y="148" text-anchor="middle">Agent</text>
-                                <text class="node-sub" x="500" y="170" text-anchor="middle">LLM + tools + goal</text>
+                                <rect
+                                    class="node-box center"
+                                    x="420"
+                                    y="116"
+                                    width="160"
+                                    height="74"
+                                    rx="13"
+                                />
+                                <text
+                                    class="node-title"
+                                    x="500"
+                                    y="148"
+                                    text-anchor="middle"
+                                >
+                                    Agent
+                                </text>
+                                <text
+                                    class="node-sub"
+                                    x="500"
+                                    y="170"
+                                    text-anchor="middle"
+                                >
+                                    LLM + tools + goal
+                                </text>
                             </g>
                             <g class="reveal" data-step="1">
-                                <path class="loop-arc" d="M580,124 A44,44 0 1 1 572,182" />
-                                <polygon class="loop-head" points="572,182 560,174 568,190" />
-                                <text class="stage-caption" x="600" y="104">plan → act → observe → revise</text>
+                                <path
+                                    class="loop-arc"
+                                    d="M580,124 A44,44 0 1 1 572,182"
+                                />
+                                <polygon
+                                    class="loop-head"
+                                    points="572,182 560,174 568,190"
+                                />
+                                <text class="stage-caption" x="600" y="104">
+                                    plan → act → observe → revise
+                                </text>
                             </g>
                             <g class="reveal" data-step="2">
-                                <rect class="node-box" x="70" y="116" width="160" height="74" rx="13" />
-                                <text class="node-title" x="150" y="148" text-anchor="middle" style="font-size: 15px">Agent</text>
-                                <text class="node-sub" x="150" y="170" text-anchor="middle">skill: /do-A</text>
-                                <rect class="node-box" x="770" y="116" width="160" height="74" rx="13" />
-                                <text class="node-title" x="850" y="148" text-anchor="middle" style="font-size: 15px">Agent</text>
-                                <text class="node-sub" x="850" y="170" text-anchor="middle">skill: /do-B</text>
-                                <line class="conn" x1="230" y1="153" x2="416" y2="153" />
-                                <line class="conn" x1="584" y1="153" x2="766" y2="153" />
-                                <rect class="outer-box" x="30" y="40" width="940" height="220" rx="20" />
-                                <text class="outer-label" x="500" y="32" text-anchor="middle">LOOPS</text>
+                                <rect
+                                    class="node-box"
+                                    x="70"
+                                    y="116"
+                                    width="160"
+                                    height="74"
+                                    rx="13"
+                                />
+                                <text
+                                    class="node-title"
+                                    x="150"
+                                    y="148"
+                                    text-anchor="middle"
+                                    style="font-size: 15px"
+                                >
+                                    Agent
+                                </text>
+                                <text
+                                    class="node-sub"
+                                    x="150"
+                                    y="170"
+                                    text-anchor="middle"
+                                >
+                                    skill: /do-A
+                                </text>
+                                <rect
+                                    class="node-box"
+                                    x="770"
+                                    y="116"
+                                    width="160"
+                                    height="74"
+                                    rx="13"
+                                />
+                                <text
+                                    class="node-title"
+                                    x="850"
+                                    y="148"
+                                    text-anchor="middle"
+                                    style="font-size: 15px"
+                                >
+                                    Agent
+                                </text>
+                                <text
+                                    class="node-sub"
+                                    x="850"
+                                    y="170"
+                                    text-anchor="middle"
+                                >
+                                    skill: /do-B
+                                </text>
+                                <line
+                                    class="conn"
+                                    x1="230"
+                                    y1="153"
+                                    x2="416"
+                                    y2="153"
+                                />
+                                <line
+                                    class="conn"
+                                    x1="584"
+                                    y1="153"
+                                    x2="766"
+                                    y2="153"
+                                />
+                                <rect
+                                    class="outer-box"
+                                    x="30"
+                                    y="40"
+                                    width="940"
+                                    height="220"
+                                    rx="20"
+                                />
+                                <text
+                                    class="outer-label"
+                                    x="500"
+                                    y="32"
+                                    text-anchor="middle"
+                                >
+                                    LOOPS
+                                </text>
                             </g>
                         </svg>
                     </div>
                     <div class="bg-captions" style="margin-top: 10px">
                         <div class="cap">
-                            <b>NORMAL PROMPT</b>The whole cycle, driven by hand — you are the loop.
+                            <b>NORMAL PROMPT</b>The whole cycle, driven by hand
+                            — you are the loop.
                         </div>
                         <div class="cap reveal" data-step="1">
-                            <b>AGENTIC</b>Zoom in: the system plans, acts, observes, revises — on repeat.
+                            <b>AGENTIC</b>Zoom in: the system plans, acts,
+                            observes, revises — on repeat.
                         </div>
                         <div class="cap reveal" data-step="2">
-                            <b>LOOPS</b>Several agents and skills chained across the task.
+                            <b>LOOPS</b>Several agents and skills chained across
+                            the task.
                         </div>
                     </div>
-                    <div class="hint">click or press next to zoom into the loop</div>
+                    <div class="hint">
+                        click or press next to zoom into the loop
+                    </div>
                 </div>
             </section>
 
             <!-- 03 COMPARE -->
             <section class="slide" data-title="Compare" data-steps="2">
                 <div class="eyebrow">
-                    <span class="idx">03 / 19</span> COMPARE
+                    <span class="idx">03 / 20</span> COMPARE
                 </div>
                 <h2 class="slide-title">
                     <span class="accent">Difference</span>
@@ -2034,20 +2423,52 @@
                         <div class="trace-col left reveal" data-step="1">
                             <h4>Normal Prompt</h4>
                             <div class="lede">You are the loop.</div>
-                            <div class="trace-line human"><span class="who">you</span> ask for the code</div>
-                            <div class="trace-line human"><span class="who">you</span> re-paste the requirements</div>
-                            <div class="trace-line human"><span class="who">you</span> apply the patch, fix errors</div>
-                            <div class="trace-line human"><span class="who">you</span> rebuild, it's still red</div>
-                            <div class="trace-loop-note">Repeat manually, from the top, each time it fails.</div>
+                            <div class="trace-line human">
+                                <span class="who">you</span> ask for the code
+                            </div>
+                            <div class="trace-line human">
+                                <span class="who">you</span> re-paste the
+                                requirements
+                            </div>
+                            <div class="trace-line human">
+                                <span class="who">you</span> apply the patch,
+                                fix errors
+                            </div>
+                            <div class="trace-line human">
+                                <span class="who">you</span> rebuild, it's still
+                                red
+                            </div>
+                            <div class="trace-loop-note">
+                                Repeat manually, from the top, each time it
+                                fails.
+                            </div>
                         </div>
                         <div class="trace-col right reveal" data-step="2">
                             <h4>Loop Engineering</h4>
                             <div class="lede">The agent is the loop.</div>
-                            <div class="trace-line human"><span class="who">you</span> message the bot: "build a counterapp"</div>
-                            <div class="trace-line agent"><span class="who">agent</span> scaffolds the project, builds it</div>
-                            <div class="trace-line agent"><span class="who">agent</span> reads build errors, fixes itself</div>
-                            <div class="trace-line agent"><span class="who">agent</span> ships the APK back to the chat</div>
-                            <div class="trace-loop-note">You reappear once, to install the APK.</div>
+                            <div class="trace-line human">
+                                <span class="who">you</span> message the bot:
+                                "build a counterapp"
+                            </div>
+                            <div class="trace-line agent">
+                                <span class="who">agent</span> scaffolds the
+                                project, builds it
+                            </div>
+                            <div class="trace-line agent">
+                                <span class="who">agent</span> reads build
+                                errors, fixes itself
+                            </div>
+                            <div class="trace-line agent">
+                                <span class="who">agent</span> ships the APK
+                                back to the chat
+                            </div>
+                            <div class="trace-line human">
+                                <span class="who">you</span> review the code
+                                before merge the PR
+                            </div>
+                            <div class="trace-loop-note">
+                                You reappear once, to install the APK.
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -2060,46 +2481,77 @@
                 </div>
                 <div class="slide-body">
                     <h2 class="slide-title">
-                        🦉 <span class="accent-teal">pang</span> — An agentic workflow for engineering loops
+                        🦉 <span class="accent-teal">pang</span> — An agentic
+                        workflow for engineering loops
                     </h2>
                     <p class="body-copy" style="margin-bottom: 18px">
                         A self-hosted, agentic software-engineering system. You
                         describe a project in a note; an
                         <span class="accent">engineer</span> agent picks it up,
-                        confirms the platform with you over Telegram, scaffolds a
-                        real codebase, and builds it. It runs alongside a personal
-                        <code>ghiath</code> assistant and shares nothing with it
-                        but the LLM gateway.
+                        confirms the platform with you over Telegram, scaffolds
+                        a real codebase, and builds it. It runs alongside a
+                        personal <code>ghiath</code> assistant and shares
+                        nothing with it but the LLM gateway.
                     </p>
                     <div class="grid3">
                         <div class="card svc reveal" data-step="1">
                             <div class="favicon plum">
-                                <svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="2.2" /><circle cx="5" cy="18" r="2.2" /><circle cx="19" cy="18" r="2.2" /><path d="M12 7.2 6.3 16.2M12 7.2l5.7 9M7.2 18h9.6" /></svg>
+                                <svg viewBox="0 0 24 24">
+                                    <circle cx="12" cy="5" r="2.2" />
+                                    <circle cx="5" cy="18" r="2.2" />
+                                    <circle cx="19" cy="18" r="2.2" />
+                                    <path
+                                        d="M12 7.2 6.3 16.2M12 7.2l5.7 9M7.2 18h9.6"
+                                    />
+                                </svg>
                             </div>
                             <div class="svc-body">
                                 <span class="tag">Orchestrator</span>
                                 <h3>hermes-agent</h3>
-                                <p>A long-lived <code>engineer</code> agent that spawns per-project <code>eng-&lt;name&gt;</code> build agents.</p>
+                                <p>
+                                    A long-lived <code>engineer</code> agent
+                                    that spawns per-project
+                                    <code>eng-&lt;name&gt;</code> build agents.
+                                </p>
                             </div>
                         </div>
                         <div class="card svc reveal" data-step="2">
                             <div class="favicon img">
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/2023_Obsidian_logo.svg/960px-2023_Obsidian_logo.svg.png" alt="Obsidian" />
+                                <img
+                                    src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/2023_Obsidian_logo.svg/960px-2023_Obsidian_logo.svg.png"
+                                    alt="Obsidian"
+                                />
                             </div>
                             <div class="svc-body">
                                 <span class="tag">Cognitive core</span>
                                 <h3>Obsidian vault</h3>
-                                <p>Plain Markdown — projects, decisions, task logs. Vendor-agnostic, synced to every device.</p>
+                                <p>
+                                    Plain Markdown — projects, decisions, task
+                                    logs. Vendor-agnostic, synced to every
+                                    device.
+                                </p>
                             </div>
                         </div>
                         <div class="card svc reveal" data-step="3">
                             <div class="favicon teal">
-                                <svg viewBox="0 0 24 24"><rect x="4" y="9" width="16" height="6" rx="1.3" /><path d="M8 9V6M16 9V6M8 15v3M16 15v3" /></svg>
+                                <svg viewBox="0 0 24 24">
+                                    <rect
+                                        x="4"
+                                        y="9"
+                                        width="16"
+                                        height="6"
+                                        rx="1.3"
+                                    />
+                                    <path d="M8 9V6M16 9V6M8 15v3M16 15v3" />
+                                </svg>
                             </div>
                             <div class="svc-body">
                                 <span class="tag">LLM gateway</span>
                                 <h3>KeiRouter</h3>
-                                <p>The one place provider keys live. Swap models in one spot; agents never hold keys.</p>
+                                <p>
+                                    The one place provider keys live. Swap
+                                    models in one spot; agents never hold keys.
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -2109,27 +2561,41 @@
             <!-- 05 HOW IT WORKS -->
             <section class="slide" data-title="How it works" data-steps="3">
                 <div class="eyebrow">
-                    <span class="idx">05 / 19</span> HOW IT WORKS
+                    <span class="idx">05 / 20</span> HOW IT WORKS
                 </div>
                 <div class="slide-body">
                     <div class="title-with-icon">
-                        <span class="tg-icon img" style="color: var(--clay); width: 30px; height: 30px;">
-                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/2023_Obsidian_logo.svg/960px-2023_Obsidian_logo.svg.png" alt="Obsidian" />
+                        <span
+                            class="tg-icon img"
+                            style="
+                                color: var(--clay);
+                                width: 30px;
+                                height: 30px;
+                            "
+                        >
+                            <img
+                                src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/2023_Obsidian_logo.svg/960px-2023_Obsidian_logo.svg.png"
+                                alt="Obsidian"
+                            />
                         </span>
                         <h2 class="slide-title">
-                            <span class="accent-teal">Obsidian vault</span> observable for tasks, no webhook
+                            <span class="accent-teal">Obsidian vault</span>
+                            observable for tasks, no webhook
                         </h2>
                     </div>
                     <p class="body-copy" style="margin-bottom: 16px">
-                        There is no webhook. hermes agents have no HTTP endpoint —
-                        their gateway is a Telegram poller. So the trigger is a
-                        frontmatter field in a Markdown note, watched by a cron
-                        tick.
+                        There is no webhook. hermes agents have no HTTP endpoint
+                        — their gateway is a Telegram poller. So the trigger is
+                        a frontmatter field in a Markdown note, watched by a
+                        cron tick.
                     </p>
                     <div class="codeblock">
                         <div class="cb-head">
-                            <span class="dot"></span><span class="dot"></span><span class="dot"></span>
-                            <span class="file">~/ippang/vault-project/timerapp/00-context.md</span>
+                            <span class="dot"></span><span class="dot"></span
+                            ><span class="dot"></span>
+                            <span class="file"
+                                >~/ippang/vault-project/timerapp/00-context.md</span
+                            >
                         </div>
                         <pre>---
 <span class="k">project:</span> <span class="s">timerapp</span>
@@ -2139,7 +2605,11 @@
 <span class="k">created:</span> <span class="s">2026-07-30T09:12:00+0700</span>
 ---</pre>
                     </div>
-                    <div class="mini-flow reveal" data-step="1" style="margin-top: 20px; margin-bottom: 0">
+                    <div
+                        class="mini-flow reveal"
+                        data-step="1"
+                        style="margin-top: 20px; margin-bottom: 0"
+                    >
                         <span class="pill on">edit status → in-progress</span>
                         <span class="flow-arrow">→</span>
                         <span class="pill">cron tick (60s)</span>
@@ -2148,9 +2618,13 @@
                         <span class="flow-arrow">→</span>
                         <span class="pill on">confirm over Telegram</span>
                     </div>
-                    <p class="body-copy reveal" data-step="2" style="margin-top: 16px; font-size: 15.5px">
-                        The tick is debounced by a state file, so editing the note
-                        body never re-fires — only a
+                    <p
+                        class="body-copy reveal"
+                        data-step="2"
+                        style="margin-top: 16px; font-size: 15.5px"
+                    >
+                        The tick is debounced by a state file, so editing the
+                        note body never re-fires — only a
                         <code>backlog → in-progress</code> transition does. The
                         engineer then confirms the platform and delegates the
                         build to an isolated <code>eng-timerapp</code> agent.
@@ -2161,7 +2635,7 @@
             <!-- 06 THE TRIGGER -->
             <section class="slide" data-title="The Trigger" data-steps="4">
                 <div class="eyebrow">
-                    <span class="idx">06 / 19</span> THE TRIGGER
+                    <span class="idx">06 / 20</span> THE TRIGGER
                 </div>
                 <div class="slide-body">
                     <h2 class="slide-title">
@@ -2171,13 +2645,18 @@
                     <p class="body-copy" style="margin-bottom: 14px">
                         Registered with <code>hermes cron</code> in
                         <code>--no-agent</code> mode: the script itself decides
-                        whether to spawn, and its stdout is delivered to Telegram.
+                        whether to spawn, and its stdout is delivered to
+                        Telegram.
                     </p>
                     <div class="grid2" style="align-items: stretch">
                         <div class="codeblock">
                             <div class="cb-head">
-                                <span class="dot"></span><span class="dot"></span><span class="dot"></span>
-                                <span class="file">_instance/hermes-cron/project-tick.py</span>
+                                <span class="dot"></span
+                                ><span class="dot"></span
+                                ><span class="dot"></span>
+                                <span class="file"
+                                    >_instance/hermes-cron/project-tick.py</span
+                                >
                             </div>
                             <pre><span class="c"># runs every minute: hermes cron '* * * * *' --no-agent \</span>
 <span class="c">#   --script project-tick.py --deliver telegram --name ippang-projects</span>
@@ -2197,30 +2676,47 @@
         <span class="f">print</span>(<span class="s">f"[{project}] {status}"</span>)  <span class="c"># stdout -> chat</span></pre>
                         </div>
                         <div class="tick-diagram bare">
-                            <div class="tk-head">cron logic · click to step</div>
+                            <div class="tk-head">
+                                cron logic · click to step
+                            </div>
                             <div class="tk-node">
                                 <span class="tk-i">01</span>
-                                <span class="tk-t">scan vault for <b>*/00-context.md</b> every 60s</span>
+                                <span class="tk-t"
+                                    >scan vault for <b>*/00-context.md</b> every
+                                    60s</span
+                                >
                             </div>
                             <div class="tk-conn reveal" data-step="1"></div>
                             <div class="tk-node reveal" data-step="1">
                                 <span class="tk-i">02</span>
-                                <span class="tk-t">guard: <b>instance == "ippang"</b>? else skip</span>
+                                <span class="tk-t"
+                                    >guard: <b>instance == "ippang"</b>? else
+                                    skip</span
+                                >
                             </div>
                             <div class="tk-conn reveal" data-step="2"></div>
                             <div class="tk-node fire reveal" data-step="2">
                                 <span class="tk-i">03</span>
-                                <span class="tk-t">status <b>backlog → in-progress</b> → spawn <b>engineer</b></span>
+                                <span class="tk-t"
+                                    >status <b>backlog → in-progress</b> → spawn
+                                    <b>engineer</b></span
+                                >
                             </div>
                             <div class="tk-conn reveal" data-step="3"></div>
                             <div class="tk-node report reveal" data-step="3">
                                 <span class="tk-i">04</span>
-                                <span class="tk-t">terminal status → <b>print</b> → delivered to Telegram</span>
+                                <span class="tk-t"
+                                    >terminal status → <b>print</b> → delivered
+                                    to Telegram</span
+                                >
                             </div>
                             <div class="tk-conn reveal" data-step="4"></div>
                             <div class="tk-node err reveal" data-step="4">
                                 <span class="tk-i">05</span>
-                                <span class="tk-t">3 failed spawns → note flagged <b>status: error</b></span>
+                                <span class="tk-t"
+                                    >3 failed spawns → note flagged
+                                    <b>status: error</b></span
+                                >
                             </div>
                         </div>
                     </div>
@@ -2230,7 +2726,7 @@
             <!-- 07 THE ENGINEER -->
             <section class="slide" data-title="The Engineer" data-steps="4">
                 <div class="eyebrow">
-                    <span class="idx">07 / 19</span> THE ENGINEER AGENT
+                    <span class="idx">07 / 20</span> THE ENGINEER AGENT
                 </div>
                 <div class="slide-body">
                     <h2 class="slide-title">
@@ -2241,55 +2737,178 @@
                         <div>
                             <p class="body-copy" style="margin-bottom: 14px">
                                 The <code>engineer</code> profile is long-lived.
-                                Its <code>SOUL.md</code> is plain prose: read the
-                                note, confirm the platform over Telegram, then
-                                provision and delegate. The real coding is done
-                                by fresh, scoped <code>eng-&lt;name&gt;</code>
+                                Its <code>SOUL.md</code> is plain prose: read
+                                the note, confirm the platform over Telegram,
+                                then provision and delegate. The real coding is
+                                done by fresh, scoped
+                                <code>eng-&lt;name&gt;</code>
                                 agents — one per build.
                             </p>
                             <div class="agent-diagram bare">
-                                <div class="ad-label">orchestrator → builders · click to spawn</div>
+                                <div class="ad-label">
+                                    orchestrator → builders · click to spawn
+                                </div>
                                 <div class="atree">
                                     <div class="ar-person root">
-                                        <div class="ap-ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" /><path d="M4 21c0-4 4-6 8-6s8 2 8 6" /></svg></div>
+                                        <div class="ap-ico">
+                                            <svg viewBox="0 0 24 24">
+                                                <circle cx="12" cy="8" r="4" />
+                                                <path
+                                                    d="M4 21c0-4 4-6 8-6s8 2 8 6"
+                                                />
+                                            </svg>
+                                        </div>
                                         <span class="ap-name">engineer</span>
-                                        <span class="ap-role">orchestrator</span>
+                                        <span class="ap-role"
+                                            >orchestrator</span
+                                        >
                                     </div>
-                                    <div class="ar-trunk reveal" data-step="1"></div>
+                                    <div
+                                        class="ar-trunk reveal"
+                                        data-step="1"
+                                    ></div>
                                     <div class="ar-bar reveal" data-step="1">
-                                        <div class="ar-col reveal" data-step="1">
+                                        <div
+                                            class="ar-col reveal"
+                                            data-step="1"
+                                        >
                                             <div class="ar-drop"></div>
-                                            <div class="ar-person bare show reveal" data-step="1">
-                                                <div class="ap-ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" /><path d="M4 21c0-4 4-6 8-6s8 2 8 6" /></svg></div>
-                                                <span class="ap-name">eng-timerapp</span>
-                                                <span class="ap-role">android</span>
+                                            <div
+                                                class="ar-person bare show reveal"
+                                                data-step="1"
+                                            >
+                                                <div class="ap-ico">
+                                                    <svg viewBox="0 0 24 24">
+                                                        <circle
+                                                            cx="12"
+                                                            cy="8"
+                                                            r="4"
+                                                        />
+                                                        <path
+                                                            d="M4 21c0-4 4-6 8-6s8 2 8 6"
+                                                        />
+                                                    </svg>
+                                                </div>
+                                                <span class="ap-name"
+                                                    >eng-timerapp</span
+                                                >
+                                                <span class="ap-role"
+                                                    >android</span
+                                                >
                                             </div>
                                         </div>
-                                        <div class="ar-col reveal" data-step="2">
+                                        <div
+                                            class="ar-col reveal has-spawn"
+                                            data-step="2"
+                                            data-spawn="eng-counterapp-tester"
+                                        >
                                             <div class="ar-drop"></div>
-                                            <div class="ar-person bare show reveal" data-step="2">
-                                                <div class="ap-ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" /><path d="M4 21c0-4 4-6 8-6s8 2 8 6" /></svg></div>
-                                                <span class="ap-name">eng-counterapp</span>
-                                                <span class="ap-role">android</span>
+                                            <div
+                                                class="ar-person bare show reveal"
+                                                data-step="2"
+                                            >
+                                                <div class="ap-ico">
+                                                    <svg viewBox="0 0 24 24">
+                                                        <circle
+                                                            cx="12"
+                                                            cy="8"
+                                                            r="4"
+                                                        />
+                                                        <path
+                                                            d="M4 21c0-4 4-6 8-6s8 2 8 6"
+                                                        />
+                                                    </svg>
+                                                </div>
+                                                <span class="ap-name"
+                                                    >eng-counterapp</span
+                                                >
+                                                <span class="ap-role"
+                                                    >android</span
+                                                >
+                                                <span class="ap-hint"
+                                                    >+ click to spawn
+                                                    tester</span
+                                                >
+                                            </div>
+                                            <div class="ar-sub">
+                                                <div class="ar-drop"></div>
+                                                <div
+                                                    class="ar-person bare show tester"
+                                                >
+                                                    <div class="ap-ico">
+                                                        <svg
+                                                            viewBox="0 0 24 24"
+                                                        >
+                                                            <circle
+                                                                cx="12"
+                                                                cy="8"
+                                                                r="4"
+                                                            />
+                                                            <path
+                                                                d="M4 21c0-4 4-6 8-6s8 2 8 6"
+                                                            />
+                                                        </svg>
+                                                    </div>
+                                                    <span class="ap-name"
+                                                        >eng-counterapp-tester</span
+                                                    >
+                                                    <span class="ap-role"
+                                                        >qa engineer</span
+                                                    >
+                                                </div>
+                                                <span class="ar-note"
+                                                    >scoped to counterapp's
+                                                    vault subtree — reads the
+                                                    app's memory to plan &
+                                                    assert coverage</span
+                                                >
                                             </div>
                                         </div>
-                                        <div class="ar-col reveal" data-step="3">
+                                        <div
+                                            class="ar-col reveal"
+                                            data-step="3"
+                                        >
                                             <div class="ar-drop"></div>
-                                            <div class="ar-person bare show reveal" data-step="3">
-                                                <div class="ap-ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" /><path d="M4 21c0-4 4-6 8-6s8 2 8 6" /></svg></div>
-                                                <span class="ap-name">eng-notesapp</span>
+                                            <div
+                                                class="ar-person bare show reveal"
+                                                data-step="3"
+                                            >
+                                                <div class="ap-ico">
+                                                    <svg viewBox="0 0 24 24">
+                                                        <circle
+                                                            cx="12"
+                                                            cy="8"
+                                                            r="4"
+                                                        />
+                                                        <path
+                                                            d="M4 21c0-4 4-6 8-6s8 2 8 6"
+                                                        />
+                                                    </svg>
+                                                </div>
+                                                <span class="ap-name"
+                                                    >eng-notesapp</span
+                                                >
                                                 <span class="ap-role">web</span>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="ar-more reveal" data-step="4">+ <b>as many eng-&lt;name&gt;</b> as the current builds need — each scoped to its own dir &amp; vault subtree, isolated from the others</div>
+                                    <div class="ar-more reveal" data-step="4">
+                                        + <b>as many eng-&lt;name&gt;</b> as the
+                                        current builds need — each scoped to its
+                                        own dir &amp; vault subtree, isolated
+                                        from the others
+                                    </div>
                                 </div>
                             </div>
                         </div>
                         <div class="codeblock tight">
                             <div class="cb-head">
-                                <span class="dot"></span><span class="dot"></span><span class="dot"></span>
-                                <span class="file">engineer, after you confirm "Android"</span>
+                                <span class="dot"></span
+                                ><span class="dot"></span
+                                ><span class="dot"></span>
+                                <span class="file"
+                                    >engineer, after you confirm "Android"</span
+                                >
                             </div>
                             <pre><span class="c"># 1. create the project: dir, vault subtree, eng-timerapp</span>
 ~/ippang/_instance/scripts/<span class="f">new-project.sh</span> timerapp android
@@ -2308,19 +2927,74 @@ hermes -p eng-timerapp -z <span class="s">"build assembleDebug"</span>
                 </div>
             </section>
 
-            <!-- 08 ANDROID FIRST -->
-            <section class="slide" data-title="Android First">
+            <!-- 07b WHY SUBAGENT MATTERS -->
+            <section class="slide" data-title="Why Subagent Matters">
                 <div class="eyebrow">
-                    <span class="idx">08 / 19</span> ANDROID FIRST
+                    <span class="idx">08 / 20</span> WHY SUBAGENT MATTERS
                 </div>
                 <div class="slide-body">
                     <h2 class="slide-title">
-                        <span class="accent">Android-first</span>, with android-cli
+                        Subagents are the
+                        <span class="accent">scoped workforce</span>
+                    </h2>
+                    <p
+                        class="body-copy"
+                        style="margin-top: 14px; max-width: 760px"
+                    >
+                        A subagent is a child session spawned by a parent agent
+                        to do one bounded job — keeping the main context lean
+                        and the role crisp.
+                    </p>
+                    <div class="why-sub">
+                        <div class="ws-card">
+                            <span class="ws-emoji">🧩</span>
+                            <span class="ws-title">Role separation</span>
+                            <span class="ws-body">
+                                Unlike primary agents (like Build or Plan),
+                                subagents run in restricted or specialized child
+                                sessions — each with its own role, scope, and
+                                memory.
+                            </span>
+                        </div>
+                        <div class="ws-card">
+                            <span class="ws-emoji">🧰</span>
+                            <span class="ws-title">Built-in options</span>
+                            <span class="ws-body">
+                                Includes <code>general</code> for multi-step
+                                tasks, <code>explore</code> for read-only
+                                codebase searches, and <code>scout</code> for
+                                checking external dependencies.
+                            </span>
+                        </div>
+                        <div class="ws-card">
+                            <span class="ws-emoji">🪶</span>
+                            <span class="ws-title">Context efficiency</span>
+                            <span class="ws-body">
+                                Prevents main context pollution and lowers token
+                                usage by isolating heavy lookups or research
+                                into throwaway child sessions.
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 08 ANDROID FIRST -->
+            <section class="slide" data-title="Android First">
+                <div class="eyebrow">
+                    <span class="idx">09 / 20</span> ANDROID FIRST
+                </div>
+                <div class="slide-body">
+                    <h2 class="slide-title">
+                        <span class="accent">Android-first</span>, with
+                        android-cli
                     </h2>
                     <div class="grid2">
                         <div class="codeblock tight">
                             <div class="cb-head">
-                                <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+                                <span class="dot"></span
+                                ><span class="dot"></span
+                                ><span class="dot"></span>
                                 <span class="file">verified end-to-end</span>
                             </div>
                             <pre><span class="c"># 1. create the project + isolated agent</span>
@@ -2340,23 +3014,35 @@ hermes -p eng-timerapp -z <span class="s">"build assembleDebug"</span>
                             <p class="body-copy" style="margin-bottom: 16px">
                                 The bundled <code>android-dev</code> skill seeds
                                 AGP&nbsp;8.7, Kotlin&nbsp;2.0, Compose,
-                                compileSdk&nbsp;35, and a working Gradle wrapper —
-                                no Android Studio required.
+                                compileSdk&nbsp;35, and a working Gradle wrapper
+                                — no Android Studio required.
                             </p>
-                            <div class="tree" style="font-size: 12.5px; line-height: 1.7">
-~/ippang/helloworld/
-├─ <span class="g">gradlew</span>
-├─ <span class="g">gradle/libs.versions.toml</span>
-├─ <span class="g">local.properties</span> <span class="c"># sdk.dir</span>
-└─ <span class="t">app/</span>
-   ├─ build.gradle.kts
-   └─ <span class="t">src/main/</span>
-      ├─ AndroidManifest.xml
-      ├─ <span class="g">java/id/ghiath/…/MainActivity.kt</span>
-      └─ res/values/strings.xml</div>
-                            <p class="body-copy" style="margin-top: 14px; font-size: 15px">
+                            <div
+                                class="tree"
+                                style="font-size: 12.5px; line-height: 1.7"
+                            >
+                                ~/ippang/helloworld/ ├─
+                                <span class="g">gradlew</span> ├─
+                                <span class="g">gradle/libs.versions.toml</span>
+                                ├─ <span class="g">local.properties</span>
+                                <span class="c"># sdk.dir</span> └─
+                                <span class="t">app/</span> ├─ build.gradle.kts
+                                └─ <span class="t">src/main/</span> ├─
+                                AndroidManifest.xml ├─
+                                <span class="g"
+                                    >java/id/ghiath/…/MainActivity.kt</span
+                                >
+                                └─ res/values/strings.xml
+                            </div>
+                            <p
+                                class="body-copy"
+                                style="margin-top: 14px; font-size: 15px"
+                            >
                                 Install on a real phone over Wi-Fi —
-                                <code>adb connect &lt;ip&gt;:5555 &amp;&amp; ./gradlew installDebug</code>.
+                                <code
+                                    >adb connect &lt;ip&gt;:5555 &amp;&amp;
+                                    ./gradlew installDebug</code
+                                >.
                             </p>
                         </div>
                     </div>
@@ -2366,7 +3052,7 @@ hermes -p eng-timerapp -z <span class="s">"build assembleDebug"</span>
             <!-- 09 COGNITIVE CORE -->
             <section class="slide" data-title="Cognitive Core" data-steps="5">
                 <div class="eyebrow">
-                    <span class="idx">09 / 19</span> COGNITIVE CORE
+                    <span class="idx">10 / 20</span> COGNITIVE CORE
                 </div>
                 <div class="slide-body">
                     <h2 class="slide-title">
@@ -2375,69 +3061,269 @@ hermes -p eng-timerapp -z <span class="s">"build assembleDebug"</span>
                     </h2>
                     <div class="core-grid tight">
                         <div class="core-diagram">
-                            <svg viewBox="0 0 440 300" xmlns="http://www.w3.org/2000/svg">
+                            <svg
+                                viewBox="0 0 440 300"
+                                xmlns="http://www.w3.org/2000/svg"
+                            >
                                 <defs>
-                                    <marker id="cd-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-                                        <path d="M0 0 L10 5 L0 10 z" fill="context-stroke" />
+                                    <marker
+                                        id="cd-arrow"
+                                        viewBox="0 0 10 10"
+                                        refX="9"
+                                        refY="5"
+                                        markerWidth="7"
+                                        markerHeight="7"
+                                        orient="auto-start-reverse"
+                                    >
+                                        <path
+                                            d="M0 0 L10 5 L0 10 z"
+                                            fill="context-stroke"
+                                        />
                                     </marker>
                                 </defs>
                                 <!-- 1. agent (entry) -->
                                 <g class="reveal" data-step="1">
-                                    <rect class="cd-node agent" x="16" y="225" width="110" height="56" rx="10" />
-                                    <text class="cd-title" x="71" y="249" text-anchor="middle">Agent</text>
-                                    <text class="cd-sub" x="71" y="264" text-anchor="middle">grounds next step</text>
+                                    <rect
+                                        class="cd-node agent"
+                                        x="16"
+                                        y="225"
+                                        width="110"
+                                        height="56"
+                                        rx="10"
+                                    />
+                                    <text
+                                        class="cd-title"
+                                        x="71"
+                                        y="249"
+                                        text-anchor="middle"
+                                    >
+                                        Agent
+                                    </text>
+                                    <text
+                                        class="cd-sub"
+                                        x="71"
+                                        y="264"
+                                        text-anchor="middle"
+                                    >
+                                        grounds next step
+                                    </text>
                                 </g>
                                 <!-- 2. obsidian vault (center) -->
                                 <g class="reveal" data-step="2">
-                                    <rect class="cd-node write" x="165" y="110" width="110" height="58" rx="10" />
-                                    <text class="cd-title" x="220" y="134" text-anchor="middle">Obsidian vault</text>
-                                    <text class="cd-sub" x="220" y="150" text-anchor="middle">Markdown on disk</text>
+                                    <rect
+                                        class="cd-node write"
+                                        x="165"
+                                        y="110"
+                                        width="110"
+                                        height="58"
+                                        rx="10"
+                                    />
+                                    <text
+                                        class="cd-title"
+                                        x="220"
+                                        y="134"
+                                        text-anchor="middle"
+                                    >
+                                        Obsidian vault
+                                    </text>
+                                    <text
+                                        class="cd-sub"
+                                        x="220"
+                                        y="150"
+                                        text-anchor="middle"
+                                    >
+                                        Markdown on disk
+                                    </text>
                                 </g>
                                 <!-- 3. couchdb + vault->couch sync -->
                                 <g class="reveal" data-step="3">
-                                    <rect class="cd-node" x="300" y="110" width="120" height="58" rx="10" />
-                                    <text class="cd-title" x="360" y="134" text-anchor="middle">CouchDB</text>
-                                    <text class="cd-sub" x="360" y="150" text-anchor="middle">replication store</text>
-                                    <line class="cd-arr" x1="275" y1="139" x2="296" y2="139" />
-                                    <text class="cd-lbl" x="286" y="132" text-anchor="middle">sync</text>
+                                    <rect
+                                        class="cd-node"
+                                        x="300"
+                                        y="110"
+                                        width="120"
+                                        height="58"
+                                        rx="10"
+                                    />
+                                    <text
+                                        class="cd-title"
+                                        x="360"
+                                        y="134"
+                                        text-anchor="middle"
+                                    >
+                                        CouchDB
+                                    </text>
+                                    <text
+                                        class="cd-sub"
+                                        x="360"
+                                        y="150"
+                                        text-anchor="middle"
+                                    >
+                                        replication store
+                                    </text>
+                                    <line
+                                        class="cd-arr"
+                                        x1="275"
+                                        y1="139"
+                                        x2="296"
+                                        y2="139"
+                                    />
+                                    <text
+                                        class="cd-lbl"
+                                        x="286"
+                                        y="132"
+                                        text-anchor="middle"
+                                    >
+                                        sync
+                                    </text>
                                 </g>
                                 <!-- 4. devices + couch->devices replicate -->
                                 <g class="reveal" data-step="4">
-                                    <rect class="cd-node" x="300" y="16" width="120" height="46" rx="10" />
-                                    <text class="cd-title" x="360" y="36" text-anchor="middle">Your devices</text>
-                                    <text class="cd-sub" x="360" y="50" text-anchor="middle">phone · Mac</text>
-                                    <line class="cd-arr" x1="360" y1="110" x2="360" y2="66" />
-                                    <text class="cd-lbl" x="372" y="90">replicate</text>
+                                    <rect
+                                        class="cd-node"
+                                        x="300"
+                                        y="16"
+                                        width="120"
+                                        height="46"
+                                        rx="10"
+                                    />
+                                    <text
+                                        class="cd-title"
+                                        x="360"
+                                        y="36"
+                                        text-anchor="middle"
+                                    >
+                                        Your devices
+                                    </text>
+                                    <text
+                                        class="cd-sub"
+                                        x="360"
+                                        y="50"
+                                        text-anchor="middle"
+                                    >
+                                        phone · Mac
+                                    </text>
+                                    <line
+                                        class="cd-arr"
+                                        x1="360"
+                                        y1="110"
+                                        x2="360"
+                                        y2="66"
+                                    />
+                                    <text class="cd-lbl" x="372" y="90">
+                                        replicate
+                                    </text>
                                 </g>
                                 <!-- 5. qdrant + embed + recall + write-back loop -->
                                 <g class="reveal" data-step="5">
-                                    <rect class="cd-node qdrant" x="165" y="225" width="120" height="52" rx="10" />
-                                    <text class="cd-title" x="225" y="247" text-anchor="middle">Qdrant</text>
-                                    <text class="cd-sub" x="225" y="262" text-anchor="middle">vector index</text>
-                                    <line class="cd-arr embed" x1="220" y1="168" x2="222" y2="221" />
-                                    <text class="cd-lbl" x="232" y="198">embed</text>
-                                    <line class="cd-arr embed" x1="163" y1="251" x2="130" y2="253" />
-                                    <text class="cd-lbl" x="100" y="244">recall</text>
-                                    <path class="cd-arr write" d="M71 225 C 60 190, 90 170, 165 150" />
-                                    <text class="cd-lbl" x="48" y="195" fill="#2c7148">write back</text>
+                                    <rect
+                                        class="cd-node qdrant"
+                                        x="165"
+                                        y="225"
+                                        width="120"
+                                        height="52"
+                                        rx="10"
+                                    />
+                                    <text
+                                        class="cd-title"
+                                        x="225"
+                                        y="247"
+                                        text-anchor="middle"
+                                    >
+                                        Qdrant
+                                    </text>
+                                    <text
+                                        class="cd-sub"
+                                        x="225"
+                                        y="262"
+                                        text-anchor="middle"
+                                    >
+                                        vector index
+                                    </text>
+                                    <line
+                                        class="cd-arr embed"
+                                        x1="220"
+                                        y1="168"
+                                        x2="222"
+                                        y2="221"
+                                    />
+                                    <text class="cd-lbl" x="232" y="198">
+                                        embed
+                                    </text>
+                                    <line
+                                        class="cd-arr embed"
+                                        x1="163"
+                                        y1="251"
+                                        x2="130"
+                                        y2="253"
+                                    />
+                                    <text class="cd-lbl" x="100" y="244">
+                                        recall
+                                    </text>
+                                    <path
+                                        class="cd-arr write"
+                                        d="M71 225 C 60 190, 90 170, 165 150"
+                                    />
+                                    <text
+                                        class="cd-lbl"
+                                        x="48"
+                                        y="195"
+                                        fill="#2c7148"
+                                    >
+                                        write back
+                                    </text>
                                 </g>
                             </svg>
                             <div class="core-loop-note" style="margin-top: 8px">
-                                ↺ what the agent learns is written back to Obsidian, re-indexed, and recalled next time — the loop compounds.
+                                ↺ what the agent learns is written back to
+                                Obsidian, re-indexed, and recalled next time —
+                                the loop compounds.
                             </div>
                         </div>
                         <div class="why-list tight">
                             <div class="why-card reveal" data-step="2">
-                                <h4><span class="wdot" style="background: var(--clay)"></span>Why Obsidian</h4>
-                                <p>Plain Markdown on disk — readable by humans and agents, owned by you, no SaaS lock-in. The agent reads and writes it directly as memory.</p>
+                                <h4>
+                                    <span
+                                        class="wdot"
+                                        style="background: var(--clay)"
+                                    ></span
+                                    >Why Obsidian
+                                </h4>
+                                <p>
+                                    Plain Markdown on disk — readable by humans
+                                    and agents, owned by you, no SaaS lock-in.
+                                    The agent reads and writes it directly as
+                                    memory.
+                                </p>
                             </div>
                             <div class="why-card reveal" data-step="3">
-                                <h4><span class="wdot" style="background: var(--teal)"></span>Why CouchDB</h4>
-                                <p>LiveSync replicates the vault to every device over your own server — a note edited on the phone reaches the agent, conflict-tolerant, instantly.</p>
+                                <h4>
+                                    <span
+                                        class="wdot"
+                                        style="background: var(--teal)"
+                                    ></span
+                                    >Why CouchDB
+                                </h4>
+                                <p>
+                                    LiveSync replicates the vault to every
+                                    device over your own server — a note edited
+                                    on the phone reaches the agent,
+                                    conflict-tolerant, instantly.
+                                </p>
                             </div>
                             <div class="why-card reveal" data-step="5">
-                                <h4><span class="wdot" style="background: var(--plum)"></span>Why Qdrant</h4>
-                                <p>Embeds every note into a vector index, so the agent recalls by meaning, not keywords — context that scales as the vault grows.</p>
+                                <h4>
+                                    <span
+                                        class="wdot"
+                                        style="background: var(--plum)"
+                                    ></span
+                                    >Why Qdrant
+                                </h4>
+                                <p>
+                                    Embeds every note into a vector index, so
+                                    the agent recalls by meaning, not keywords —
+                                    context that scales as the vault grows.
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -2447,7 +3333,7 @@ hermes -p eng-timerapp -z <span class="s">"build assembleDebug"</span>
             <!-- 10 THE STACK -->
             <section class="slide" data-title="The Stack">
                 <div class="eyebrow">
-                    <span class="idx">10 / 19</span> TOOLING
+                    <span class="idx">11 / 20</span> TOOLING
                 </div>
                 <div class="slide-body">
                     <h2 class="slide-title">
@@ -2457,23 +3343,35 @@ hermes -p eng-timerapp -z <span class="s">"build assembleDebug"</span>
                     <div class="row-label">Mobile first</div>
                     <div class="mfirst">
                         <div class="card svc mfirst-card">
-                            <div class="favicon img" style="color: #3DDC84;">
-                                <img src="https://developer.android.com/static/images/brand/android-head_3D.png" alt="Android" />
+                            <div class="favicon img" style="color: #3ddc84">
+                                <img
+                                    src="https://developer.android.com/static/images/brand/android-head_3D.png"
+                                    alt="Android"
+                                />
                             </div>
                             <div class="svc-body">
                                 <span class="tag">Platform</span>
                                 <h3>Android</h3>
-                                <p>Jetpack Compose, AGP, the Android SDK — the default build target.</p>
+                                <p>
+                                    Jetpack Compose, AGP, the Android SDK — the
+                                    default build target.
+                                </p>
                             </div>
                         </div>
                         <div class="card svc mfirst-card">
-                            <div class="favicon img" style="color: #7F52FF;">
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Kotlin_icon_%282021-present%29.svg/960px-Kotlin_icon_%282021-present%29.svg.png?_=20210505134836" alt="Kotlin" />
+                            <div class="favicon img" style="color: #7f52ff">
+                                <img
+                                    src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Kotlin_icon_%282021-present%29.svg/960px-Kotlin_icon_%282021-present%29.svg.png?_=20210505134836"
+                                    alt="Kotlin"
+                                />
                             </div>
                             <div class="svc-body">
                                 <span class="tag">Language</span>
                                 <h3>Kotlin</h3>
-                                <p>Coroutines, KMP, multiplatform — the language every agent writes in.</p>
+                                <p>
+                                    Coroutines, KMP, multiplatform — the
+                                    language every agent writes in.
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -2481,49 +3379,106 @@ hermes -p eng-timerapp -z <span class="s">"build assembleDebug"</span>
                     <div class="grid3">
                         <div class="card tool">
                             <div class="icon img">
-                                <img src="https://cdn.jsdelivr.net/gh/selfhst/icons/png/hermes-agent.png" alt="hermes-agent" />
+                                <img
+                                    src="https://cdn.jsdelivr.net/gh/selfhst/icons/png/hermes-agent.png"
+                                    alt="hermes-agent"
+                                />
                             </div>
                             <h3>hermes-agent</h3>
-                            <p>Runs the plan → act → observe loop for every agent.</p>
+                            <p>
+                                Runs the plan → act → observe loop for every
+                                agent.
+                            </p>
                         </div>
                         <div class="card tool">
                             <div class="icon img">
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/2023_Obsidian_logo.svg/960px-2023_Obsidian_logo.svg.png" alt="Obsidian" />
+                                <img
+                                    src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/2023_Obsidian_logo.svg/960px-2023_Obsidian_logo.svg.png"
+                                    alt="Obsidian"
+                                />
                             </div>
                             <h3>Obsidian + LiveSync</h3>
-                            <p>A synced vault agents read and write as shared memory.</p>
+                            <p>
+                                A synced vault agents read and write as shared
+                                memory.
+                            </p>
                         </div>
                         <div class="card tool">
                             <div class="icon img">
-                                <img src="https://keirouter.app/static/keirouter-logo-04204f6aad1ed463a88256b5dc86b0fd.png" alt="keirouter" />
+                                <img
+                                    src="https://keirouter.app/static/keirouter-logo-04204f6aad1ed463a88256b5dc86b0fd.png"
+                                    alt="keirouter"
+                                />
                             </div>
                             <h3>keirouter</h3>
-                            <p>The one LLM gateway — swap models/providers in one place.</p>
+                            <p>
+                                The one LLM gateway — swap models/providers in
+                                one place.
+                            </p>
                         </div>
                     </div>
-                    <div class="row-label">Project integrations <span style="text-transform: none; letter-spacing: 0; font-family: var(--sans); color: var(--ink-soft); font-size: 13px">— what the build agents reach for</span></div>
+                    <div class="row-label">
+                        Project integrations
+                        <span
+                            style="
+                                text-transform: none;
+                                letter-spacing: 0;
+                                font-family: var(--sans);
+                                color: var(--ink-soft);
+                                font-size: 13px;
+                            "
+                            >— what the build agents reach for</span
+                        >
+                    </div>
                     <div class="grid4">
                         <div class="card tool">
                             <div class="icon">
-                                <svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2" /><path d="M8 9h8M8 13h8M8 17h4" /></svg>
+                                <svg viewBox="0 0 24 24">
+                                    <rect
+                                        x="4"
+                                        y="4"
+                                        width="16"
+                                        height="16"
+                                        rx="2"
+                                    />
+                                    <path d="M8 9h8M8 13h8M8 17h4" />
+                                </svg>
                             </div>
                             <h3>Basecamp</h3>
                         </div>
                         <div class="card tool">
                             <div class="icon">
-                                <svg viewBox="0 0 24 24"><path d="M12 5c5 0 8.5 5 8.5 7s-3.5 7-8.5 7-8.5-5-8.5-7 3.5-7 8.5-7z" /><circle cx="12" cy="12" r="2.3" /></svg>
+                                <svg viewBox="0 0 24 24">
+                                    <path
+                                        d="M12 5c5 0 8.5 5 8.5 7s-3.5 7-8.5 7-8.5-5-8.5-7 3.5-7 8.5-7z"
+                                    />
+                                    <circle cx="12" cy="12" r="2.3" />
+                                </svg>
                             </div>
                             <h3>Sentry</h3>
                         </div>
                         <div class="card tool">
                             <div class="icon">
-                                <svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="7" ry="2.5" /><path d="M5 6v12c0 1.4 3.1 2.6 7 2.6s7-1.2 7-2.6V6" /><path d="M5 12c0 1.4 3.1 2.6 7 2.6s7-1.2 7-2.6" /></svg>
+                                <svg viewBox="0 0 24 24">
+                                    <ellipse cx="12" cy="6" rx="7" ry="2.5" />
+                                    <path
+                                        d="M5 6v12c0 1.4 3.1 2.6 7 2.6s7-1.2 7-2.6V6"
+                                    />
+                                    <path
+                                        d="M5 12c0 1.4 3.1 2.6 7 2.6s7-1.2 7-2.6"
+                                    />
+                                </svg>
                             </div>
                             <h3>Supabase</h3>
                         </div>
                         <div class="card tool">
                             <div class="icon">
-                                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3" /><path d="M12 3v2.4M12 18.6V21M21 12h-2.4M5.4 12H3M18.4 5.6l-1.7 1.7M7.3 16.7l-1.7 1.7M18.4 18.4l-1.7-1.7M7.3 7.3 5.6 5.6" /></svg>
+                                <svg viewBox="0 0 24 24">
+                                    <circle cx="12" cy="12" r="3" />
+                                    <path
+                                        d="M12 3v2.4M12 18.6V21M21 12h-2.4M5.4 12H3M18.4 5.6l-1.7 1.7M7.3 16.7l-1.7 1.7M18.4 18.4l-1.7-1.7M7.3 7.3 5.6 5.6"
+                                    />
+                                </svg>
                             </div>
                             <h3>Bitrise CI</h3>
                         </div>
@@ -2534,53 +3489,72 @@ hermes -p eng-timerapp -z <span class="s">"build assembleDebug"</span>
             <!-- 11 GOOGLE STITCH -->
             <section class="slide" data-title="Google Stitch" data-steps="3">
                 <div class="eyebrow">
-                    <span class="idx">11 / 19</span> DESIGN COLLABORATION
+                    <span class="idx">12 / 20</span> DESIGN COLLABORATION
                 </div>
                 <div class="slide-body">
                     <h2 class="slide-title">
-                        <span class="accent-teal">Google Stitch</span> — the design before the code
+                        <span class="accent-teal">Google Stitch</span> — the
+                        design before the code
                     </h2>
                     <p class="body-copy" style="margin-bottom: 14px">
                         Before the agent writes a line of Kotlin, Google Stitch
-                        generates the <span class="accent">skeleton design</span>
+                        generates the
+                        <span class="accent">skeleton design</span>
                         — screens, layout, and a basic
                         <span class="accent-teal">design system</span> (colors,
-                        type, spacing). The engineer feeds that into the scaffold,
-                        so the Compose UI is grounded in a real design, not a
-                        guess.
+                        type, spacing). The engineer feeds that into the
+                        scaffold, so the Compose UI is grounded in a real
+                        design, not a guess.
                     </p>
                     <div class="stitch-flow">
                         <span class="sf-node start">Google Stitch</span>
                         <span class="flow-arrow reveal" data-step="1">→</span>
-                        <span class="sf-node reveal" data-step="1">skeleton screens</span>
+                        <span class="sf-node reveal" data-step="1"
+                            >skeleton screens</span
+                        >
                         <span class="flow-arrow reveal" data-step="2">→</span>
-                        <span class="sf-node reveal" data-step="2">design system (tokens)</span>
+                        <span class="sf-node reveal" data-step="2"
+                            >design system (tokens)</span
+                        >
                         <span class="flow-arrow reveal" data-step="3">→</span>
-                        <span class="sf-node end reveal" data-step="3">engineer scaffold → Compose UI</span>
+                        <span class="sf-node end reveal" data-step="3"
+                            >engineer scaffold → Compose UI</span
+                        >
                     </div>
                     <div class="grid2" style="margin-top: 6px">
                         <div class="card">
                             <span class="tag">What Stitch gives</span>
                             <h3>Skeleton + design system</h3>
-                            <p>Screen layouts and a basic token set — colors, typography, spacing — the visual contract the build agent codes against.</p>
+                            <p>
+                                Screen layouts and a basic token set — colors,
+                                typography, spacing — the visual contract the
+                                build agent codes against.
+                            </p>
                         </div>
                         <div class="card">
                             <span class="tag">What the agent does</span>
                             <h3>Scaffold to match</h3>
-                            <p>The <code>android-dev</code> skill consumes the Stitch output and emits Compose theme + screens, so design and code stay in lockstep.</p>
+                            <p>
+                                The <code>android-dev</code> skill consumes the
+                                Stitch output and emits Compose theme + screens,
+                                so design and code stay in lockstep.
+                            </p>
                         </div>
                     </div>
-                    <p class="body-copy" style="margin-top: 14px; font-size: 15px">
+                    <p
+                        class="body-copy"
+                        style="margin-top: 14px; font-size: 15px"
+                    >
                         A nod to today's host — built with Stitch in mind, and
                         demoed live from the Google office.
                     </p>
                 </div>
             </section>
 
-            <!-- 12 N8N ADDON -->
+            <!-- 12 N8N ADDON — hidden from presentation
             <section class="slide" data-title="n8n Add-on">
                 <div class="eyebrow">
-                    <span class="idx">12 / 19</span> ADD-ON AUTOMATION
+                    <span class="idx">13 / 20</span> ADD-ON AUTOMATION
                 </div>
                 <div class="slide-body">
                     <h2 class="slide-title">
@@ -2609,90 +3583,52 @@ hermes -p eng-timerapp -z <span class="s">"build assembleDebug"</span>
                     </div>
                     <p class="body-copy" style="margin-top: 16px">
                         n8n sits beside the agent stack for plumbing that's
-                        deterministic, not decision-making. It's an opt-in add-on
-                        — nothing in the loop depends on it.
+                        deterministic, not decision-making. It's an opt-in
+                        add-on — nothing in the loop depends on it.
                     </p>
                 </div>
             </section>
-
-            <!-- 13 SELF-HOSTING -->
-            <section class="slide" data-title="Self-Hosting">
-                <div class="eyebrow">
-                    <span class="idx">13 / 19</span> SELF-HOSTING
-                </div>
-                <div class="slide-body">
-                    <h2 class="slide-title">
-                        Run it on your
-                        <span class="accent">own VPS</span>
-                    </h2>
-                    <p class="body-copy" style="margin-bottom: 14px">
-                        The server design runs ippang as a second, isolated
-                        instance next to a personal <code>ghiath</code>, sharing
-                        only keirouter and one Caddy reverse proxy. Three scripts
-                        guard the existing instance.
-                    </p>
-                    <div class="codeblock">
-                        <div class="cb-head">
-                            <span class="dot"></span><span class="dot"></span><span class="dot"></span>
-                            <span class="file">on the VPS — ~/ippang/_instance</span>
-                        </div>
-                        <pre><span class="c"># 1. prove no port / name / DB collision with the live instance</span>
-./scripts/<span class="f">preflight.sh</span>
-
-<span class="c"># 2. provision alongside, never replacing — own CouchDB, Qdrant,</span>
-<span class="c">#    n8n, ntfy, own compose project + private network</span>
-./scripts/<span class="f">provision.sh</span>
-
-<span class="c"># 3. validate, including a "personal instance intact" section</span>
-./scripts/<span class="f">validate.sh</span></pre>
-                    </div>
-                    <div class="grid3" style="margin-top: 16px">
-                        <div class="card">
-                            <span class="tag">Ingress</span>
-                            <h3>Caddy</h3>
-                            <p>One shared reverse proxy, automatic HTTPS, namespaced domains <code>*.work.ghiath.id</code>.</p>
-                        </div>
-                        <div class="card">
-                            <span class="tag">Sync</span>
-                            <h3>LiveSync bridge</h3>
-                            <p>Wires the on-disk vault to CouchDB so devices stay in sync.</p>
-                        </div>
-                        <div class="card">
-                            <span class="tag">Recall</span>
-                            <h3>Qdrant indexer</h3>
-                            <p>Watches the vault and embeds new notes for semantic search.</p>
-                        </div>
-                    </div>
-                </div>
-            </section>
+            -->
 
             <!-- 14 CHAT GATEWAY -->
             <section class="slide" data-title="Chat Gateway">
                 <div class="eyebrow">
-                    <span class="idx">14 / 19</span> CHAT GATEWAY
+                    <span class="idx">13 / 20</span> CHAT GATEWAY
                 </div>
                 <div class="slide-body">
                     <div class="title-with-icon">
                         <span class="tg-icon">
-                            <svg viewBox="0 0 24 24"><path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71l-4.14-3.05-1.99 1.93c-.23.23-.42.42-.83.42z"/></svg>
+                            <svg viewBox="0 0 24 24">
+                                <path
+                                    d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71l-4.14-3.05-1.99 1.93c-.23.23-.42.42-.83.42z"
+                                />
+                            </svg>
                         </span>
                         <h2 class="slide-title">
-                            <span class="accent-teal">Telegram</span> is the interface
+                            <span class="accent-teal">Telegram</span> is the
+                            interface
                         </h2>
                     </div>
                     <div class="grid2" style="align-items: stretch">
                         <div>
-                            <p class="body-copy" style="margin-bottom: 12px; font-size: 15.5px">
-                                hermes agents are Telegram long-pollers — there is
-                                no HTTP endpoint to call. So the chat
+                            <p
+                                class="body-copy"
+                                style="margin-bottom: 12px; font-size: 15.5px"
+                            >
+                                hermes agents are Telegram long-pollers — there
+                                is no HTTP endpoint to call. So the chat
                                 <em>is</em> the gateway: you drive the loop by
-                                messaging the bot, and the cron tick reports back
-                                to the same chat.
+                                messaging the bot, and the cron tick reports
+                                back to the same chat.
                             </p>
                             <div class="codeblock tight">
                                 <div class="cb-head">
-                                    <span class="dot"></span><span class="dot"></span><span class="dot"></span>
-                                    <span class="file">getting started with the gateway</span>
+                                    <span class="dot"></span
+                                    ><span class="dot"></span
+                                    ><span class="dot"></span>
+                                    <span class="file"
+                                        >getting started with the gateway</span
+                                    >
                                 </div>
                                 <pre><span class="c"># 1. install + start the gateway</span>
 PORT=8646 hermes -p engineer gateway install --force --start-now
@@ -2715,7 +3651,9 @@ hermes cron create <span class="s">'* * * * *'</span> --no-agent \
                                 <div class="ch-status">online</div>
                             </div>
                             <div class="chat-body">
-                                <div class="bubble user b1">build counterapp</div>
+                                <div class="bubble user b1">
+                                    build counterapp
+                                </div>
                                 <div class="bubble agent eng-counter b2">
                                     <span class="ab">eng-counter</span>
                                     Building now…
@@ -2724,11 +3662,18 @@ hermes cron create <span class="s">'* * * * *'</span> --no-agent \
                                     <span class="ab">eng-counter</span>
                                     Build succeeded — download APK
                                     <span class="att">
-                                        <svg viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V8z" /><path d="M14 3v5h5M9 14h6M9 17h4" /></svg>
+                                        <svg viewBox="0 0 24 24">
+                                            <path
+                                                d="M14 3H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V8z"
+                                            />
+                                            <path d="M14 3v5h5M9 14h6M9 17h4" />
+                                        </svg>
                                         counterapp-debug.apk
                                     </span>
                                 </div>
-                                <div class="bubble user b4">build todolist app</div>
+                                <div class="bubble user b4">
+                                    build todolist app
+                                </div>
                                 <div class="bubble agent eng-todolist b5">
                                     <span class="ab">eng-todolist</span>
                                     Building now…
@@ -2737,7 +3682,12 @@ hermes cron create <span class="s">'* * * * *'</span> --no-agent \
                                     <span class="ab">eng-todolist</span>
                                     Build succeeded — download APK
                                     <span class="att">
-                                        <svg viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V8z" /><path d="M14 3v5h5M9 14h6M9 17h4" /></svg>
+                                        <svg viewBox="0 0 24 24">
+                                            <path
+                                                d="M14 3H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V8z"
+                                            />
+                                            <path d="M14 3v5h5M9 14h6M9 17h4" />
+                                        </svg>
                                         todolist-debug.apk
                                     </span>
                                 </div>
@@ -2750,31 +3700,62 @@ hermes cron create <span class="s">'* * * * *'</span> --no-agent \
             <!-- 15 REPO LAYOUT -->
             <section class="slide" data-title="Repo Layout">
                 <div class="eyebrow">
-                    <span class="idx">15 / 19</span> REPO LAYOUT
+                    <span class="idx">14 / 20</span> REPO LAYOUT
                 </div>
                 <div class="slide-body">
                     <h2 class="slide-title">
                         <span class="accent">Inside the projects</span>
                     </h2>
                     <div class="tree">
-<span class="c"># the overlay — instance config, scripts, souls</span>
-ippang/
-├─ <span class="t">_instance/</span>
-│  ├─ <span class="g">agents.conf</span>          <span class="c"># engineer + project profiles, ports, isolation</span>
-│  ├─ <span class="g">docker-compose.yml</span>    <span class="c"># server stack (shares Caddy + keirouter)</span>
-│  ├─ <span class="g">docker-compose.local.yml</span>  <span class="c"># standalone local trial</span>
-│  ├─ <span class="g">RUNBOOK.md</span>           <span class="c"># step-by-step server deploy</span>
-│  ├─ <span class="g">scripts/</span>             <span class="c"># bootstrap, new-project, scaffold, tick…</span>
-│  ├─ <span class="g">hermes-cron/</span>         <span class="c"># project-tick.py — the trigger</span>
-│  ├─ <span class="g">skills/android-dev/</span>  <span class="c"># the Android/KMP build skill</span>
-│  └─ <span class="g">souls/</span>               <span class="c"># engineer + per-project personas</span>
-├─ <span class="t">vault-project/</span>        <span class="c"># the engineering vault (gitignored)</span>
-│  ├─ _templates/        <span class="c"># 00-context, 10-architecture, 20-task-log…</span>
-│  └─ &lt;project&gt;/00-context.md
-├─ <span class="t">&lt;project&gt;/</span>            <span class="c"># one real codebase per project</span>
-└─ <span class="t">_shared/</span>              <span class="c"># android-sdk, tooling every project reuses</span>
+                        <span class="c"
+                            ># the overlay — instance config, scripts,
+                            souls</span
+                        >
+                        ippang/ ├─ <span class="t">_instance/</span> │ ├─
+                        <span class="g">agents.conf</span>
+                        <span class="c"
+                            ># engineer + project profiles, ports,
+                            isolation</span
+                        >
+                        │ ├─ <span class="g">docker-compose.yml</span>
+                        <span class="c"
+                            ># server stack (shares Caddy + keirouter)</span
+                        >
+                        │ ├─ <span class="g">docker-compose.local.yml</span>
+                        <span class="c"># standalone local trial</span> │ ├─
+                        <span class="g">RUNBOOK.md</span>
+                        <span class="c"># step-by-step server deploy</span> │ ├─
+                        <span class="g">scripts/</span>
+                        <span class="c"
+                            ># bootstrap, new-project, scaffold, tick…</span
+                        >
+                        │ ├─ <span class="g">hermes-cron/</span>
+                        <span class="c"># project-tick.py — the trigger</span> │
+                        ├─ <span class="g">skills/android-dev/</span>
+                        <span class="c"># the Android/KMP build skill</span> │
+                        └─ <span class="g">souls/</span>
+                        <span class="c"># engineer + per-project personas</span>
+                        ├─ <span class="t">vault-project/</span>
+                        <span class="c"
+                            ># the engineering vault (gitignored)</span
+                        >
+                        │ ├─ <span class="g">_templates/</span>
+                        <span class="c"
+                            ># 00-context, 10-architecture, 20-task-log…</span
+                        >
+                        │ └─
+                        <span class="g">&lt;project&gt;/00-context.md</span> ├─
+                        <span class="t">&lt;project&gt;/</span>
+                        <span class="c"># one real codebase per project</span>
+                        └─ <span class="t">_shared/</span>
+                        <span class="c"
+                            ># android-sdk, tooling every project reuses</span
+                        >
                     </div>
-                    <p class="body-copy" style="margin-top: 14px; font-size: 15px">
+                    <p
+                        class="body-copy"
+                        style="margin-top: 14px; font-size: 15px"
+                    >
                         Every <code>vault*/</code> and project folder is
                         gitignored — no note or secret is ever pushed.
                     </p>
@@ -2784,7 +3765,7 @@ ippang/
             <!-- 16 GETTING STARTED -->
             <section class="slide" data-title="Getting Started">
                 <div class="eyebrow">
-                    <span class="idx">16 / 19</span> GETTING STARTED
+                    <span class="idx">15 / 20</span> GETTING STARTED
                 </div>
                 <div class="slide-body">
                     <h2 class="slide-title">
@@ -2796,28 +3777,50 @@ ippang/
                             <p class="body-copy" style="margin-bottom: 14px">
                                 Stand up the whole stack on your Mac and run the
                                 loop end-to-end before touching a server. One
-                                idempotent script brings up CouchDB, Qdrant, n8n,
-                                ntfy, keirouter, the LiveSync bridge, the indexer,
-                                and configures the engineer profile.
+                                idempotent script brings up CouchDB, Qdrant,
+                                n8n, ntfy, keirouter, the LiveSync bridge, the
+                                indexer, and configures the engineer profile.
                             </p>
                             <div class="steps">
                                 <div class="step-row">
                                     <div class="step-num">01</div>
-                                    <div class="step-txt"><h4>Bootstrap</h4><p>One command — generates local secrets, builds containers, seeds the vault + soul.</p></div>
+                                    <div class="step-txt">
+                                        <h4>Bootstrap</h4>
+                                        <p>
+                                            One command — generates local
+                                            secrets, builds containers, seeds
+                                            the vault + soul.
+                                        </p>
+                                    </div>
                                 </div>
                                 <div class="step-row">
                                     <div class="step-num">02</div>
-                                    <div class="step-txt"><h4>Give it a model</h4><p>Point at Anthropic directly, or add a key to the local keirouter.</p></div>
+                                    <div class="step-txt">
+                                        <h4>Give it a model</h4>
+                                        <p>
+                                            Point at Anthropic directly, or add
+                                            a key to the local keirouter.
+                                        </p>
+                                    </div>
                                 </div>
                                 <div class="step-row">
                                     <div class="step-num">03</div>
-                                    <div class="step-txt"><h4>Fire the trigger</h4><p>Write a backlog note, flip it to <code>in-progress</code>, watch it dispatch.</p></div>
+                                    <div class="step-txt">
+                                        <h4>Fire the trigger</h4>
+                                        <p>
+                                            Write a backlog note, flip it to
+                                            <code>in-progress</code>, watch it
+                                            dispatch.
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                         <div class="codeblock tight">
                             <div class="cb-head">
-                                <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+                                <span class="dot"></span
+                                ><span class="dot"></span
+                                ><span class="dot"></span>
                                 <span class="file">local trial</span>
                             </div>
                             <pre><span class="c"># the instance lives at ~/ippang</span>
@@ -2837,67 +3840,180 @@ hermes -p engineer -z <span class="s">"reply with one word: ok"</span>
 ./scripts/<span class="f">try-local.sh</span> myidea</pre>
                         </div>
                     </div>
+                    <div style="margin-top: 18px; padding: 12px 18px; background: var(--panel); border: 1px solid var(--clay); border-radius: 8px; display: flex; align-items: center; justify-content: space-between;">
+                        <span style="font-family: var(--mono); font-size: 14px; color: var(--ink);">📖 Follow the interactive workshop stepper:</span>
+                        <a href="codelab.html" target="_blank" style="background: var(--clay); color: white; padding: 6px 14px; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 13.5px;">Open Interactive Codelab →</a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 16 SELF-HOSTING (moved here, after Getting Started) -->
+            <section class="slide" data-title="Self-Hosting">
+                <div class="eyebrow">
+                    <span class="idx">16 / 20</span> SELF-HOSTING
+                </div>
+                <div class="slide-body">
+                    <h2 class="slide-title">
+                        Run it on your
+                        <span class="accent">own VPS</span>
+                    </h2>
+                    <p class="body-copy" style="margin-bottom: 14px">
+                        The server design runs ippang as a second, isolated
+                        instance next to a personal <code>ghiath</code>, sharing
+                        only keirouter and one Caddy reverse proxy. Three
+                        scripts guard the existing instance.
+                    </p>
+                    <div class="codeblock">
+                        <div class="cb-head">
+                            <span class="dot"></span><span class="dot"></span
+                            ><span class="dot"></span>
+                            <span class="file"
+                                >on the VPS — ~/ippang/_instance</span
+                            >
+                        </div>
+                        <pre><span class="c"># 1. prove no port / name / DB collision with the live instance</span>
+./scripts/<span class="f">preflight.sh</span>
+
+<span class="c"># 2. provision alongside, never replacing — own CouchDB, Qdrant,</span>
+<span class="c">#    n8n, ntfy, own compose project + private network</span>
+./scripts/<span class="f">provision.sh</span>
+
+<span class="c"># 3. validate, including a "personal instance intact" section</span>
+./scripts/<span class="f">validate.sh</span></pre>
+                    </div>
+                    <div class="grid3" style="margin-top: 16px">
+                        <div class="card">
+                            <span class="tag">Ingress</span>
+                            <h3>Caddy</h3>
+                            <p>
+                                One shared reverse proxy, automatic HTTPS,
+                                namespaced domains
+                                <code>*.work.ghiath.id</code>.
+                            </p>
+                        </div>
+                        <div class="card">
+                            <span class="tag">Sync</span>
+                            <h3>LiveSync bridge</h3>
+                            <p>
+                                Wires the on-disk vault to CouchDB so devices
+                                stay in sync.
+                            </p>
+                        </div>
+                        <div class="card">
+                            <span class="tag">Recall</span>
+                            <h3>Qdrant indexer</h3>
+                            <p>
+                                Watches the vault and embeds new notes for
+                                semantic search.
+                            </p>
+                        </div>
+                    </div>
                 </div>
             </section>
 
             <!-- 17 BEYOND ANDROID -->
             <section class="slide" data-title="Beyond Android">
                 <div class="eyebrow">
-                    <span class="idx">17 / 19</span> AN ECOSYSTEM
+                    <span class="idx">17 / 20</span> AN ECOSYSTEM
                 </div>
                 <div class="slide-body">
                     <h2 class="slide-title">
-                        Not just
-                        <span class="accent">Android</span>
+                        More than
+                        <span class="accent">Android stacks</span>
                     </h2>
                     <p class="body-copy" style="margin-bottom: 16px">
-                        <span class="accent-teal">pang</span> is an ecosystem for
-                        product builders — ship the backend, the database, and
-                        the web, then iterate fast on Android.
+                        <span class="accent-teal">pang</span> is an ecosystem
+                        for product builders — ship the backend, the database,
+                        and the web, then iterate fast on Android.
                     </p>
                     <div class="grid2">
                         <div class="card svc">
-                            <div class="favicon img" style="color: #7F52FF;">
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Kotlin_icon_%282021-present%29.svg/960px-Kotlin_icon_%282021-present%29.svg.png?_=20210505134836" alt="Kotlin" />
+                            <div class="favicon img" style="color: #7f52ff">
+                                <img
+                                    src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Kotlin_icon_%282021-present%29.svg/960px-Kotlin_icon_%282021-present%29.svg.png?_=20210505134836"
+                                    alt="Kotlin"
+                                />
                             </div>
                             <div class="svc-body">
                                 <span class="tag">Shared code</span>
                                 <h3>Kotlin Multiplatform</h3>
-                                <p>One codebase across Android, iOS, web — the same eng-&lt;name&gt; agent targets them.</p>
+                                <p>
+                                    One codebase across Android, iOS, web — the
+                                    same eng-&lt;name&gt; agent targets them.
+                                </p>
                             </div>
                         </div>
                         <div class="card svc">
-                            <div class="favicon" style="color: var(--plum);">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="14" rx="3" /><path d="M5 11h14M8 14h.01M16 14h.01M7 17l-2 4M17 17l2 4" /><circle cx="9" cy="14" r="0.6" /><circle cx="15" cy="14" r="0.6" /></svg>
+                            <div class="favicon" style="color: var(--plum)">
+                                <svg
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="1.6"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                >
+                                    <rect
+                                        x="5"
+                                        y="3"
+                                        width="14"
+                                        height="14"
+                                        rx="3"
+                                    />
+                                    <path
+                                        d="M5 11h14M8 14h.01M16 14h.01M7 17l-2 4M17 17l2 4"
+                                    />
+                                    <circle cx="9" cy="14" r="0.6" />
+                                    <circle cx="15" cy="14" r="0.6" />
+                                </svg>
                             </div>
                             <div class="svc-body">
                                 <span class="tag">Backend</span>
                                 <h3>Railway</h3>
-                                <p>Deploy the API services the mobile app talks to — provisioned alongside the build.</p>
+                                <p>
+                                    Deploy the API services the mobile app talks
+                                    to — provisioned alongside the build.
+                                </p>
                             </div>
                         </div>
                         <div class="card svc">
-                            <div class="favicon img" style="color: #3ECF8E;">
-                                <img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/webp/supabase.webp" alt="Supabase" />
+                            <div class="favicon img" style="color: #3ecf8e">
+                                <img
+                                    src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/webp/supabase.webp"
+                                    alt="Supabase"
+                                />
                             </div>
                             <div class="svc-body">
                                 <span class="tag">Database</span>
                                 <h3>Supabase</h3>
-                                <p>Postgres, auth, and storage for the product — the database the backend agent reads and writes.</p>
+                                <p>
+                                    Postgres, auth, and storage for the product
+                                    — the database the backend agent reads and
+                                    writes.
+                                </p>
                             </div>
                         </div>
                         <div class="card svc">
-                            <div class="favicon img" style="color: #F38020;">
-                                <img src="https://make-cxp-documentation.ams3.digitaloceanspaces.com/apps-center-icons/cloudflare.png" alt="Cloudflare" />
+                            <div class="favicon img" style="color: #f38020">
+                                <img
+                                    src="https://make-cxp-documentation.ams3.digitaloceanspaces.com/apps-center-icons/cloudflare.png"
+                                    alt="Cloudflare"
+                                />
                             </div>
                             <div class="svc-body">
                                 <span class="tag">Static web</span>
                                 <h3>Cloudflare</h3>
-                                <p>Ship the landing page and project previews as static pages — fast, cheap, global.</p>
+                                <p>
+                                    Ship the landing page and project previews
+                                    as static pages — fast, cheap, global.
+                                </p>
                             </div>
                         </div>
                     </div>
-                    <p class="body-copy" style="margin-top: 14px; font-size: 15px">
+                    <p
+                        class="body-copy"
+                        style="margin-top: 14px; font-size: 15px"
+                    >
                         The whole product, from database to device — but the
                         heart of the loop is still shipping
                         <span class="accent">Android</span> and iterating fast.
@@ -2908,7 +4024,7 @@ hermes -p engineer -z <span class="s">"reply with one word: ok"</span>
             <!-- 18 LIVE DEMO -->
             <section class="slide" data-title="Live Demo">
                 <div class="eyebrow">
-                    <span class="idx">18 / 19</span> LIVE DEMO
+                    <span class="idx">18 / 20</span> LIVE DEMO
                 </div>
                 <div class="slide-body">
                     <h2 class="slide-title">
@@ -2921,10 +4037,50 @@ hermes -p engineer -z <span class="s">"reply with one word: ok"</span>
                 </div>
             </section>
 
+            <!-- 18b GUARDRAILS -->
+            <section class="slide" data-title="Guardrails">
+                <div class="eyebrow">
+                    <span class="idx">19 / 20</span> GUARDRAILS
+                </div>
+                <div class="slide-body">
+                    <h2 class="slide-title">
+                        Guardrails on your
+                        <span class="accent">own</span>
+                    </h2>
+                    <div class="guardrails">
+                        <div class="gr-card">
+                            <span class="gr-ico">🧪</span>
+                            <span class="gr-title">Tests</span>
+                            <span class="gr-sub">
+                                Unit test and instrument test verification —
+                                ensure all test cases are passed.
+                            </span>
+                        </div>
+                        <div class="gr-card">
+                            <span class="gr-ico">🔗</span>
+                            <span class="gr-title">Pipelines</span>
+                            <span class="gr-sub">
+                                PR checkers are a must (review it manually as
+                                possible) — do not merge intentionally without
+                                checking the changes.
+                            </span>
+                        </div>
+                        <div class="gr-card">
+                            <span class="gr-ico">📦</span>
+                            <span class="gr-title">Sandboxes</span>
+                            <span class="gr-sub">
+                                Keep your private key or data safe — do not
+                                share it to AI.
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             <!-- 19 CONCLUSION -->
             <section class="slide" data-title="Conclusion">
                 <div class="eyebrow">
-                    <span class="idx">19 / 19</span> CONCLUSION
+                    <span class="idx">20 / 20</span> CONCLUSION
                 </div>
                 <div class="slide-body">
                     <h2 class="slide-title">
@@ -2932,10 +4088,23 @@ hermes -p engineer -z <span class="s">"reply with one word: ok"</span>
                         <span class="accent-teal">not the prompt</span>
                     </h2>
                     <ul class="plain" style="max-width: 62ch">
-                        <li>An agent alone is just a smarter autocomplete — the loop is what makes it useful.</li>
-                        <li>A note's <code>status</code> field, a cron tick, and a long-lived orchestrator turn one-off prompting into a repeatable system.</li>
-                        <li>Scope each build to its own agent and vault subtree — fast loops, contained mistakes.</li>
-                        <li>Start small: one note, one engineer, one APK — then let the pipeline grow.</li>
+                        <li>
+                            An agent alone is just a smarter autocomplete — the
+                            loop is what makes it useful.
+                        </li>
+                        <li>
+                            A note's <code>status</code> field, a cron tick, and
+                            a long-lived orchestrator turn one-off prompting
+                            into a repeatable system.
+                        </li>
+                        <li>
+                            Scope each build to its own agent and vault subtree
+                            — fast loops, contained mistakes.
+                        </li>
+                        <li>
+                            Start small: one note, one engineer, one APK — then
+                            let the pipeline grow.
+                        </li>
                     </ul>
                 </div>
             </section>
@@ -2945,8 +4114,16 @@ hermes -p engineer -z <span class="s">"reply with one word: ok"</span>
                 <div class="eyebrow"><span class="idx">·</span> SPONSOR</div>
                 <div class="slide-body">
                     <div class="sponsor">
-                        <img src="assets/2026-agentic-workflow-sponsor.png" alt="Sponsor" />
-                        <a class="sponsor-link" href="https://paas.id" target="_blank" rel="noopener">
+                        <img
+                            src="assets/2026-agentic-workflow-sponsor.png"
+                            alt="Sponsor"
+                        />
+                        <a
+                            class="sponsor-link"
+                            href="https://paas.id"
+                            target="_blank"
+                            rel="noopener"
+                        >
                             <span class="sl-ico">↗</span>paas.id
                         </a>
                     </div>
@@ -2963,22 +4140,72 @@ hermes -p engineer -z <span class="s">"reply with one word: ok"</span>
                     </p>
                     <div class="contact-list">
                         <div class="c-item">
-                            <span class="c-ico"><svg viewBox="0 0 24 24"><path d="M4 4h16v16H4z" /><path d="M4 4l8 7 8-7" /></svg></span>
+                            <span class="c-ico"
+                                ><svg viewBox="0 0 24 24">
+                                    <path d="M4 4h16v16H4z" />
+                                    <path d="M4 4l8 7 8-7" /></svg
+                            ></span>
                             <a href="mailto:isfa@ghiath.id">isfa@ghiath.id</a>
                         </div>
                         <div class="c-item">
-                            <span class="c-ico"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="4" /><path d="M9 8v8M15 8v8" /><circle cx="9" cy="14.5" r="2.5" /><circle cx="15" cy="9.5" r="2.5" /></svg></span>
-                            <a href="https://www.linkedin.com/in/isfaaghyth" target="_blank" rel="noopener">@isfaaghyth</a>
-                            <span style="color: var(--ink-soft); font-size: 14px;">· LinkedIn</span>
+                            <span class="c-ico"
+                                ><svg viewBox="0 0 24 24">
+                                    <rect
+                                        x="3"
+                                        y="3"
+                                        width="18"
+                                        height="18"
+                                        rx="4"
+                                    />
+                                    <path d="M9 8v8M15 8v8" />
+                                    <circle cx="9" cy="14.5" r="2.5" />
+                                    <circle cx="15" cy="9.5" r="2.5" /></svg
+                            ></span>
+                            <a
+                                href="https://www.linkedin.com/in/isfaaghyth"
+                                target="_blank"
+                                rel="noopener"
+                                >@isfaaghyth</a
+                            >
+                            <span
+                                style="color: var(--ink-soft); font-size: 14px"
+                                >· LinkedIn</span
+                            >
                         </div>
                         <div class="c-item">
-                            <span class="c-ico"><svg viewBox="0 0 24 24"><path d="M3 3l7.5 10L3 21h2.5l6-7.5L17 21h4l-7.8-10.5L20.5 3H18l-5.7 7.2L7.5 3H3z" fill="currentColor" stroke="none" /></svg></span>
-                            <a href="https://x.com/isfaaghyth" target="_blank" rel="noopener">@isfaaghyth</a>
-                            <span style="color: var(--ink-soft); font-size: 14px;">· X / Twitter</span>
+                            <span class="c-ico"
+                                ><svg viewBox="0 0 24 24">
+                                    <path
+                                        d="M3 3l7.5 10L3 21h2.5l6-7.5L17 21h4l-7.8-10.5L20.5 3H18l-5.7 7.2L7.5 3H3z"
+                                        fill="currentColor"
+                                        stroke="none"
+                                    /></svg
+                            ></span>
+                            <a
+                                href="https://x.com/isfaaghyth"
+                                target="_blank"
+                                rel="noopener"
+                                >@isfaaghyth</a
+                            >
+                            <span
+                                style="color: var(--ink-soft); font-size: 14px"
+                                >· X / Twitter</span
+                            >
                         </div>
                         <div class="c-item">
-                            <span class="c-ico"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 002 19 8 8 0 01-2-19z" /><circle cx="12" cy="12" r="3" /></svg></span>
-                            <a href="https://github.com/isfaaghyth/pang" target="_blank" rel="noopener">github.com/isfaaghyth/pang</a>
+                            <span class="c-ico"
+                                ><svg viewBox="0 0 24 24">
+                                    <path
+                                        d="M12 2a10 10 0 002 19 8 8 0 01-2-19z"
+                                    />
+                                    <circle cx="12" cy="12" r="3" /></svg
+                            ></span>
+                            <a
+                                href="https://github.com/isfaaghyth/pang"
+                                target="_blank"
+                                rel="noopener"
+                                >github.com/isfaaghyth/pang</a
+                            >
                         </div>
                     </div>
                 </div>
@@ -2992,7 +4219,9 @@ hermes -p engineer -z <span class="s">"reply with one word: ok"</span>
                 <span id="slideCount">01 / 22</span>
             </div>
             <div class="nav-btns">
-                <button id="prevBtn" aria-label="Previous slide">&#8592;</button>
+                <button id="prevBtn" aria-label="Previous slide">
+                    &#8592;
+                </button>
                 <button id="nextBtn" aria-label="Next slide">&#8594;</button>
             </div>
         </div>
@@ -3020,10 +4249,23 @@ hermes -p engineer -z <span class="s">"reply with one word: ok"</span>
             }
 
             function render() {
-                slides.forEach((s, i) => s.classList.toggle("active", i === current));
+                slides.forEach((s, i) =>
+                    s.classList.toggle("active", i === current),
+                );
                 applySteps();
+                const act = slides[current];
+                if (act && act.querySelector(".chat-mock")) {
+                    act.querySelectorAll(".bubble").forEach((b) => {
+                        b.style.animation = "none";
+                        void b.offsetWidth;
+                        b.style.animation = "";
+                    });
+                }
                 label.textContent = slides[current].dataset.title;
-                count.textContent = String(current + 1).padStart(2, "0") + " / " + String(total).padStart(2, "0");
+                count.textContent =
+                    String(current + 1).padStart(2, "0") +
+                    " / " +
+                    String(total).padStart(2, "0");
                 fill.style.width = ((current + 1) / total) * 100 + "%";
             }
 
@@ -3056,29 +4298,65 @@ hermes -p engineer -z <span class="s">"reply with one word: ok"</span>
                 render();
             }
 
-            document.getElementById("prevBtn").addEventListener("click", (e) => { e.stopPropagation(); retreat(); });
-            document.getElementById("nextBtn").addEventListener("click", (e) => { e.stopPropagation(); advance(); });
+            document
+                .getElementById("prevBtn")
+                .addEventListener("click", (e) => {
+                    e.stopPropagation();
+                    retreat();
+                });
+            document
+                .getElementById("nextBtn")
+                .addEventListener("click", (e) => {
+                    e.stopPropagation();
+                    advance();
+                });
 
             document.getElementById("stage").addEventListener("click", (e) => {
                 if (e.target.closest("a")) return;
+                const spawn = e.target.closest(".ar-col.has-spawn");
+                if (spawn) {
+                    e.stopPropagation();
+                    spawn.classList.toggle("spawned");
+                    return;
+                }
                 advance();
             });
 
             document.addEventListener("keydown", (e) => {
-                if (["ArrowRight", "ArrowDown", " ", "PageDown"].includes(e.key)) { e.preventDefault(); advance(); }
-                if (["ArrowLeft", "ArrowUp", "PageUp"].includes(e.key)) { e.preventDefault(); retreat(); }
+                if (
+                    ["ArrowRight", "ArrowDown", " ", "PageDown"].includes(e.key)
+                ) {
+                    e.preventDefault();
+                    advance();
+                }
+                if (["ArrowLeft", "ArrowUp", "PageUp"].includes(e.key)) {
+                    e.preventDefault();
+                    retreat();
+                }
                 if (e.key === "Home") jumpTo(0);
                 if (e.key === "End") jumpTo(total - 1);
             });
 
             let touchX = null;
-            document.addEventListener("touchstart", (e) => { touchX = e.touches[0].clientX; }, { passive: true });
-            document.addEventListener("touchend", (e) => {
-                if (touchX === null) return;
-                const dx = e.changedTouches[0].clientX - touchX;
-                if (Math.abs(dx) > 50) { dx < 0 ? advance() : retreat(); }
-                touchX = null;
-            }, { passive: true });
+            document.addEventListener(
+                "touchstart",
+                (e) => {
+                    touchX = e.touches[0].clientX;
+                },
+                { passive: true },
+            );
+            document.addEventListener(
+                "touchend",
+                (e) => {
+                    if (touchX === null) return;
+                    const dx = e.changedTouches[0].clientX - touchX;
+                    if (Math.abs(dx) > 50) {
+                        dx < 0 ? advance() : retreat();
+                    }
+                    touchX = null;
+                },
+                { passive: true },
+            );
 
             render();
         </script>

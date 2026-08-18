@@ -1,0 +1,1410 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Codelab: An agentic workflow for autonomous engineering loops for Android</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+            rel="stylesheet"
+        />
+        <style>
+            :root {
+                --bg: #f8f9fa;
+                --sidebar-bg: #ffffff;
+                --panel: #ffffff;
+                --panel-2: #f1f3f4;
+                --line: #e0e0e0;
+                --line-strong: #d0d7de;
+                --ink: #1f2937;
+                --ink-dim: #4b5563;
+                --ink-soft: #6b7280;
+                --primary: #1a73e8;
+                --primary-bg: #e8f0fe;
+                --clay: #2c7148;
+                --clay-soft: #e6f4ea;
+                --teal: #00796b;
+                --teal-soft: #e0f2f1;
+                --plum: #7a4a5a;
+                --plum-soft: #f3e8ee;
+                --warn-bg: #fef7e0;
+                --warn-border: #f9ab00;
+                --display: "Space Grotesk", sans-serif;
+                --sans: "Inter", sans-serif;
+                --mono: "JetBrains Mono", monospace;
+                --topbar-height: 64px;
+                --sidebar-width: 320px;
+            }
+
+            :root[data-theme="dark"] {
+                --bg: #121214;
+                --sidebar-bg: #18181c;
+                --panel: #1e1e24;
+                --panel-2: #272730;
+                --line: #2e2e38;
+                --line-strong: #3f3f4a;
+                --ink: #f4f4f6;
+                --ink-dim: #a1a1aa;
+                --ink-soft: #71717a;
+                --primary: #5294e2;
+                --primary-bg: #1e2532;
+                --clay: #4ade80;
+                --clay-soft: #143522;
+                --teal: #2dd4bf;
+                --teal-soft: #113533;
+                --plum: #f472b6;
+                --plum-soft: #38182d;
+                --warn-bg: #382400;
+                --warn-border: #fbbf24;
+            }
+
+            * {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+
+            body {
+                font-family: var(--sans);
+                background: var(--bg);
+                color: var(--ink);
+                line-height: 1.6;
+                display: flex;
+                flex-direction: column;
+                height: 100vh;
+                overflow: hidden;
+                -webkit-font-smoothing: antialiased;
+            }
+
+            /* ---------- Top App Bar ---------- */
+            .top-bar {
+                height: var(--topbar-height);
+                background: var(--panel);
+                border-bottom: 1px solid var(--line);
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 0 24px;
+                z-index: 100;
+                box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            }
+            .top-bar-left {
+                display: flex;
+                align-items: center;
+                gap: 16px;
+            }
+            .menu-btn {
+                display: none;
+                background: none;
+                border: none;
+                cursor: pointer;
+                padding: 8px;
+                border-radius: 6px;
+                color: var(--ink-dim);
+            }
+            .menu-btn:hover {
+                background: var(--panel-2);
+            }
+            .logo-badge {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                text-decoration: none;
+                color: var(--ink);
+                font-family: var(--display);
+                font-weight: 700;
+                font-size: 18px;
+            }
+            .logo-badge .icon {
+                width: 32px;
+                height: 32px;
+                background: var(--clay);
+                color: white;
+                border-radius: 8px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 18px;
+            }
+            .event-chip {
+                display: none;
+                align-items: center;
+                background: var(--clay-soft);
+                color: var(--clay);
+                padding: 2px 10px;
+                border-radius: 12px;
+                font-size: 13px;
+                font-weight: 600;
+                font-family: var(--mono);
+                margin-left: 2px;
+            }
+            .codelab-meta {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                font-size: 13px;
+                color: var(--ink-soft);
+            }
+            .meta-tag {
+                background: var(--clay-soft);
+                color: var(--clay);
+                padding: 3px 10px;
+                border-radius: 12px;
+                font-weight: 600;
+                font-size: 12px;
+                font-family: var(--mono);
+            }
+            .top-bar-right {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+            }
+            .btn-nav {
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+                padding: 8px 14px;
+                border-radius: 8px;
+                font-size: 13.5px;
+                font-weight: 600;
+                text-decoration: none;
+                transition: all 0.2s;
+                cursor: pointer;
+                border: 1px solid var(--line-strong);
+                background: var(--panel);
+                color: var(--ink);
+            }
+            .btn-nav:hover {
+                background: var(--panel-2);
+                border-color: var(--ink-soft);
+            }
+            .btn-primary {
+                background: var(--primary);
+                color: white;
+                border: none;
+            }
+            .btn-primary:hover {
+                background: #1557b0;
+            }
+
+            /* ---------- Progress Bar ---------- */
+            .progress-container {
+                width: 100%;
+                height: 4px;
+                background: var(--line);
+            }
+            .progress-bar {
+                height: 100%;
+                background: var(--clay);
+                width: 12.5%;
+                transition: width 0.3s ease;
+            }
+
+            /* ---------- Layout Body ---------- */
+            .app-container {
+                display: flex;
+                flex: 1;
+                overflow: hidden;
+                position: relative;
+            }
+
+            /* ---------- Sidebar Stepper ---------- */
+            .sidebar {
+                width: var(--sidebar-width);
+                background: var(--sidebar-bg);
+                border-right: 1px solid var(--line);
+                display: flex;
+                flex-direction: column;
+                overflow-y: auto;
+                flex-shrink: 0;
+            }
+            .sidebar-header {
+                padding: 20px;
+                border-bottom: 1px solid var(--line);
+            }
+            .sidebar-header h2 {
+                font-family: var(--display);
+                font-size: 16px;
+                font-weight: 700;
+                color: var(--ink);
+                margin-bottom: 4px;
+            }
+            .sidebar-header p {
+                font-size: 13px;
+                color: var(--ink-soft);
+            }
+            .stepper-list {
+                list-style: none;
+                padding: 12px 0;
+            }
+            .step-item {
+                display: flex;
+                align-items: flex-start;
+                padding: 12px 20px;
+                cursor: pointer;
+                transition: background 0.2s;
+                gap: 14px;
+                position: relative;
+                border-left: 3px solid transparent;
+            }
+            .step-item:hover {
+                background: var(--panel-2);
+            }
+            .step-item.active {
+                background: var(--primary-bg);
+                border-left-color: var(--primary);
+            }
+            .step-item.completed .step-number {
+                background: var(--clay);
+                color: white;
+            }
+            .step-number {
+                width: 26px;
+                height: 26px;
+                border-radius: 50%;
+                background: var(--panel-2);
+                color: var(--ink-dim);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 12px;
+                font-weight: 700;
+                font-family: var(--mono);
+                flex-shrink: 0;
+                margin-top: 2px;
+            }
+            .step-item.active .step-number {
+                background: var(--primary);
+                color: white;
+            }
+            .step-info {
+                display: flex;
+                flex-direction: column;
+            }
+            .step-title {
+                font-size: 14px;
+                font-weight: 600;
+                color: var(--ink);
+                line-height: 1.35;
+            }
+            .step-item.active .step-title {
+                color: var(--primary);
+            }
+            .step-duration {
+                font-size: 12px;
+                color: var(--ink-soft);
+                margin-top: 4px;
+            }
+
+            /* ---------- Main Content ---------- */
+            .main-content {
+                flex: 1;
+                overflow-y: auto;
+                padding: 40px 60px 80px;
+                max-width: 900px;
+                margin: 0 auto;
+                background: var(--panel);
+                box-shadow: 0 0 20px rgba(0,0,0,0.02);
+            }
+            .codelab-step {
+                display: none;
+            }
+            .codelab-step.active {
+                display: block;
+                animation: fadeIn 0.3s ease;
+            }
+            @keyframes fadeIn {
+                from { opacity: 0; transform: translateY(6px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+
+            h1.step-heading {
+                font-family: var(--display);
+                font-size: 28px;
+                font-weight: 700;
+                color: var(--ink);
+                margin-bottom: 12px;
+                line-height: 1.25;
+            }
+            .step-badge-bar {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                margin-bottom: 24px;
+                padding-bottom: 16px;
+                border-bottom: 1px solid var(--line);
+                font-size: 13px;
+                color: var(--ink-soft);
+            }
+            h2 {
+                font-family: var(--display);
+                font-size: 20px;
+                font-weight: 700;
+                color: var(--ink);
+                margin: 28px 0 14px 0;
+            }
+            h3 {
+                font-size: 16px;
+                font-weight: 600;
+                color: var(--ink);
+                margin: 20px 0 10px 0;
+            }
+            p {
+                margin-bottom: 16px;
+                font-size: 15.5px;
+                color: var(--ink-dim);
+            }
+            ul, ol {
+                margin-bottom: 20px;
+                padding-left: 24px;
+                color: var(--ink-dim);
+            }
+            li {
+                margin-bottom: 8px;
+                font-size: 15px;
+            }
+
+            /* ---------- Callouts ---------- */
+            .callout {
+                padding: 16px 20px;
+                border-radius: 8px;
+                margin: 20px 0;
+                font-size: 14.5px;
+                line-height: 1.5;
+                border-left: 4px solid;
+            }
+            .callout-info {
+                background: var(--primary-bg);
+                border-color: var(--primary);
+                color: #174ea6;
+            }
+            .callout-tip {
+                background: var(--clay-soft);
+                border-color: var(--clay);
+                color: #0d652d;
+            }
+            .callout-warning {
+                background: var(--warn-bg);
+                border-color: var(--warn-border);
+                color: #b06000;
+            }
+            .callout-title {
+                font-weight: 700;
+                margin-bottom: 4px;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+            }
+
+            /* ---------- Code Blocks ---------- */
+            .code-block {
+                position: relative;
+                background: #1e1e1e;
+                color: #d4d4d4;
+                border-radius: 10px;
+                overflow: hidden;
+                margin: 20px 0;
+                font-family: var(--mono);
+                font-size: 14px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            }
+            .code-header {
+                background: #252526;
+                padding: 8px 16px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                border-bottom: 1px solid #333;
+                color: #858585;
+                font-size: 12px;
+            }
+            .copy-btn {
+                background: #333;
+                color: #ccc;
+                border: none;
+                padding: 4px 10px;
+                border-radius: 4px;
+                font-size: 11px;
+                cursor: pointer;
+                transition: background 0.2s;
+                font-family: var(--sans);
+            }
+            .copy-btn:hover {
+                background: #444;
+                color: white;
+            }
+            pre {
+                padding: 16px 20px;
+                overflow-x: auto;
+                white-space: pre;
+                line-height: 1.5;
+            }
+            code {
+                font-family: var(--mono);
+            }
+            p code, li code {
+                background: var(--panel-2);
+                border: 1px solid var(--line);
+                padding: 2px 6px;
+                border-radius: 4px;
+                font-size: 13.5px;
+                color: var(--teal);
+            }
+
+            /* Syntax highlighting helpers */
+            .kw { color: #569cd6; font-weight: 600; }
+            .str { color: #ce9178; }
+            .cmt { color: #6a9955; font-style: italic; }
+            .fn { color: #dcdcaa; }
+            .num { color: #b5cea8; }
+
+            /* ---------- Diagrams & Cards ---------- */
+            .arch-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+                gap: 16px;
+                margin: 24px 0;
+            }
+            .card-box {
+                background: var(--panel);
+                border: 1px solid var(--line);
+                border-radius: 10px;
+                padding: 18px;
+                transition: transform 0.2s, box-shadow 0.2s;
+            }
+            .card-box:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+            }
+            .card-box .tag {
+                font-family: var(--mono);
+                font-size: 11px;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+                color: var(--clay);
+                font-weight: 600;
+            }
+            .card-box h3 {
+                margin: 6px 0 8px 0;
+                font-size: 16px;
+            }
+            .card-box p {
+                font-size: 13.5px;
+                color: var(--ink-dim);
+                margin-bottom: 0;
+            }
+
+            /* ---------- Checklist ---------- */
+            .checklist {
+                list-style: none;
+                padding-left: 0;
+                margin: 20px 0;
+            }
+            .checklist-item {
+                display: flex;
+                align-items: flex-start;
+                gap: 12px;
+                padding: 10px 14px;
+                background: var(--bg);
+                border: 1px solid var(--line);
+                border-radius: 8px;
+                margin-bottom: 8px;
+                cursor: pointer;
+                transition: background 0.2s;
+            }
+            .checklist-item:hover {
+                background: var(--panel-2);
+            }
+            .checklist-item input[type="checkbox"] {
+                width: 18px;
+                height: 18px;
+                margin-top: 2px;
+                accent-color: var(--clay);
+                cursor: pointer;
+            }
+            .checklist-text {
+                font-size: 14.5px;
+                color: var(--ink);
+            }
+
+            /* ---------- Bottom Stepper Controls ---------- */
+            .footer-bar {
+                position: sticky;
+                bottom: 0;
+                background: var(--panel);
+                border-top: 1px solid var(--line);
+                padding: 16px 60px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                box-shadow: 0 -4px 12px rgba(0,0,0,0.04);
+                z-index: 90;
+            }
+
+            /* Toast Notification */
+            .toast {
+                position: fixed;
+                bottom: 80px;
+                right: 24px;
+                background: #323232;
+                color: white;
+                padding: 10px 18px;
+                border-radius: 6px;
+                font-size: 13.5px;
+                opacity: 0;
+                transform: translateY(10px);
+                transition: all 0.3s ease;
+                z-index: 1000;
+                pointer-events: none;
+            }
+            .toast.show {
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+            /* Responsive */
+            @media (max-width: 900px) {
+                .sidebar {
+                    position: fixed;
+                    top: var(--topbar-height);
+                    left: 0;
+                    bottom: 0;
+                    z-index: 200;
+                    transform: translateX(-100%);
+                    transition: transform 0.3s ease;
+                    box-shadow: 4px 0 12px rgba(0,0,0,0.1);
+                }
+                .sidebar.open {
+                    transform: translateX(0);
+                }
+                .menu-btn {
+                    display: block;
+                }
+                .main-content {
+                    padding: 24px 20px 80px;
+                }
+                .footer-bar {
+                    padding: 16px 20px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <!-- Top App Bar -->
+        <header class="top-bar">
+            <div class="top-bar-left">
+                <button class="menu-btn" id="toggleSidebar" aria-label="Toggle Navigation">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 12h18M3 6h18M3 18h18"/>
+                    </svg>
+                </button>
+                <a href="#" class="logo-badge">
+                    <div class="icon">🦉</div>
+                    <span>codelabs</span>
+                    <span id="eventChip" class="event-chip"></span>
+                </a>
+                <div class="codelab-meta">
+                    <span class="meta-tag">60 MINS</span>
+                </div>
+            </div>
+            <div class="top-bar-right">
+                <button class="btn-nav" id="themeToggle" aria-label="Toggle Dark Mode" style="padding: 8px 10px;">
+                    <span id="themeIcon">🌙</span>
+                </button>
+                <a href="https://github.com/isfaaghyth/pang" target="_blank" rel="noopener" class="btn-nav">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+                    </svg>
+                    GitHub Repo
+                </a>
+            </div>
+        </header>
+
+        <!-- Progress Bar -->
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+
+        <!-- Main App Container -->
+        <div class="app-container">
+            <!-- Sidebar Stepper -->
+            <nav class="sidebar" id="sidebar">
+                <div class="sidebar-header">
+                    <h2>Architecting an agentic workflow</h2>
+                    <p>An agentic workflow for autonomous engineering loops for Android</p>
+                </div>
+                <ul class="stepper-list" id="stepperList">
+                    <li class="step-item active" data-step="1">
+                        <div class="step-number">1</div>
+                        <div class="step-info">
+                            <span class="step-title">Introduction & Architecture</span>
+                            <span class="step-duration">5 mins</span>
+                        </div>
+                    </li>
+                    <li class="step-item" data-step="2">
+                        <div class="step-number">2</div>
+                        <div class="step-info">
+                            <span class="step-title">Prerequisites & Setup</span>
+                            <span class="step-duration">10 mins</span>
+                        </div>
+                    </li>
+                    <li class="step-item" data-step="3">
+                        <div class="step-number">3</div>
+                        <div class="step-info">
+                            <span class="step-title">Cognitive Core (Obsidian Vault)</span>
+                            <span class="step-duration">8 mins</span>
+                        </div>
+                    </li>
+                    <li class="step-item" data-step="4">
+                        <div class="step-number">4</div>
+                        <div class="step-info">
+                            <span class="step-title">The Trigger (project-tick)</span>
+                            <span class="step-duration">7 mins</span>
+                        </div>
+                    </li>
+                    <li class="step-item" data-step="5">
+                        <div class="step-number">5</div>
+                        <div class="step-info">
+                            <span class="step-title">Android Dev Skill & Scaffolding</span>
+                            <span class="step-duration">10 mins</span>
+                        </div>
+                    </li>
+                    <li class="step-item" data-step="6">
+                        <div class="step-number">6</div>
+                        <div class="step-info">
+                            <span class="step-title">Live Build & Telegram Gateway</span>
+                            <span class="step-duration">10 mins</span>
+                        </div>
+                    </li>
+                    <li class="step-item" data-step="7">
+                        <div class="step-number">7</div>
+                        <div class="step-info">
+                            <span class="step-title">Production Guardrails</span>
+                            <span class="step-duration">5 mins</span>
+                        </div>
+                    </li>
+                    <li class="step-item" data-step="8">
+                        <div class="step-number">8</div>
+                        <div class="step-info">
+                            <span class="step-title">Workshop Exercises & Summary</span>
+                            <span class="step-duration">5 mins</span>
+                        </div>
+                    </li>
+                </ul>
+            </nav>
+
+            <!-- Main Content Container -->
+            <main class="main-content" id="mainContent">
+                <!-- STEP 1 -->
+                <section class="codelab-step active" data-step="1">
+                    <h1 class="step-heading">1. Introduction & Architecture Overview</h1>
+                    <div class="step-badge-bar">
+                        <span>⏱️ Estimated time: 5 mins</span>
+                        <span>•</span>
+                        <span>Level: Intermediate</span>
+                    </div>
+
+                    <p>Welcome to the hands-on codelab for <strong>An agentic workflow for autonomous engineering loops for Android</strong>. In this workshop, we move beyond basic LLM code-completion / chat tabs and build a fully automated, self-hosted <strong>agentic engineering loop</strong> tailored for Android developers using <code>pang</code>.</p>
+
+                    <div class="callout callout-info">
+                        <div class="callout-title">💡 What is an Agentic Workflow?</div>
+                        An agentic workflow is not just asking an LLM to generate a snippet. It is a long-running, state-aware system where an <strong>orchestrator agent</strong> monitors human intentions (e.g. notes), spawns isolated <strong>builder agents</strong>, invokes real compiler/CLI tools (like Gradle & ADB), tests output, and reports results back via chat.
+                    </div>
+
+                    <h2>How `pang` Works: End-to-End Visual Flowchart</h2>
+                    <p>Below is the complete architectural lifecycle showing how a simple Markdown note turns into a compiled, tested Android APK delivered to your device:</p>
+
+                    <div class="flowchart-container" style="background: var(--panel-2); border: 1px solid var(--line); border-radius: 12px; padding: 24px; margin: 24px 0; overflow-x: auto;">
+                        <svg viewBox="0 0 860 380" style="width: 100%; min-width: 720px; height: auto;" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                                <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                                    <path d="M 0 0 L 10 5 L 0 10 z" fill="#2c7148"/>
+                                </marker>
+                                <marker id="arrow-blue" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                                    <path d="M 0 0 L 10 5 L 0 10 z" fill="#1a73e8"/>
+                                </marker>
+                            </defs>
+                            <!-- Row 1 Nodes -->
+                            <g>
+                                <rect x="20" y="30" width="160" height="70" rx="10" fill="#ffffff" stroke="#2c7148" stroke-width="2"/>
+                                <text x="100" y="58" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-weight="700" font-size="13" fill="#1f2937">1. Obsidian Note</text>
+                                <text x="100" y="78" text-anchor="middle" font-family="Inter, sans-serif" font-size="11" fill="#4b5563">status: in-progress</text>
+                            </g>
+                            <path d="M 180 65 L 230 65" stroke="#2c7148" stroke-width="2" marker-end="url(#arrow)"/>
+                            <g>
+                                <rect x="240" y="30" width="170" height="70" rx="10" fill="#e6f4ea" stroke="#2c7148" stroke-width="2"/>
+                                <text x="325" y="58" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-weight="700" font-size="13" fill="#0d652d">2. project-tick.py</text>
+                                <text x="325" y="78" text-anchor="middle" font-family="Inter, sans-serif" font-size="11" fill="#0d652d">60s Cron Watcher</text>
+                            </g>
+                            <path d="M 410 65 L 460 65" stroke="#2c7148" stroke-width="2" marker-end="url(#arrow)"/>
+                            <g>
+                                <rect x="470" y="30" width="170" height="70" rx="10" fill="#ffffff" stroke="#7a4a5a" stroke-width="2"/>
+                                <text x="555" y="58" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-weight="700" font-size="13" fill="#7a4a5a">3. Orchestrator</text>
+                                <text x="555" y="78" text-anchor="middle" font-family="Inter, sans-serif" font-size="11" fill="#4b5563">engineer Profile</text>
+                            </g>
+                            <path d="M 640 65 L 690 65" stroke="#2c7148" stroke-width="2" marker-end="url(#arrow)"/>
+                            <g>
+                                <rect x="700" y="30" width="140" height="70" rx="10" fill="#e8f0fe" stroke="#1a73e8" stroke-width="2"/>
+                                <text x="770" y="58" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-weight="700" font-size="13" fill="#174ea6">4. Telegram</text>
+                                <text x="770" y="78" text-anchor="middle" font-family="Inter, sans-serif" font-size="11" fill="#174ea6">Confirm Platform</text>
+                            </g>
+
+                            <!-- Connecting Row 1 to Row 2 -->
+                            <path d="M 770 100 L 770 150 L 555 150 L 555 185" stroke="#1a73e8" stroke-width="2" marker-end="url(#arrow-blue)" fill="none"/>
+
+                            <!-- Row 2 Nodes -->
+                            <g>
+                                <rect x="440" y="190" width="230" height="75" rx="10" fill="#ffffff" stroke="#1a73e8" stroke-width="2.5"/>
+                                <text x="555" y="218" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-weight="700" font-size="13" fill="#174ea6">5. Ephemeral Builder</text>
+                                <text x="555" y="238" text-anchor="middle" font-family="Inter, sans-serif" font-weight="600" font-size="11" fill="#1a73e8">eng-&lt;name&gt; Subagent</text>
+                            </g>
+                            <path d="M 440 227 L 390 227" stroke="#2c7148" stroke-width="2" marker-end="url(#arrow)"/>
+                            <g>
+                                <rect x="220" y="190" width="170" height="75" rx="10" fill="#ffffff" stroke="#00796b" stroke-width="2"/>
+                                <text x="305" y="218" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-weight="700" font-size="13" fill="#00796b">6. scaffold.sh</text>
+                                <text x="305" y="238" text-anchor="middle" font-family="Inter, sans-serif" font-size="11" fill="#4b5563">Compose + Stitch Design</text>
+                            </g>
+                            <path d="M 220 227 L 170 227" stroke="#2c7148" stroke-width="2" marker-end="url(#arrow)"/>
+                            <g>
+                                <rect x="20" y="190" width="150" height="75" rx="10" fill="#ffffff" stroke="#2c7148" stroke-width="2"/>
+                                <text x="95" y="218" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-weight="700" font-size="13" fill="#1f2937">7. Gradle Build</text>
+                                <text x="95" y="238" text-anchor="middle" font-family="Inter, sans-serif" font-size="11" fill="#4b5563">assembleDebug</text>
+                            </g>
+
+                            <!-- Connecting Row 2 to Row 3 -->
+                            <path d="M 95 265 L 95 320 L 330 320" stroke="#2c7148" stroke-width="2" marker-end="url(#arrow)" fill="none"/>
+
+                            <!-- Row 3 Node -->
+                            <g>
+                                <rect x="340" y="290" width="240" height="65" rx="10" fill="#e6f4ea" stroke="#2c7148" stroke-width="2"/>
+                                <text x="460" y="318" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-weight="700" font-size="14" fill="#0d652d">8. deliver.sh</text>
+                                <text x="460" y="338" text-anchor="middle" font-family="Inter, sans-serif" font-size="11" fill="#0d652d">Telegram APK / ADB Wireless Install</text>
+                            </g>
+                        </svg>
+                    </div>
+
+                    <h2>Core Concept & Terminology Deep Dives</h2>
+                    <p>To master architecting mobile agentic workflows, understand these key components:</p>
+
+                    <div class="arch-grid">
+                        <div class="card-box">
+                            <span class="tag">01. Dynamic Agent Pattern</span>
+                            <h3>Ephemeral Builder Subagent</h3>
+                            <p><strong>Proper Terminology:</strong> <em>Ephemeral Per-Project Builder Subagent</em>. Rather than keeping a single bloated agent, <code>hermes-agent</code> provisions temporary subagents (e.g. <code>eng-timerapp</code>) per build. This prevents context bloat, prompt drift, and file conflicts.</p>
+                        </div>
+                        <div class="card-box">
+                            <span class="tag">02. Headless Project Seeding</span>
+                            <h3>scaffold (`scaffold.sh`)</h3>
+                            <p>Generates baseline Android Jetpack Compose code with AGP 8.7, Kotlin 2.0, compileSdk 35, and Gradle wrapper without Android Studio UI, consuming Google Stitch UI design tokens.</p>
+                        </div>
+                        <div class="card-box">
+                            <span class="tag">03. Event Trigger Engine</span>
+                            <h3>project-tick (`project-tick.py`)</h3>
+                            <p>A 60s cron polling watcher registered via <code>hermes cron</code> in <code>--no-agent</code> mode. Scans Markdown note YAML frontmatter for <code>status: backlog → in-progress</code> with state debouncing.</p>
+                        </div>
+                        <div class="card-box">
+                            <span class="tag">04. Artifact Delivery Pipeline</span>
+                            <h3>deliver (`deliver.sh`)</h3>
+                            <p>The post-build script that validates generated <code>app-debug.apk</code> binaries and ships them to Telegram as documents or directly onto devices over <code>adb connect</code> Wi-Fi.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- STEP 2 -->
+                <section class="codelab-step" data-step="2">
+                    <h1 class="step-heading">2. Prerequisites & Local Environment Setup</h1>
+                    <div class="step-badge-bar">
+                        <span>⏱️ Estimated time: 10 mins</span>
+                        <span>•</span>
+                        <span>Prerequisite Checklist</span>
+                    </div>
+
+                    <p>Before launching the live workshop exercises, complete the setup checklist below on your machine (macOS / Linux recommended).</p>
+
+                    <h2>Prerequisites Checklist</h2>
+                    <ul class="checklist" id="prereqChecklist">
+                        <li class="checklist-item">
+                            <input type="checkbox" id="c1">
+                            <label for="c1" class="checklist-text"><strong>JDK 17 or 21</strong> installed and configured (<code>java -version</code>)</label>
+                        </li>
+                        <li class="checklist-item">
+                            <input type="checkbox" id="c2">
+                            <label for="c2" class="checklist-text"><strong>Android SDK & Build-Tools</strong> (<code>ANDROID_HOME</code> set in <code>~/.zshrc</code> or <code>~/.bashrc</code>)</label>
+                        </li>
+                        <li class="checklist-item">
+                            <input type="checkbox" id="c3">
+                            <label for="c3" class="checklist-text"><strong>Docker & Docker Compose</strong> installed and running</label>
+                        </li>
+                        <li class="checklist-item">
+                            <input type="checkbox" id="c4">
+                            <label for="c4" class="checklist-text"><strong>Python 3.10+</strong> and <code>git</code></label>
+                        </li>
+                        <li class="checklist-item">
+                            <input type="checkbox" id="c5">
+                            <label for="c5" class="checklist-text"><strong>LLM API Key</strong> (Anthropic Claude 3.5 Sonnet / OpenAI GPT-4o / or local Ollama)</label>
+                        </li>
+                    </ul>
+
+                    <h2>Cloning & Bootstrapping `pang`</h2>
+                    <p>Run the following commands in your terminal to set up the <code>ippang</code> workspace environment locally:</p>
+
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span>terminal</span>
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        </div>
+                        <pre><code><span class="cmt"># 1. Clone the pang repository to ~/ippang</span>
+git clone https://github.com/isfaaghyth/pang.git ~/ippang
+<span class="kw">cd</span> ~/ippang/_instance
+
+<span class="cmt"># 2. Run the local bootstrap script (Brings up Docker containers)</span>
+./scripts/bootstrap-local.sh
+
+<span class="cmt"># 3. Configure your preferred LLM provider (e.g. Anthropic)</span>
+hermes -p engineer config set model.provider anthropic
+hermes -p engineer config set model.default claude-3-5-sonnet-20241022
+hermes -p engineer config set model.api_key YOUR_ANTHROPIC_API_KEY</code></pre>
+                    </div>
+
+                    <h2>Local Docker Container Stack (`docker-compose.local.yml`)</h2>
+                    <p>To keep your host environment clean and reproducible, <code>./scripts/bootstrap-local.sh</code> automatically spins up a lightweight multi-container Docker stack using <code>docker-compose.local.yml</code>:</p>
+
+                    <div class="arch-grid">
+                        <div class="card-box">
+                            <span class="tag">Container 01</span>
+                            <h3>couchdb (Port 5984)</h3>
+                            <p>Obsidian LiveSync backend database handling real-time note replication across devices.</p>
+                        </div>
+                        <div class="card-box">
+                            <span class="tag">Container 02</span>
+                            <h3>qdrant (Port 6333)</h3>
+                            <p>Vector database storing vector embeddings of your Markdown notes for semantic memory recall.</p>
+                        </div>
+                        <div class="card-box">
+                            <span class="tag">Container 03</span>
+                            <h3>keirouter (Port 8645)</h3>
+                            <p>Local unified LLM router gateway hiding API keys from agents.</p>
+                        </div>
+                        <div class="card-box">
+                            <span class="tag">Container 04 & 05</span>
+                            <h3>Sync & Index Workers</h3>
+                            <p>Background bridge containers watching disk vault changes and updating CouchDB + Qdrant automatically.</p>
+                        </div>
+                    </div>
+
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span>terminal (verify Docker containers)</span>
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        </div>
+                        <pre><code><span class="cmt"># Verify all local containers are healthy</span>
+docker compose -f docker-compose.local.yml ps
+
+<span class="cmt"># Output should show:</span>
+<span class="cmt"># ippang-couchdb-1          running   0.0.0.0:5984->5984/tcp</span>
+<span class="cmt"># ippang-qdrant-1           running   0.0.0.0:6333->6333/tcp</span>
+<span class="cmt"># ippang-keirouter-1        running   0.0.0.0:8645->8645/tcp</span>
+<span class="cmt"># ippang-livesync-bridge-1  running</span>
+<span class="cmt"># ippang-vault-indexer-1    running</span></code></pre>
+                    </div>
+
+                    <div class="callout callout-tip">
+                        <div class="callout-title">⚡ Verification Command</div>
+                        Test that your local orchestrator is functional by running:
+                        <code>hermes -p engineer -z "reply with one word: ready"</code>
+                    </div>
+                </section>
+
+                <!-- STEP 3 -->
+                <section class="codelab-step" data-step="3">
+                    <h1 class="step-heading">3. Setting Up the Cognitive Core (Obsidian Vault)</h1>
+                    <div class="step-badge-bar">
+                        <span>⏱️ Estimated time: 8 mins</span>
+                        <span>•</span>
+                        <span>Vault Architecture</span>
+                    </div>
+
+                    <p>The Cognitive Core is a plain Markdown Obsidian vault stored locally at <code>~/ippang/vault-project/</code>. Agents interact with Markdown notes as human-readable, vendor-agnostic long-term memory.</p>
+
+                    <h2>Vault File Structure</h2>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span>directory structure</span>
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        </div>
+                        <pre><code>~/ippang/vault-project/
+├── _templates/
+│   ├── 00-context.md          <span class="cmt"># Project specification & status</span>
+│   ├── 10-architecture.md     <span class="cmt"># Architecture decisions</span>
+│   └── 20-task-log.md         <span class="cmt"># Agent execution trail</span>
+└── timerapp/
+    └── 00-context.md          <span class="cmt"># The active note watched by cron</span></code></pre>
+                    </div>
+
+                    <h2>The `00-context.md` Specification Note</h2>
+                    <p>Every mobile project starts as a note with structured YAML frontmatter:</p>
+
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span>~/ippang/vault-project/timerapp/00-context.md</span>
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        </div>
+                        <pre><code>---
+<span class="kw">project:</span> <span class="str">timerapp</span>
+<span class="kw">instance:</span> <span class="str">ippang</span>
+<span class="kw">platform:</span> <span class="str">mobile</span>
+<span class="kw">status:</span> <span class="str">backlog</span> <span class="cmt"># backlog -> in-progress triggers the builder agent!</span>
+<span class="kw">created:</span> <span class="str">2026-08-18T10:00:00+0700</span>
+---
+
+<span class="fn"># TimerApp Specification</span>
+
+Build a clean Jetpack Compose countdown timer app for Android.
+- Features: Start, Pause, Reset, audio alarm tick notification.
+- UI: Modern dark theme with Space Grotesk font styling and clean progress ring.</code></pre>
+                    </div>
+
+                    <div class="callout callout-warning">
+                        <div class="callout-title">⚠️ Instance Tagging Guard</div>
+                        Notice <code>instance: ippang</code> in frontmatter. This isolation guard prevents other personal agents from accidentally picking up engineering projects.
+                    </div>
+                </section>
+
+                <!-- STEP 4 -->
+                <section class="codelab-step" data-step="4">
+                    <h1 class="step-heading">4. The Trigger Mechanism (`project-tick.py`)</h1>
+                    <div class="step-badge-bar">
+                        <span>⏱️ Estimated time: 7 mins</span>
+                        <span>•</span>
+                        <span>Event Engine</span>
+                    </div>
+
+                    <p>Instead of exposing HTTP webhooks or open ports, <code>pang</code> uses <code>project-tick.py</code> — a periodic watcher registered with <code>hermes cron</code> that scans the Obsidian vault every 60 seconds.</p>
+
+                    <h2>How `project-tick.py` Operates</h2>
+
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span>_instance/hermes-cron/project-tick.py</span>
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        </div>
+                        <pre><code><span class="kw">import</span> os, glob, yaml
+
+TERMINAL_STATES = [<span class="str">"completed"</span>, <span class="str">"failed"</span>, <span class="str">"error"</span>]
+
+<span class="kw">for</span> note_path <span class="kw">in</span> glob.glob(<span class="str">"vault-project/*/00-context.md"</span>):
+    with open(note_path) <span class="kw">as</span> f:
+        fm = yaml.safe_load(f.read().split(<span class="str">"---"</span>)[1])
+
+    <span class="cmt"># 1. Instance isolation check</span>
+    <span class="kw">if</span> fm.get(<span class="str">"instance"</span>) != <span class="str">"ippang"</span>:
+        <span class="kw">continue</span>
+
+    <span class="cmt"># 2. State transition check: backlog -> in-progress</span>
+    <span class="kw">if</span> fm.get(<span class="str">"status"</span>) == <span class="str">"in-progress"</span> <span class="kw">and not</span> is_dispatched(fm[<span class="str">"project"</span>]):
+        mark_dispatched(fm[<span class="str">"project"</span>])
+        spawn_orchestrator(fm[<span class="str">"project"</span>], brief=note_path)
+
+    <span class="cmt"># 3. Terminal status report to Telegram</span>
+    <span class="kw">if</span> fm.get(<span class="str">"status"</span>) <span class="kw">in</span> TERMINAL_STATES:
+        print(<span class="str">f"[{fm['project']}] Build status: {fm['status']}"</span>)</code></pre>
+                    </div>
+
+                    <h2>Registering the Hermes Cron Job</h2>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span>terminal</span>
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        </div>
+                        <pre><code>hermes cron create <span class="str">'* * * * *'</span> --no-agent \
+    --script project-tick.py --deliver telegram --name ippang-projects</code></pre>
+                    </div>
+
+                    <div class="callout callout-tip">
+                        <div class="callout-title">🛡️ Debouncing State</div>
+                        The tick engine uses state hashes so modifying note body prose will <strong>never</strong> re-trigger a build. Only explicitly editing <code>status: backlog → in-progress</code> fires the build loop!
+                    </div>
+                </section>
+
+                <!-- STEP 5 -->
+                <section class="codelab-step" data-step="5">
+                    <h1 class="step-heading">5. Android Dev Skill & Headless Scaffolding</h1>
+                    <div class="step-badge-bar">
+                        <span>⏱️ Estimated time: 10 mins</span>
+                        <span>•</span>
+                        <span>Scaffold & Gradle Build</span>
+                    </div>
+
+                    <p>The builder subagent leverages the custom <code>android-dev</code> skill. It seeds a complete Android project structure with Gradle wrapper without requiring Android Studio UI.</p>
+
+                    <h2>Executing the Scaffold Command</h2>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span>terminal</span>
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        </div>
+                        <pre><code><span class="cmt"># 1. Create target project folder + isolated subagent profile</span>
+./scripts/new-project.sh timerapp android
+
+<span class="cmt"># 2. Scaffold Compose baseline & Gradle wrapper</span>
+./scripts/scaffold.sh timerapp android --i-confirm-mobile-cost
+
+<span class="cmt"># 3. Inspect generated project structure</span>
+<span class="kw">cd</span> ~/ippang/timerapp
+ls -la</code></pre>
+                    </div>
+
+                    <h2>Generated Android Project Tree</h2>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span>project structure</span>
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        </div>
+                        <pre><code>~/ippang/timerapp/
+├── gradlew                  <span class="cmt"># Standalone Gradle wrapper</span>
+├── gradle/libs.versions.toml<span class="cmt"># Catalog: AGP 8.7, Kotlin 2.0, Compose</span>
+├── local.properties         <span class="cmt"># Points to sdk.dir</span>
+└── app/
+    ├── build.gradle.kts
+    └── src/main/
+        ├── AndroidManifest.xml
+        ├── java/id/ghiath/timerapp/MainActivity.kt
+        └── res/values/strings.xml</code></pre>
+                    </div>
+
+                    <h2>Integrating Google Stitch Design System</h2>
+                    <p>Before coding screens, Google Stitch generates layout skeletons and color tokens into <code>ui/theme/Color.kt</code> and <code>Theme.kt</code>, enabling the agent to write clean, visually cohesive Compose UI components.</p>
+                </section>
+
+                <!-- STEP 6 -->
+                <section class="codelab-step" data-step="6">
+                    <h1 class="step-heading">6. Live Build Loop & Telegram Gateway</h1>
+                    <div class="step-badge-bar">
+                        <span>⏱️ Estimated time: 10 mins</span>
+                        <span>•</span>
+                        <span>APK Build & Delivery</span>
+                    </div>
+
+                    <p>Now let me trigger the complete loop end-to-end!</p>
+
+                    <h2>1. Starting Telegram Chat Gateway</h2>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span>terminal</span>
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        </div>
+                        <pre><code>PORT=8646 hermes -p engineer gateway install --force --start-now</code></pre>
+                    </div>
+
+                    <h2>2. Firing the Build Loop (2 Alternative Approaches)</h2>
+
+                    <div class="arch-grid">
+                        <div class="card-box">
+                            <span class="tag">Approach A</span>
+                            <h3>Obsidian Vault Note</h3>
+                            <p>Edit frontmatter <code>status: backlog → in-progress</code> inside <code>vault-project/timerapp/00-context.md</code>. Watched by <code>project-tick.py</code> cron.</p>
+                        </div>
+                        <div class="card-box">
+                            <span class="tag">Approach B</span>
+                            <h3>Direct Telegram Chat / CLI Prompt</h3>
+                            <p>Message the bot directly on Telegram: <code>"build timerapp android"</code> or run <code>./scripts/try-local.sh timerapp</code> via terminal.</p>
+                        </div>
+                    </div>
+
+                    <h3>Approach A: Obsidian Vault Trigger</h3>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span>~/ippang/vault-project/timerapp/00-context.md</span>
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        </div>
+                        <pre><code>---
+<span class="kw">project:</span> <span class="str">timerapp</span>
+<span class="kw">instance:</span> <span class="str">ippang</span>
+<span class="kw">platform:</span> <span class="str">mobile</span>
+<span class="kw">status:</span> <span class="str">in-progress</span> <span class="cmt"># FIRES CRON TICK DISPATCH!</span>
+---</code></pre>
+                    </div>
+
+                    <h3>Approach B: Direct Telegram / CLI Verification Prompt</h3>
+                    <p>If you don't want to open Obsidian, test your environment instantly by sending a chat message to your Telegram bot or using the <code>try-local.sh</code> runner:</p>
+
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span>terminal or Telegram Chat</span>
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        </div>
+                        <pre><code><span class="cmt"># Option B1: Instant local environment test runner</span>
+./scripts/try-local.sh timerapp
+
+<span class="cmt"># Option B2: Direct message to your Telegram Bot</span>
+<span class="cmt"># In Telegram Chat with @your_engineer_bot:</span>
+"build timerapp app with Jetpack Compose countdown timer"</code></pre>
+                    </div>
+
+                    <h2>3. Watching Agent Execution & Output</h2>
+                    <p>The orchestrator agent confirms the platform over Telegram and spawns <code>eng-timerapp</code> builder agent to perform headless compile:</p>
+
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span>terminal (agent execution)</span>
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        </div>
+                        <pre><code><span class="kw">cd</span> ~/ippang/timerapp
+./gradlew assembleDebug
+
+<span class="cmt"># -> BUILD SUCCESSFUL in 24s</span>
+<span class="cmt"># -> Output APK: app/build/outputs/apk/debug/app-debug.apk</span>
+
+<span class="cmt"># Deliver APK to Telegram</span>
+~/ippang/_instance/scripts/deliver.sh app-debug.apk</code></pre>
+                    </div>
+
+                    <div class="callout callout-tip">
+                        <div class="callout-title">📱 Installing via ADB on Real Device</div>
+                        Connect your Android test device via Wi-Fi or USB and run:
+                        <code>adb connect &lt;device-ip&gt;:5555 &amp;&amp; ./gradlew installDebug</code>
+                    </div>
+                </section>
+
+                <!-- STEP 7 -->
+                <section class="codelab-step" data-step="7">
+                    <h1 class="step-heading">7. Production Guardrails & Subagent Isolation</h1>
+                    <div class="step-badge-bar">
+                        <span>⏱️ Estimated time: 5 mins</span>
+                        <span>•</span>
+                        <span>Safety & Quality</span>
+                    </div>
+
+                    <p>Autonomous code generation requires strict guardrails to protect security, stability, and code quality.</p>
+
+                    <h2>The 3 Pillars of Safety in `pang`</h2>
+
+                    <div class="arch-grid">
+                        <div class="card-box">
+                            <span class="tag">01. Verification</span>
+                            <h3>Automated Testing</h3>
+                            <p>Build subagents must execute unit tests (<code>./gradlew testDebugUnitTest</code>) before declaring build success.</p>
+                        </div>
+                        <div class="card-box">
+                            <span class="tag">02. Review Pipeline</span>
+                            <h3>PR & Human Review</h3>
+                            <p>Subagents commit to feature branches and open Pull Requests. Automatic PR checkers enforce code review before merge.</p>
+                        </div>
+                        <div class="card-box">
+                            <span class="tag">03. Security</span>
+                            <h3>API Key Sandboxing</h3>
+                            <p>LLM credentials live solely inside <code>KeiRouter</code>. Agents never hold raw API keys or private signing keys.</p>
+                        </div>
+                    </div>
+
+                    <div class="callout callout-warning">
+                        <div class="callout-title">⚠️ Isolation Rule</div>
+                        Each project build runs under its own subagent (<code>eng-timerapp</code>, <code>eng-counterapp</code>). Never allow multiple projects to share a single agent workspace context!
+                    </div>
+                </section>
+
+                <!-- STEP 8 -->
+                <section class="codelab-step" data-step="8">
+                    <h1 class="step-heading">8. Workshop Exercises & Summary</h1>
+                    <div class="step-badge-bar">
+                        <span>⏱️ Estimated time: 5 mins</span>
+                        <span>•</span>
+                        <span>Hands-On Challenge</span>
+                    </div>
+
+                    <h2>Workshop Hands-On Challenges</h2>
+                    <p>Try completing these exercises during the live workshop session:</p>
+
+                    <div class="callout callout-info">
+                        <div class="callout-title">🎯 Challenge 1: Interactive Prompt Alignment (Room DB Notes App)</div>
+                        <p style="margin-bottom: 8px;"><strong>Don't write the note manually!</strong> Test the agent alignment loop interactively with the audience:</p>
+                        <ol style="margin-bottom: 0; font-size: 14px;">
+                            <li>Send a minimal prompt to Telegram or CLI: <code>"Build a simple Notes app using Room DB"</code></li>
+                            <li><strong>Watch the Agent Counter-Interview:</strong> The orchestrator agent (<code>engineer</code>) will analyze the brief and ask clarifying questions (Entity fields, DAO methods, ViewModel state, Compose layout).</li>
+                            <li>Answer the agent's questions to let it auto-generate a structured <code>00-context.md</code> spec and <code>10-architecture.md</code> plan before flipping status to <code>in-progress</code> for execution!</li>
+                        </ol>
+                    </div>
+
+                    <div class="callout callout-tip">
+                        <div class="callout-title">🎯 Challenge 2: Add Unit Test Guardrails</div>
+                        Update the builder agent prompt to write unit tests for ViewModels and run <code>./gradlew test</code> automatically before assembling the debug APK.
+                    </div>
+
+                    <h2>Summary & What's Next</h2>
+                    <ul>
+                        <li>You have built a complete, self-hosted agentic workflow engine (<code>pang</code>) for Android development.</li>
+                        <li>You learned how frontmatter state triggers, subagent isolation, and headless Gradle scripts eliminate manual dev boilerplate.</li>
+                        <li>Explore extending `pang` for Kotlin Multiplatform (KMP), Railway backend deployments, and Supabase database integrations!</li>
+                    </ul>
+
+                    <div style="margin-top: 40px; padding: 24px; background: var(--clay-soft); border-radius: 12px; text-align: center;">
+                        <h2 style="margin-top:0; color: var(--clay);">🎉 Congratulations!</h2>
+                        <p style="color: var(--clay); margin-bottom: 16px;">You are now ready for the live 60-minute workshop session!</p>
+                        <a href="https://github.com/isfaaghyth/pang" target="_blank" rel="noopener" class="btn-nav btn-primary">Star on GitHub</a>
+                    </div>
+                </section>
+            </main>
+        </div>
+
+        <!-- Footer Stepper Bar -->
+        <footer class="footer-bar">
+            <button class="btn-nav" id="prevBtn" disabled>
+                ← Previous Step
+            </button>
+            <span style="font-size: 14px; color: var(--ink-soft); font-family: var(--mono);" id="stepCounter">Step 1 of 8</span>
+            <button class="btn-nav btn-primary" id="nextBtn">
+                Next Step →
+            </button>
+        </footer>
+
+        <!-- Toast Notification -->
+        <div class="toast" id="toast">Copied to clipboard!</div>
+
+        <!-- Stepper Logic Script -->
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const totalSteps = 8;
+                let currentStep = 1;
+
+                const stepperItems = document.querySelectorAll('.step-item');
+                const codelabSteps = document.querySelectorAll('.codelab-step');
+                const prevBtn = document.getElementById('prevBtn');
+                const nextBtn = document.getElementById('nextBtn');
+                const stepCounter = document.getElementById('stepCounter');
+                const progressBar = document.getElementById('progressBar');
+                const sidebar = document.getElementById('sidebar');
+                const toggleSidebar = document.getElementById('toggleSidebar');
+
+                function updateStep(step) {
+                    if (step < 1 || step > totalSteps) return;
+                    currentStep = step;
+
+                    // Update Stepper List
+                    stepperItems.forEach(item => {
+                        const itemStep = parseInt(item.getAttribute('data-step'));
+                        item.classList.remove('active');
+                        if (itemStep < currentStep) {
+                            item.classList.add('completed');
+                        } else {
+                            item.classList.remove('completed');
+                        }
+                        if (itemStep === currentStep) {
+                            item.classList.add('active');
+                        }
+                    });
+
+                    // Update Content Steps
+                    codelabSteps.forEach(el => {
+                        const elStep = parseInt(el.getAttribute('data-step'));
+                        if (elStep === currentStep) {
+                            el.classList.add('active');
+                        } else {
+                            el.classList.remove('active');
+                        }
+                    });
+
+                    // Update Controls
+                    prevBtn.disabled = currentStep === 1;
+                    if (currentStep === totalSteps) {
+                        nextBtn.textContent = 'Finish Codelab 🎉';
+                    } else {
+                        nextBtn.textContent = 'Next Step →';
+                    }
+
+                    stepCounter.textContent = `Step ${currentStep} of ${totalSteps}`;
+                    progressBar.style.width = `${(currentStep / totalSteps) * 100}%`;
+
+                    // Scroll to top of content
+                    document.getElementById('mainContent').scrollTop = 0;
+
+                    // Close mobile sidebar
+                    sidebar.classList.remove('open');
+                }
+
+                // Event Listeners for Stepper List
+                stepperItems.forEach(item => {
+                    item.addEventListener('click', () => {
+                        const step = parseInt(item.getAttribute('data-step'));
+                        updateStep(step);
+                    });
+                });
+
+                // Next & Prev Buttons
+                prevBtn.addEventListener('click', () => updateStep(currentStep - 1));
+                nextBtn.addEventListener('click', () => {
+                    if (currentStep < totalSteps) {
+                        updateStep(currentStep + 1);
+                    } else {
+                        showToast('Codelab completed! Ready for the live workshop.');
+                    }
+                });
+
+                // Mobile Sidebar Toggle
+                toggleSidebar.addEventListener('click', () => {
+                    sidebar.classList.toggle('open');
+                });
+
+                // Dynamic Event Chip from URL Query Params (e.g. ?event=GDG Bandung)
+                const urlParams = new URLSearchParams(window.location.search);
+                const eventVal = urlParams.get('event') || urlParams.get('host') || urlParams.get('community') || urlParams.get('tag');
+                if (eventVal) {
+                    const chipEl = document.getElementById('eventChip');
+                    if (chipEl) {
+                        // Strip any parentheses if present, do NOT include "(" and ")"
+                        const rawText = eventVal.trim().replace(/^\(|\)$/g, '');
+                        chipEl.textContent = rawText;
+                        chipEl.style.display = 'inline-flex';
+                    }
+                }
+
+                // Dark Mode Toggle Logic
+                const themeToggle = document.getElementById('themeToggle');
+                const themeIcon = document.getElementById('themeIcon');
+
+                function setTheme(theme) {
+                    document.documentElement.setAttribute('data-theme', theme);
+                    localStorage.setItem('theme', theme);
+                    if (themeIcon) {
+                        themeIcon.textContent = theme === 'dark' ? '☀️' : '🌙';
+                    }
+                }
+
+                const savedTheme = localStorage.getItem('theme');
+                // Default explicitly to Light Mode
+                const initialTheme = savedTheme || 'light';
+                setTheme(initialTheme);
+
+                if (themeToggle) {
+                    themeToggle.addEventListener('click', () => {
+                        const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+                        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                        setTheme(newTheme);
+                    });
+                }
+            });
+
+            // Copy Code Snippet Helper
+            function copyCode(btn) {
+                const codeBlock = btn.closest('.code-block').querySelector('code');
+                const text = codeBlock.innerText;
+                navigator.clipboard.writeText(text).then(() => {
+                    showToast('Copied code snippet!');
+                }).catch(err => {
+                    console.error('Failed to copy text: ', err);
+                });
+            }
+
+            // Toast Helper
+            function showToast(msg) {
+                const toast = document.getElementById('toast');
+                toast.textContent = msg;
+                toast.classList.add('show');
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 2500);
+            }
+        </script>
+    </body>
+</html>
