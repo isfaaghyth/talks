@@ -1508,6 +1508,68 @@
                 color: var(--ink);
             }
 
+            /* ---- simulation slide ---- */
+            .simflow {
+                display: flex;
+                align-items: center;
+                flex-wrap: wrap;
+                gap: 6px;
+                margin: 10px 0 8px;
+                font-family: var(--mono);
+            }
+            .simflow .sf {
+                font-size: 12px;
+                padding: 5px 10px;
+                border-radius: 999px;
+                background: var(--panel-2);
+                border: 1px solid var(--line);
+                color: var(--ink-dim);
+                font-weight: 600;
+            }
+            .simflow .sf.sf-2 {
+                background: var(--teal-soft);
+                border-color: var(--teal);
+                color: var(--teal);
+            }
+            .simflow .sf-arrow {
+                color: var(--ink-soft);
+                font-size: 13px;
+            }
+            .sim-row {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 6px;
+                margin: 4px 0 10px;
+            }
+            .sim-badge {
+                font-family: var(--mono);
+                font-size: 10px;
+                letter-spacing: 0.05em;
+                text-transform: uppercase;
+                padding: 3px 8px;
+                border-radius: 5px;
+                background: var(--clay-soft);
+                color: #1f5c38;
+                font-weight: 600;
+            }
+            .sim-tree {
+                font-size: 12.5px;
+                line-height: 1.7;
+                padding: 13px 16px;
+                margin-bottom: 10px;
+            }
+            .sim-note {
+                font-size: 13px;
+                line-height: 1.5;
+                color: var(--ink-dim);
+            }
+            .sim-note code {
+                font-size: 12px;
+            }
+            .card .tree.sim-tree {
+                margin-top: 0;
+            }
+
             /* ---- slide 02: wider bg diagram wrapper ---- */
             .bg-wrap {
                 width: 100%;
@@ -4021,10 +4083,102 @@ hermes -p engineer -z <span class="s">"reply with one word: ok"</span>
                 </div>
             </section>
 
+            <!-- 18 EXAMPLE SIMULATION -->
+            <section class="slide" data-title="Simulation" data-steps="2">
+                <div class="eyebrow">
+                    <span class="idx">18 / 21</span> EXAMPLE SIMULATION
+                </div>
+                <div class="slide-body">
+                    <h2 class="slide-title">
+                        Two prompts, one
+                        <span class="accent">orchestrator</span>
+                    </h2>
+                    <p class="body-copy" style="margin-bottom: 18px">
+                        The <code>engineer</code> orchestrator scales the agent
+                        graph and workspace to match the ask — a single note
+                        spawns isolated builders, all speaking through one
+                        shared vault.
+                    </p>
+                    <div class="grid2">
+                        <div class="card">
+                            <span class="tag">Scenario 01 — Backend + Mobile</span>
+                            <h3 style="font-size: 15.5px">
+                                “Go endpoint, Android app, design the contract
+                                first”
+                            </h3>
+                            <div class="simflow reveal" data-step="1">
+                                <span class="sf">Engineer</span
+                                ><span class="sf-arrow">⇢</span
+                                ><span class="sf">Contract</span
+                                ><span class="sf-arrow">⇢</span
+                                ><span class="sf sf-2">backend</span>
+                                <span class="sf sf-2">app</span>
+                            </div>
+                            <div class="sim-row reveal" data-step="1">
+                                <span class="sim-badge">1 · 3 agents</span>
+                                <span class="sim-badge">1 · vault SSOT</span>
+                            </div>
+                            <div class="tree sim-tree reveal" data-step="2">
+projects/noteapp/<span class="c">  # scaled multi-service layout</span>
+├── <span class="g">backend</span>/    <span class="c"># Go endpoint service</span>
+└── <span class="g">app</span>/       <span class="c"># Android Compose app</span>
+vault-project/noteapp/
+├── <span class="t">30-api.md</span>     <span class="c"># contract the builders read</span>
+└── <span class="t">20-task-log.md</span> <span class="c"># AST dep graph</span></div>
+                            <p class="sim-note reveal" data-step="2">
+                                Contract settles in <code>30-api.md</code> first;
+                                <code>eng-noteapp-backend</code> and
+                                <code>eng-noteapp-app</code> build in parallel,
+                                then <code>gate.sh</code> + build report ships
+                                the APK.
+                            </p>
+                        </div>
+                        <div class="card">
+                            <span class="tag">Scenario 02 — Backend + Web</span>
+                            <h3 style="font-size: 15.5px">
+                                “Backend for the notes, dashboard to manage
+                                them”
+                            </h3>
+                            <div class="simflow reveal" data-step="1">
+                                <span class="sf">Engineer</span
+                                ><span class="sf-arrow">⇢</span
+                                ><span class="sf">backend</span>
+                                <span class="sf sf-2">fe/admin</span>
+                            </div>
+                            <div class="sim-row reveal" data-step="1">
+                                <span class="sim-badge">1 · fullstack</span>
+                                <span class="sim-badge">1 · Cloudflare</span>
+                            </div>
+                            <div class="tree sim-tree reveal" data-step="2">
+projects/noteapp/
+├── <span class="g">backend/</span>       <span class="c"># endpoint microservice</span>
+└── <span class="g">fe/</span>
+    └── <span class="g">admin/</span>      <span class="c"># Astro + RTK islands</span>
+vault-project/noteapp/
+├── <span class="t">30-api.md</span>     <span class="c"># populated by backend agent</span>
+└── <span class="t">20-task-log.md</span> <span class="c"># graphify AST checks</span></div>
+                            <p class="sim-note reveal" data-step="2">
+                                Backend agent writes the endpoints; frontend
+                                agent scaffolds the Astro dashboard off
+                                <code>30-api.md</code>, then
+                                <code>build-report.sh</code> provisions a
+                                Cloudflare route.
+                            </p>
+                        </div>
+                    </div>
+                    <p class="body-copy" style="margin-top: 14px; font-size: 15px">
+                        Both cases use exactly
+                        <span class="accent">3 agents</span> — one orchestrator,
+                        two ephemeral builders — kept in sync by the shared
+                        vault, then torn down clean when done.
+                    </p>
+                </div>
+            </section>
+
             <!-- 18 LIVE DEMO -->
             <section class="slide" data-title="Live Demo">
                 <div class="eyebrow">
-                    <span class="idx">18 / 20</span> LIVE DEMO
+                    <span class="idx">19 / 21</span> LIVE DEMO
                 </div>
                 <div class="slide-body">
                     <h2 class="slide-title">
@@ -4040,7 +4194,7 @@ hermes -p engineer -z <span class="s">"reply with one word: ok"</span>
             <!-- 18b GUARDRAILS -->
             <section class="slide" data-title="Guardrails">
                 <div class="eyebrow">
-                    <span class="idx">19 / 20</span> GUARDRAILS
+                    <span class="idx">20 / 21</span> GUARDRAILS
                 </div>
                 <div class="slide-body">
                     <h2 class="slide-title">
@@ -4080,7 +4234,7 @@ hermes -p engineer -z <span class="s">"reply with one word: ok"</span>
             <!-- 19 CONCLUSION -->
             <section class="slide" data-title="Conclusion">
                 <div class="eyebrow">
-                    <span class="idx">20 / 20</span> CONCLUSION
+                    <span class="idx">21 / 21</span> CONCLUSION
                 </div>
                 <div class="slide-body">
                     <h2 class="slide-title">

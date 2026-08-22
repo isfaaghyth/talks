@@ -810,6 +810,82 @@
                             <p>The post-build script that validates generated <code>app-debug.apk</code> binaries and ships them to Telegram as documents or directly onto devices over <code>adb connect</code> Wi-Fi.</p>
                         </div>
                     </div>
+
+                    <h2>Simulation: Two Example Runs</h2>
+                    <p>To make the flow concrete, let's trace two realistic prompts. Both use the exact same cast — a single <code>engineer</code> orchestrator that detects the shape of the ask, scaffolds a project tree, spawns <strong>two ephemeral builder subagents</strong>, and coordinates them through the shared vault before tearing everything down.</p>
+
+                    <h3>Scenario 1 — Backend + Android App</h3>
+                    <p><strong>Prompt:</strong> <code>"build endpoint for note app using go and develop android app using that endpoint, but let's design the contract first"</code></p>
+                    <div class="arch-grid">
+                        <div class="card-box">
+                            <span class="tag">Agent Structure</span>
+                            <h3>3 Agents</h3>
+                            <p>
+                                <code>engineer</code> (orchestrator) + <code>eng-noteapp-backend</code> (Go API) +
+                                <code>eng-noteapp-app</code> (Android). Orchestrator confirms Android-only vs KMP with the user, then scaffolds <code>projects/noteapp/{backend, app}</code>.
+                            </p>
+                        </div>
+                        <div class="card-box">
+                            <span class="tag">Contract-First</span>
+                            <h3>Vault as SSOT</h3>
+                            <p>
+                                The OpenAPI contract settles in <code>vault-project/noteapp/30-api.md</code> <strong>before</strong> any code is written. Both builders read it, then build in parallel; progress + AST dependency graphs land in <code>20-task-log.md</code>.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span>project layout</span>
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        </div>
+                        <pre><code>projects/noteapp/
+├── backend/          <span class="cmt"># Go endpoint service codebase</span>
+└── app/              <span class="cmt"># Android Jetpack Compose application</span>
+
+vault-project/noteapp/
+├── 30-api.md         <span class="cmt"># OpenAPI 3.0 spec + data models (SSOT)</span>
+└── 20-task-log.md    <span class="cmt"># progress + AST dep graph (graphify)</span></code></pre>
+                    </div>
+                    <p>Delivery: <code>gate.sh</code> validates, <code>build-report.sh</code> ships the APK/build report to Telegram, then the ephemeral worker contexts are disposed — the code in <code>projects/noteapp/</code> and docs in <code>vault-project/noteapp/</code> stay permanently.</p>
+
+                    <h3>Scenario 2 — Backend + Admin Web Dashboard</h3>
+                    <p><strong>Prompt:</strong> <code>"build endpoint for note app and develop frontend dashboard to manage all notes"</code></p>
+                    <div class="arch-grid">
+                        <div class="card-box">
+                            <span class="tag">Agent Structure</span>
+                            <h3>3 Agents</h3>
+                            <p>
+                                <code>engineer</code> (orchestrator) detects Full-Stack (Backend + Admin Web) and scaffolds <code>projects/noteapp/{backend, fe/admin}</code>. Builders: <code>eng-noteapp-backend</code> + <code>eng-noteapp-fe</code>.
+                            </p>
+                        </div>
+                        <div class="card-box">
+                            <span class="tag">Contract & Delivery</span>
+                            <h3>Shared Vault + Cloudflare</h3>
+                            <p>
+                                Backend agent populates <code>30-api.md</code>; frontend agent reads it and scaffolds an <strong>Astro</strong> dashboard with Redux Toolkit islands. <code>build-report.sh noteapp</code> then provisions a Cloudflare route (<code>noteapp.projects.ghiath.id</code>).
+                            </p>
+                        </div>
+                    </div>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span>project layout</span>
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        </div>
+                        <pre><code>projects/noteapp/
+├── backend/          <span class="cmt"># endpoint microservice</span>
+└── fe/
+    └── admin/        <span class="cmt"># Astro web dashboard (RTK state)</span>
+
+vault-project/noteapp/
+├── 30-api.md         <span class="cmt"># endpoints, written by the backend agent</span>
+└── 20-task-log.md    <span class="cmt"># rtk log compression + graphify AST checks</span></code></pre>
+                    </div>
+                    <p>Both builders use the <code>rtk</code> wrapper for log compression and <code>graphify</code> for AST structure checks. After delivery, <code>teardown-project.sh</code> disposes the ephemeral subagent profiles, leaving the workspace clean for the next iteration.</p>
+
+                    <div class="callout callout-tip">
+                        <div class="callout-title">🚀 The Recurring Pattern</div>
+                        No matter how the ask grows, the loop is the same: <strong>one orchestrator → two (or more) isolated builders → one shared vault as the source of truth → gate & deliver → dispose.</strong> This is the spine you'll see repeated through the rest of the codelab.
+                    </div>
                 </section>
 
                 <!-- STEP 2 -->
