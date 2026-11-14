@@ -1,0 +1,773 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Unlock agentic capabilities in your app with ML Kit GenAI</title>
+<style>
+@font-face { font-family: "GSans"; src: url("assets/2026-mlkit-genai-agentic/fonts/GoogleSansFlex-latin.woff2") format("woff2"); font-weight: 100 1000; font-display: block; }
+@font-face { font-family: "GSansCode"; src: url("assets/2026-mlkit-genai-agentic/fonts/GoogleSansCode-latin.woff2") format("woff2"); font-weight: 300 800; font-display: block; }
+
+:root {
+  --g: #22c55a;          /* primary green */
+  --g2: #12c24c;         /* bright fill green */
+  --b: #2f5fe0;          /* accent blue */
+  --red: #f2385a;
+  --orange: #f0a830;
+  --cmt: #8c8c8c;
+  --bg: #070707;
+  --txt: #f2f2f2;
+  --W: 1304px;
+  --H: 733px;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; background: #000; overflow: hidden; }
+body { font-family: "GSans", system-ui, sans-serif; color: var(--txt); -webkit-font-smoothing: antialiased; }
+
+#stage { position: absolute; left: 50%; top: 50%; width: var(--W); height: var(--H); transform-origin: 0 0; }
+.slide { position: absolute; inset: 0; width: var(--W); height: var(--H); background: var(--bg); overflow: hidden; display: none; }
+.slide.on { display: block; }
+
+/* bottom glow used by the deck template */
+.glow::before { content: ""; position: absolute; inset: 0; pointer-events: none;
+  background:
+    radial-gradient(70% 30% at 50% 102%, rgba(28,105,22,.36), transparent 90%),
+    radial-gradient(36% 32% at 0% 100%, rgba(40,95,95,.42), transparent 90%),
+    radial-gradient(36% 32% at 100% 100%, rgba(38,105,125,.42), transparent 90%);
+}
+.glow-cover::before { content: ""; position: absolute; inset: 0; pointer-events: none;
+  background:
+    radial-gradient(40% 45% at -2% 72%, rgba(30,150,70,.40), transparent 80%),
+    radial-gradient(35% 30% at 10% 105%, rgba(40,90,160,.35), transparent 85%);
+}
+.glow-corner::before { content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(40% 50% at 100% 100%, rgba(30,140,70,.38), transparent 80%),
+              radial-gradient(30% 35% at 75% 105%, rgba(40,90,160,.28), transparent 85%);
+}
+.tag { position: absolute; left: 46px; top: 694px; font-size: 12px; font-weight: 500; color: #e8e8e8; letter-spacing: .1px; }
+.abs { position: absolute; }
+.title { position: absolute; left: 0; right: 0; top: 46px; text-align: center; font-size: 51px; font-weight: 500; letter-spacing: -.3px; line-height: 1.2; }
+.center { text-align: center; }
+.g { color: var(--g); }
+.gradtext { background: linear-gradient(90deg, #22c55a 0%, #1fae6a 55%, #2a4fc8 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+
+/* gradient-border box */
+.gb { border: 2px solid transparent; border-radius: 26px;
+  background: linear-gradient(var(--fill, #0a0a0a), var(--fill, #0a0a0a)) padding-box,
+              linear-gradient(150deg, #27c95c 0%, #22c55a 62%, #2a55d8 100%) border-box; }
+.gb.thin { border-width: 1px; }
+.gbar { position: absolute; border-radius: 12px; background: linear-gradient(170deg, #10c94a 0%, #14b85a 40%, #1a8a7a 72%, #2140b8 100%); }
+.gbar svg { position: absolute; left: 50%; top: 50%; width: 82px; height: 82px; transform: translate(-50%,-50%); }
+
+/* step visibility */
+[data-from], [data-at] { transition: opacity .35s ease; }
+.hidden-step { opacity: 0 !important; pointer-events: none; }
+.dim { transition: opacity .35s ease, color .35s ease, border-color .35s ease; }
+
+/* code */
+.codebox { position: absolute; left: 48px; top: 143px; width: 1209px; height: 540px; background: #000; border-radius: 26px; }
+.code { position: absolute; left: 107px; font-family: "GSansCode", ui-monospace, monospace; white-space: pre; color: #f2f2f2; }
+.code .l { display: block; height: var(--lh); line-height: var(--lh); }
+.k { color: #36c35f; } .s { color: var(--orange); } .r { color: var(--red); } .c { color: var(--cmt); } .cg { color: #36c35f; }
+.hl { position: absolute; left: 0; width: var(--W); background: rgba(150,150,150,.30); }
+.fade { opacity: .14; }
+
+/* diagram boxes */
+.box { position: absolute; border: 2px solid var(--g); border-radius: 12px; background: #000; }
+.box .t { position: absolute; left: 20px; font-size: 26px; font-weight: 500; line-height: 1.25; }
+.arrow { position: absolute; height: 2px; background: var(--g); }
+.arrow.r::after, .arrow.l::after { content: ""; position: absolute; top: -6px; border: 7px solid transparent; }
+.arrow.r::after { right: -2px; border-left: 12px solid var(--g); border-right: 0; }
+.arrow.l::after { left: -2px; border-right: 12px solid var(--g); border-left: 0; }
+.arrow.blue { background: #3f72f0; } .arrow.blue.r::after { border-left-color: #3f72f0; }
+
+/* cards */
+.card { position: absolute; border-radius: 14px; background: #131416; border: 1px solid #2b2c2f; }
+.ov { position: absolute; top: 218px; width: 281px; height: 294px; border-radius: 10px; border: 1px solid #3c3c3c; background: transparent; }
+.ov .n { position: absolute; left: 26px; top: 57px; width: 39px; height: 39px; border-radius: 50%; border: 1.5px solid #8a8a8a; color: #9a9a9a; font-size: 19px; display: flex; align-items: center; justify-content: center; }
+.ov .lb { position: absolute; left: 27px; top: 118px; font-size: 26px; font-weight: 600; color: #8a8a8a; line-height: 1.3; }
+.ov.act { background: #000; border: 1px solid transparent;
+  background: linear-gradient(#000,#000) padding-box, linear-gradient(200deg, #2a55d8 0%, #333 45%, #333 60%, #22c55a 100%) border-box; }
+.ov.act .n { border-color: #fff; color: #fff; }
+.ov.act .lb { color: #fff; }
+.ov.plain .n { border-color: #fff; color: #fff; } .ov.plain .lb { color: #fff; }
+
+/* UI chrome */
+#hud { position: fixed; right: 14px; bottom: 10px; font: 12px/1 system-ui, sans-serif; color: #888; opacity: 0; transition: opacity .3s; user-select: none; }
+body:hover #hud { opacity: 1; }
+#bar { position: fixed; left: 0; bottom: 0; height: 3px; background: var(--g); transition: width .25s; }
+body.shot #hud, body.shot #bar { display: none; }
+body.shot * { transition: none !important; }
+
+@media print {
+  @page { size: 1304px 733px; margin: 0; }
+  html, body { overflow: visible; height: auto; background: none; }
+  #stage { position: static; transform: none !important; }
+  .slide { display: block !important; position: relative; page-break-after: always; break-after: page; }
+  #hud, #bar { display: none; }
+}
+</style>
+</head>
+<body>
+<!-- shared SVG gradients -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="gs" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#27c95c"/><stop offset=".6" stop-color="#22c55a"/><stop offset="1" stop-color="#2a55d8"/>
+    </linearGradient>
+    <linearGradient id="gsv" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#27c95c"/><stop offset=".65" stop-color="#22c55a"/><stop offset="1" stop-color="#2a55d8"/>
+    </linearGradient>
+    <linearGradient id="gfill" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#3cb043"/><stop offset=".55" stop-color="#2a9a52"/><stop offset=".85" stop-color="#2a6aa8"/><stop offset="1" stop-color="#3a3ad0"/>
+    </linearGradient>
+    <path id="star" d="M50 0 C50 27.6 72.4 50 100 50 C72.4 50 50 72.4 50 100 C50 72.4 27.6 50 0 50 C27.6 50 50 27.6 50 0Z"/>
+  </defs>
+</svg>
+
+<div id="stage">
+
+<!-- 1. Android Dev Summit bumper -->
+<section class="slide" data-name="Android Dev Summit" style="background:#141214">
+  <div class="abs" style="inset:0;background:radial-gradient(45% 35% at 92% -5%, rgba(60,150,110,.55), transparent 75%), radial-gradient(35% 30% at 70% -8%, rgba(40,120,60,.45), transparent 80%)"></div>
+  <div class="abs" style="left:302px;top:282px;font-size:92px;font-weight:500;letter-spacing:-2.5px;line-height:88px">
+    Android <svg viewBox="0 0 120 72" style="width:112px;height:68px;margin-left:12px;vertical-align:-2px"><path d="M8 70 A52 52 0 0 1 112 70 Z" fill="#3ddc84" style="fill:#34c35a"/><path d="M30 26 L20 6" stroke="#34c35a" stroke-width="7" stroke-linecap="round"/><path d="M90 26 L100 6" stroke="#34c35a" stroke-width="7" stroke-linecap="round"/><circle cx="35" cy="48" r="5.5" fill="#141214"/><circle cx="85" cy="48" r="5.5" fill="#141214"/></svg><br>Dev Summit
+  </div>
+</section>
+
+<!-- 2. Title -->
+<section class="slide glow-cover" data-name="Title">
+  <div class="abs" style="right:44px;top:42px;font-size:24px;font-weight:500;line-height:26px;letter-spacing:-.5px">Android <svg viewBox="0 0 120 72" style="width:34px;height:20px;vertical-align:-1px"><path d="M8 70 A52 52 0 0 1 112 70 Z" fill="#34c35a"/><path d="M30 26 L20 6" stroke="#34c35a" stroke-width="8" stroke-linecap="round"/><path d="M90 26 L100 6" stroke="#34c35a" stroke-width="8" stroke-linecap="round"/><circle cx="35" cy="48" r="6" fill="#0a0a0a"/><circle cx="85" cy="48" r="6" fill="#0a0a0a"/></svg><br>Dev Summit</div>
+  <div class="abs" style="left:46px;top:108px;font-size:90px;line-height:90px;letter-spacing:-1px;font-weight:500">Unlock agentic<br>capabilities in your app<br>with ML Kit GenAI</div>
+  <img class="abs" src="assets/2026-mlkit-genai-agentic/img/jolanda-verhoef.jpg" alt="Jolanda Verhoef" style="left:45px;top:455px;width:182px;height:182px;border-radius:50%;object-fit:cover">
+  <div class="abs" style="left:275px;top:498px;font-size:27px;font-weight:600">Jolanda Verhoef</div>
+  <div class="abs" style="left:275px;top:534px;font-size:21px;line-height:27px">Android Developer Relations</div>
+  <img class="abs" src="assets/2026-mlkit-genai-agentic/img/victoria-lestari.jpg" alt="Victoria Lestari" style="left:668px;top:455px;width:182px;height:182px;border-radius:50%;object-fit:cover">
+  <div class="abs" style="left:897px;top:498px;font-size:27px;font-weight:600">Victoria Lestari</div>
+  <div class="abs" style="left:897px;top:534px;font-size:21px;line-height:27px">Android AICore Engineering</div>
+</section>
+
+<!-- 3. ML Kit GenAI -->
+<section class="slide glow" data-name="ML Kit GenAI">
+  <div class="title">ML Kit GenAI</div>
+  <div class="abs gb" style="left:56px;top:195px;width:566px;height:368px;border-radius:40px"></div>
+  <svg class="abs" viewBox="0 0 566 368" style="left:56px;top:195px;width:566px;height:368px" fill="none" stroke="#3fbf4f" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <!-- row 1 -->
+    <g transform="translate(120,62)"><rect x="0" y="12" width="44" height="56" rx="4"/><path d="M10 28h4M20 28h16M10 40h4M20 40h16M10 52h4M20 52h12"/><use href="#star" transform="translate(38,0) scale(.3)" fill="#3fbf4f" stroke="none"/></g>
+    <g transform="translate(250,62)"><path d="M2 60 L20 10 L38 60 M9 42h22"/><path d="M28 64 l8 8 l14 -16"/><use href="#star" transform="translate(40,0) scale(.3)" fill="#3fbf4f" stroke="none"/></g>
+    <g transform="translate(380,62)"><use href="#star" transform="translate(0,6) scale(.3)" fill="#3fbf4f" stroke="none"/><path d="M14 74 L64 22 l8 8 L22 82 l-10 2 z"/></g>
+    <!-- row 2 -->
+    <g transform="translate(70,204)"><rect x="0" y="10" width="56" height="56" rx="4"/><path d="M8 58 l14-16 10 10 8-8 10 14z"/><use href="#star" transform="translate(38,-6) scale(.3)" fill="#3fbf4f" stroke="none"/></g>
+    <g transform="translate(195,204)"><path d="M6 30v26M18 18v50M30 38v16"/><use href="#star" transform="translate(26,-6) scale(.3)" fill="#3fbf4f" stroke="none"/></g>
+    <g transform="translate(316,204)"><circle cx="30" cy="40" r="28"/><path d="M2 40h56M30 12c-12 14-12 42 0 56M30 12c12 14 12 42 0 56"/><use href="#star" transform="translate(40,-6) scale(.3)" fill="#3fbf4f" stroke="none"/></g>
+    <g transform="translate(450,204)"><circle cx="24" cy="30" r="20"/><path d="M38 44 l22 22"/><use href="#star" transform="translate(36,-6) scale(.3)" fill="#3fbf4f" stroke="none"/></g>
+  </svg>
+  <div class="abs center" style="left:56px;width:566px;top:587px;font-size:24px">High-level tasks</div>
+
+  <div class="abs gb" style="left:682px;top:195px;width:566px;height:368px;border-radius:40px" data-at="0"></div>
+  <svg class="abs" viewBox="0 0 100 100" style="left:937px;top:350px;width:56px;height:56px" data-at="0"><use href="#star" fill="#3fbf4f"/></svg>
+  <div class="abs" style="left:682px;top:195px;width:566px;height:368px;border-radius:40px;background:linear-gradient(160deg,#3db043 0%,#35a94c 40%,#2a8e6e 70%,#2b5bb0 88%,#3c33c8 100%)" data-from="1"></div>
+  <svg class="abs" viewBox="0 0 100 100" style="left:922px;top:336px;width:86px;height:86px" data-from="1"><use href="#star" fill="#1e1e22"/></svg>
+  <div class="abs center" style="left:682px;width:566px;top:587px;font-size:24px">Gemini Nano Foundation Model</div>
+  <div class="tag">#AndroidDevSummit</div>
+</section>
+
+<!-- 4. Examples: on-device vs cloud -->
+<section class="slide" data-name="On-device and cloud examples">
+  <svg class="abs" viewBox="0 0 100 60" style="left:280px;top:73px;width:96px;height:58px" fill="none" stroke="url(#gs)" stroke-width="4" stroke-linecap="round"><path d="M4 57 A46 46 0 0 1 96 57 Z"/><path d="M26 18 L16 3M74 18 L84 3"/><circle cx="30" cy="40" r="3" fill="#27c95c" stroke="none"/><circle cx="70" cy="40" r="3" fill="#27c95c" stroke="none"/></svg>
+  <svg class="abs" viewBox="0 0 90 62" style="left:937px;top:72px;width:88px;height:60px" fill="none" stroke="url(#gs)" stroke-width="4"><path d="M22 58 H70 A17 17 0 0 0 68 24 A24 24 0 0 0 22 22 A18 18 0 0 0 22 58 Z"/></svg>
+  <div class="abs gb" style="left:48px;top:162px;width:559px;height:474px;border-radius:46px;--fill:#070707"></div>
+  <div class="abs gb" style="left:702px;top:162px;width:559px;height:474px;border-radius:46px;--fill:#070707"></div>
+  <img class="abs" src="assets/2026-mlkit-genai-agentic/img/ex1-left.jpg" alt="" style="left:84px;top:190px;width:486px;height:410px" data-at="0">
+  <img class="abs" src="assets/2026-mlkit-genai-agentic/img/ex1-right.jpg" alt="" style="left:762px;top:186px;width:445px;height:412px" data-at="0">
+  <img class="abs" src="assets/2026-mlkit-genai-agentic/img/ex2-left.jpg" alt="" style="left:84px;top:190px;width:486px;height:410px" data-from="1">
+  <img class="abs" src="assets/2026-mlkit-genai-agentic/img/ex2-right.jpg" alt="" style="left:762px;top:186px;width:445px;height:412px" data-from="1">
+  <div class="tag">#AndroidDevSummit</div>
+</section>
+
+<!-- 5. Gemini Nano 4 -->
+<section class="slide glow" data-name="Gemini Nano 4">
+  <div class="abs center" style="left:0;right:0;top:194px;font-size:90px;line-height:98px;font-weight:500;letter-spacing:-.5px">Gemini Nano 4 is<br><span class="gradtext">available today</span> on<br>select flagship devices</div>
+  <div class="tag">#AndroidDevSummit</div>
+</section>
+
+<!-- 6. 100M+ -->
+<section class="slide glow" data-name="100M+">
+  <div class="abs center" style="left:0;right:0;top:162px;font-size:270px;line-height:270px;font-weight:350;letter-spacing:0"><span style="background:linear-gradient(90deg,#1fc64d 0%,#21b45a 45%,#1f8a78 75%,#2547c0 100%);-webkit-background-clip:text;background-clip:text;color:transparent">100M+</span></div>
+  <div class="abs center" style="left:0;right:0;top:436px;font-size:36px;font-weight:500">Android devices with Gemini Nano 4 in early 2027</div>
+  <div class="tag">#AndroidDevSummit</div>
+</section>
+
+<!-- 7. Agentic AI -->
+<section class="slide glow" data-name="Agentic AI">
+  <div class="abs center" style="left:0;right:0;top:194px;font-size:90px;line-height:98px;font-weight:500;letter-spacing:-.5px"><span class="gradtext">Agentic AI</span><br>can plan and execute<br>complex tasks in your app.</div>
+  <div class="tag">#AndroidDevSummit</div>
+</section>
+
+<!-- 8. Gemini Nano hub -->
+<section class="slide" data-name="Gemini Nano capabilities">
+  <svg class="abs" viewBox="0 0 1304 733" style="left:0;top:0;width:1304px;height:733px" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <g stroke="#666" stroke-width="1.6" stroke-dasharray="2 5">
+      <path d="M440 240 L383 194" data-from="1"/>
+      <path d="M440 505 L387 548" data-from="2"/>
+      <path d="M866 240 L922 194" data-from="3"/>
+      <path d="M866 505 L922 548" data-from="4"/>
+    </g>
+    <g data-from="1" stroke="url(#gs)" stroke-width="3.2"><path d="M292 158 L332 136 L372 158 L332 180 Z"/><path d="M292 172 L332 194 L372 172" stroke="#27c95c"/><path d="M292 186 L332 208 L372 186" stroke="#27c95c"/></g>
+    <g data-from="2" stroke="url(#gs)" stroke-width="3.2"><path d="M306 582 H356 A17 17 0 0 0 354 548 A24 24 0 0 0 308 545 A18 18 0 0 0 306 582 Z"/></g>
+    <g data-from="3" stroke="url(#gsv)" stroke-width="3.2"><path d="M940 137 H1002 V198 H980 L970 209 L960 198 H940 Z"/><path d="M961 157 A10 10 0 1 1 975 166 C971 168 970 171 970 176" /><circle cx="970" cy="187" r="1.6" fill="#27c95c"/></g>
+    <g data-from="4" stroke="url(#gsv)" stroke-width="3.2"><circle cx="953" cy="532" r="7.5"/><circle cx="992" cy="532" r="7.5"/><circle cx="953" cy="589" r="7.5" stroke="#2a55d8"/><path d="M953 540 V581 M992 540 C992 560 955 556 953 576"/></g>
+  </svg>
+  <div class="abs gb" style="left:438px;top:234px;width:431px;height:277px;border-radius:30px"></div>
+  <div class="abs center" style="left:438px;width:431px;top:347px;font-size:34px;font-weight:500">Gemini Nano</div>
+  <div class="tag">#AndroidDevSummit</div>
+</section>
+
+<!-- 9. Function Calling -->
+<section class="slide glow" data-name="Function Calling">
+  <div class="abs center" style="left:0;right:0;top:194px;font-size:90px;line-height:98px;font-weight:500;letter-spacing:-.5px"><span class="gradtext">Function Calling</span><br><span data-from="1">is available in AICore<br>Developer Preview</span></div>
+  <div class="tag">#AndroidDevSummit</div>
+</section>
+
+<!-- 10. Agentic flow / Direct access -->
+<section class="slide glow-corner" data-name="Agentic flow and Direct access" id="apis1">
+  <!-- card markup is reused by JS template (see apiCards) -->
+</section>
+
+<!-- 11. JETPACKER -->
+<section class="slide glow-corner" data-name="Jetpacker">
+  <img class="abs" src="assets/2026-mlkit-genai-agentic/img/jetpacker-wordmark.jpg" alt="JETPACKER" style="left:118px;top:158px;width:430px;height:52px">
+  <img class="abs" src="assets/2026-mlkit-genai-agentic/img/qr-jetpacker.jpg" alt="QR code to goo.gle/jetpacker" style="left:188px;top:218px;width:292px;height:292px">
+  <div class="abs center" style="left:118px;width:440px;top:520px;font-size:30px;font-weight:500">goo.gle/jetpacker</div>
+  <img class="abs" src="assets/2026-mlkit-genai-agentic/img/jetpacker-phone.jpg" alt="Jetpacker app screenshot" style="left:812px;top:38px;width:310px;height:648px">
+  <div class="tag">#AndroidDevSummit</div>
+</section>
+
+<!-- 12. Jetpacker empowered by -->
+<section class="slide glow" data-name="Jetpacker is empowered by ML Kit GenAI">
+  <svg class="abs" viewBox="0 0 70 70" style="left:635px;top:128px;width:70px;height:70px" fill="none" stroke="url(#gs)" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"><path d="M66 4 C50 4 36 12 26 28 L42 44 C58 34 66 20 66 4 Z"/><circle cx="48" cy="22" r="4" fill="#27c95c" stroke="none"/><path d="M26 28 L14 26 L4 36 L18 38 M42 44 L44 56 L34 66 L32 52"/><path d="M18 46 C12 48 8 56 6 64 C14 62 22 58 24 52"/></svg>
+  <div class="abs center" style="left:0;right:0;top:252px;font-size:24px;font-weight:500">The Jetpacker app is</div>
+  <div class="abs center" style="left:0;right:0;top:316px;font-size:47px;line-height:58px;font-weight:500;letter-spacing:-.2px">Empowered by <span class="g">ML Kit GenAI</span> and <span class="g">AICore</span>,<br>which provides on-device LLM inference.</div>
+  <div class="tag">#AndroidDevSummit</div>
+</section>
+
+<!-- 13. Demo 1 -->
+<section class="slide" data-name="Demo: single-step expense" style="background:#000">
+  <img class="abs" src="assets/2026-mlkit-genai-agentic/img/demo-1.jpg" alt="Demo screenshot: expense added through the in-app assistant" style="left:0;top:0;width:1304px;height:733px">
+</section>
+
+<!-- 14. Single-step function call diagram -->
+<section class="slide glow" data-name="Single-step function call">
+  <svg class="abs wave" style="left:94px;top:132px;width:68px;height:76px" viewBox="0 0 68 76"></svg>
+  <div class="arrow r" style="left:205px;top:168px;width:155px"></div>
+  <div class="box" style="left:362px;top:112px;width:536px;height:116px" data-at="0 1">
+    <div class="t" style="top:20px">“Please add 45 dollars to my expenses<br>for the airport taxi to Mountain View.”</div>
+  </div>
+  <div class="box" style="left:362px;top:112px;width:536px;height:257px" data-from="2">
+    <div class="t" style="top:20px">“Please add 45 dollars to my expenses<br>for the airport taxi to Mountain View.”</div>
+    <div class="abs" style="left:22px;right:32px;top:106px;height:2px;background:#1d6b33"></div>
+    <div class="t" style="top:128px">Tools</div>
+    <div class="abs" style="left:22px;top:172px;font-size:17px;line-height:22px">• &nbsp;get trip budget &nbsp;&nbsp;• &nbsp;get itinerary<br>• &nbsp;add an expense &nbsp;&nbsp;• &nbsp;get event details</div>
+  </div>
+  <div data-from="1">
+    <div class="arrow r" style="left:898px;top:168px;width:182px"></div>
+    <div class="gbar" style="left:1081px;top:100px;width:146px;height:535px"><svg viewBox="0 0 100 100"><use href="#star" fill="#0a0a0a"/></svg></div>
+  </div>
+  <div class="arrow l" style="left:898px;top:502px;width:183px" data-at="1 3"></div>
+  <div class="box" style="left:362px;top:465px;width:536px;height:77px" data-at="1"><div class="t" style="top:20px">“Sorry, I can't help with that.”</div></div>
+  <div class="box" style="left:362px;top:420px;width:536px;height:168px" data-from="3">
+    <div class="t" style="top:20px">Tool call: add an expense</div>
+    <div class="abs" style="left:22px;right:32px;top:72px;height:2px;background:#1d6b33"></div>
+    <div class="abs" style="left:20px;top:95px;font-size:18px;line-height:22px">amount: 45 dollars<br>description: Taxi to Mountain View</div>
+  </div>
+  <div class="tag">#AndroidDevSummit</div>
+</section>
+
+<!-- 15. Android MCP diagram -->
+<section class="slide glow" data-name="Android MCP">
+  <div class="title">Android MCP</div>
+  <div class="abs" style="left:86px;top:187px;width:387px;height:311px;border:2px solid #4a4c50;border-radius:10px;background:#0c0c0d;overflow:hidden">
+    <div style="height:37px;background:#5f6368;font-size:17px;font-weight:600;padding:9px 12px">Your App</div>
+  </div>
+  <div class="abs" style="left:651px;top:187px;width:571px;height:311px;border:2px solid #3a3c40;border-radius:10px;background:#0c0c0d;overflow:hidden">
+    <div style="height:37px;background:#12c24c;font-size:17px;font-weight:600;padding:9px 12px">Android OS</div>
+  </div>
+  <div class="abs center mcpi" style="top:252px" data-from="1">Services</div>
+  <div class="abs center mcpi" style="top:333px" data-from="2">Data</div>
+  <div class="abs center mcpi" style="top:413px" data-from="2">Actions</div>
+  <svg class="abs" viewBox="0 0 126 200" style="left:498px;top:250px;width:126px;height:200px" data-from="3" fill="#12c24c"><path d="M2 12h92V2l30 20-30 20V32H2z"/><path d="M2 92h92V82l30 20-30 20v-10H2z"/><path d="M2 172h92v-10l30 20-30 20v-10H2z"/></svg>
+  <div class="abs center" style="left:686px;top:252px;width:500px;height:219px;border:2px solid var(--g);border-radius:8px;background:#06200d" data-from="3">
+    <div style="margin-top:80px;font-size:28px;font-weight:600">Registry</div>
+    <div style="font-size:14px;color:#d8d8d8;margin-top:4px">Central capability &amp; service repository</div>
+  </div>
+  <div class="abs center" style="left:0;right:0;top:548px;font-size:27px;font-weight:500" data-from="4">This allows users to complete tasks through <span class="g">agents</span> and <span class="g">system-level interactions</span>.</div>
+  <div class="tag">#AndroidDevSummit</div>
+  <style>.mcpi{left:126px;width:300px;height:58px;border:2px solid #2aa84a;border-radius:6px;background:#141517;font-size:25px;font-weight:500;line-height:54px}</style>
+</section>
+
+<!-- 16. Android MCP code -->
+<section class="slide glow" data-name="Android MCP: AppFunction">
+  <div class="title">Android MCP</div>
+  <div class="codebox"></div>
+  <div class="code" style="top:192px;font-size:21.1px;--lh:25px"><span class="l c">/**</span><span class="l c"> * Adds an expense to a trip.</span><span class="l c"> *</span><span class="l c"> * @param tripId Identifier of the trip (e.g., "paris-2026").</span><span class="l c"> * @param amount Expense amount in dollars.</span><span class="l c"> * @param description Short description of what the expense was for.</span><span class="l c"> */</span><span class="l"><span class="k">@AppFunctionDeclaration</span>(isDescribedByKDoc = true)</span><span class="l"><span class="k">@AppFunctionAccessLevel</span>(</span><span class="l">  level = <span class="r">ACCESS_LEVEL_SELF</span>,</span><span class="l">  isCompatEnforcementEnabled = true,</span><span class="l">)</span><span class="l"><span class="k">suspend fun</span> addExpense(tripId: String, amount: Double, description: String) {</span><span class="l c">  // Save expense to local DB / repository...</span><span class="l">}</span></div>
+  <div class="tag">#AndroidDevSummit</div>
+</section>
+
+<!-- 17. Agentic workflow building blocks -->
+<section class="slide glow" data-name="Agentic workflow building blocks">
+  <div class="title">Agentic workflow</div>
+  <div class="abs center bb" style="left:38px;width:300px;top:262px">
+    <div class="bbi"><svg viewBox="0 0 80 80" style="width:80px;height:80px" fill="none" stroke="url(#gs)" stroke-width="3.2" stroke-linejoin="round"><path d="M50 8 A20 20 0 0 0 30 34 L4 60 A6 6 0 0 0 14 70 L40 44 A20 20 0 0 0 66 24 L56 34 L44 30 L40 18 Z"/></svg></div>
+    <div class="bbn">AppFunctions</div><div class="bbd">registers the tools</div>
+  </div>
+  <div class="abs center bb" style="left:347px;width:300px;top:262px" data-from="1">
+    <div class="bbi"><svg viewBox="0 0 100 64" style="width:98px;height:62px" fill="none" stroke="url(#gs)" stroke-width="3.2" stroke-linecap="round"><path d="M4 60 A46 46 0 0 1 96 60 Z"/><path d="M26 20 L16 4M74 20 L84 4"/><circle cx="30" cy="42" r="3.4" fill="#27c95c" stroke="none"/><circle cx="70" cy="42" r="3.4" fill="#27c95c" stroke="none"/></svg></div>
+    <div class="bbn">Agent</div><div class="bbd">holds the agent config</div>
+  </div>
+  <div class="abs center bb" style="left:656px;width:300px;top:262px" data-from="2">
+    <div class="bbi"><svg viewBox="0 0 100 100" style="width:78px;height:78px"><use href="#star" fill="none" stroke="url(#gsv)" stroke-width="3.6"/></svg></div>
+    <div class="bbn">AgentRunner</div><div class="bbd">manages execution<br>sessions</div>
+  </div>
+  <div class="abs center bb" style="left:966px;width:300px;top:262px" data-from="3">
+    <div class="bbi"><svg viewBox="0 0 80 72" style="width:80px;height:72px" fill="none" stroke="url(#gs)" stroke-width="3.2" stroke-linejoin="round"><path d="M4 4 H76 V54 H18 L6 66 Z"/><path d="M18 20 H62 M18 31 H62 M18 42 H48" stroke="#27c95c"/></svg></div>
+    <div class="bbn">AgentEvent</div><div class="bbd">emitted during execution</div>
+  </div>
+  <div class="tag">#AndroidDevSummit</div>
+  <style>.bbi{height:92px;display:flex;align-items:flex-end;justify-content:center}.bbn{font-family:"GSansCode",monospace;color:#36c35f;font-size:26px;font-weight:500;margin-top:28px;line-height:34px}.bbd{font-size:21px;line-height:24px}</style>
+</section>
+
+<!-- 18. ML Kit GenAI - Function Calling -->
+<section class="slide glow" data-name="ML Kit GenAI: check Function Calling support">
+  <div class="title">ML Kit GenAI - Function Calling</div>
+  <div class="codebox"></div>
+  <div class="code" style="top:185px;font-size:20.9px;--lh:38.5px"><span class="l"><span class="k">val</span> model = Generation.getClient()</span><span class="l"><span class="k">val</span> features = model.getAvailableFeatures()</span><span class="l"><span class="k">if</span>(<span class="r">FUNCTION_CALLING</span> <span class="k">in</span> features) {</span><span class="l c">  // Device is supported!</span><span class="l">} <span class="k">else</span> {</span><span class="l c">  // Graceful fallback</span><span class="l">}</span></div>
+  <div class="tag">#AndroidDevSummit</div>
+</section>
+
+<!-- 19. Agentic workflow code build -->
+<section class="slide glow" data-name="Agentic workflow: single turn">
+  <div class="title">Agentic workflow</div>
+  <div class="codebox"></div>
+  <div class="code" style="top:180px;font-size:21.6px;--lh:27px"><span class="l"><span class="k">if</span>(<span class="r">FUNCTION_CALLING</span> <span class="k">in</span> features) {</span><span class="l" style="height:13px"></span><span class="l cg">  // 1. Build the agent configuration</span><span class="l">  val agent = Agent.builder()</span><span class="l" data-from="1">    .setName("Assistant")</span><span class="l" data-from="2">    .setInstructions("You are a helpful on-device assistant.")</span><span class="l" data-from="3">    .enableAppFunctions()</span><span class="l" data-from="3">    .build()</span><span class="l"></span><span class="l cg" data-from="4">  // 2. Initialize the runner</span><span class="l" data-from="4">  val runner = AgentRunner(agent)</span><span class="l"></span><span class="l cg" data-from="5">  // 3. Create your prompt</span><span class="l" data-from="5">  val prompt = content { text(userPrompt)}</span><span class="l"></span><span class="l cg" data-from="6">  // 4. Start the agent</span><span class="l" data-from="6">  runner.runSingleTurnAsync(prompt)<span data-from="7">.textTokens().collect { responseMessage += it }</span></span></div>
+  <div class="code" style="top:650px;font-size:21.6px;--lh:27px"><span class="l">}</span></div>
+  <div class="tag">#AndroidDevSummit</div>
+</section>
+
+<!-- 20. Overview: single-step -> multi-step -->
+<section class="slide glow" data-name="Overview: multi-step">
+  <div class="title">Overview</div>
+  <div class="ov act" style="left:45px" data-cls="1:-act"><div class="n">1</div><div class="lb">Single-Step</div></div>
+  <div class="ov act" style="left:354px" data-from="1"><div class="n">2</div><div class="lb">Multi-Step</div></div>
+  <div class="tag">#AndroidDevSummit</div>
+</section>
+
+<!-- 21. Demo 2 -->
+<section class="slide" data-name="Demo: multi-step expense" style="background:#000">
+  <img class="abs" src="assets/2026-mlkit-genai-agentic/img/demo-2.jpg" alt="Demo screenshot: museum ticket added as an expense" style="left:0;top:0;width:1304px;height:733px">
+</section>
+
+<!-- 22. Multi-step tool calls (museum) -->
+<section class="slide glow" data-name="Multi-step tool calls">
+  <svg class="abs wave" style="left:94px;top:84px;width:68px;height:76px" viewBox="0 0 68 76"></svg>
+  <div class="arrow r" style="left:205px;top:120px;width:155px"></div>
+  <div class="box" style="left:362px;top:45px;width:472px;height:152px">
+    <div class="abs" style="left:18px;top:12px;font-size:20px;line-height:23px;font-weight:500">“Add the admission ticket for our museum visit<br>to my expenses.”</div>
+    <div class="abs" style="left:18px;right:22px;top:69px;height:2px;background:#1d6b33"></div>
+    <div class="abs" style="left:18px;top:78px;font-size:20px;font-weight:500">Tools</div>
+    <div class="abs" style="left:20px;top:105px;font-size:14px;line-height:17px">• &nbsp;get trip budget &nbsp;&nbsp;• &nbsp;get itinerary<br>• &nbsp;add an expense &nbsp;&nbsp;• &nbsp;get event details</div>
+  </div>
+  <div class="arrow r" style="left:834px;top:120px;width:244px"></div>
+  <div class="gbar" style="left:1081px;top:45px;width:146px;height:590px"><svg viewBox="0 0 100 100"><use href="#star" fill="#0a0a0a"/></svg></div>
+
+  <div class="box mb" style="top:207px;height:46px"><div class="mt">Tool call: get itinerary</div></div>
+  <div class="arrow l" style="left:834px;top:229px;width:247px"></div>
+  <div class="box mb" style="top:263px;height:72px"><div class="mt">Tool response: &nbsp;id: "ads_5"<br><span style="padding-left:132px">title: “SFMOMA Museum Visit”</span></div></div>
+  <div class="arrow r" style="left:834px;top:297px;width:244px"></div>
+
+  <div data-from="1">
+    <div class="box mb" style="top:345px;height:65px"><div class="mt">Tool call: &nbsp;get event details<br><span style="padding-left:81px">eventId: “ads_5”</span></div></div>
+    <div class="arrow l" style="left:834px;top:376px;width:247px"></div>
+    <div class="box mb" style="top:420px;height:66px"><div class="mt">Tool response: price 25 dollars<br>..</div></div>
+    <div class="arrow r" style="left:834px;top:451px;width:244px"></div>
+  </div>
+  <div data-from="2">
+    <div class="box mb" style="top:496px;height:83px"><div class="mt">Tool call: &nbsp;add an expense<br><span style="padding-left:81px">amount: 25</span><br><span style="padding-left:81px">title: “SFMoma Museum visit”</span></div></div>
+    <div class="arrow l" style="left:834px;top:536px;width:247px"></div>
+    <div class="box mb" style="top:589px;height:46px"><div class="mt">Tool response: success</div></div>
+    <div class="arrow r" style="left:834px;top:610px;width:244px"></div>
+  </div>
+  <div class="tag">#AndroidDevSummit</div>
+  <style>.mb{left:362px;width:472px}.mt{position:absolute;left:18px;top:9px;font-size:18px;line-height:21.5px;font-weight:500}</style>
+</section>
+
+<!-- 23. Multi-step function calling sequence -->
+<section class="slide glow" data-name="Multi-step function calling">
+  <div class="title">Multi-step function calling</div>
+  <div class="abs" style="left:292px;top:187px;width:18px;height:473px;background:#3a3c41"></div>
+  <div class="abs" style="left:996px;top:187px;width:18px;height:473px;background:#3a3c41"></div>
+  <div class="abs" style="left:184px;top:378px;width:68px;height:53px;border:2px solid #2a5bd8;border-radius:4px;overflow:hidden"><div style="height:9px;background:#22c55a"></div></div>
+  <svg class="abs" viewBox="0 0 100 100" style="left:1052px;top:372px;width:66px;height:66px"><use href="#star" fill="none" stroke="url(#gsv)" stroke-width="3.4"/></svg>
+
+  <div data-from="1"><div class="arrow blue r" style="left:310px;top:236px;width:686px"></div><div class="box qb" style="top:207px;height:55px"><div class="qt" style="top:7px;font-size:17px;line-height:20px">Query<br>Tools</div></div></div>
+  <div data-from="2"><div class="arrow l" style="left:310px;top:297px;width:686px"></div><div class="box cb" style="top:276px;height:41px"><div class="qt" style="top:9px">Tool Call 1</div></div></div>
+  <div data-from="3"><div class="arrow blue r" style="left:310px;top:368px;width:686px"></div><div class="box qb" style="top:329px;height:76px"><div class="qt" style="top:4px;font-size:14px;line-height:17.5px">Query<br>Tools<br>Tool Call 1<br>Tool Response 1</div></div></div>
+  <div data-from="4"><div class="abs center" style="left:527px;width:252px;top:410px;font-size:22px;font-weight:700;letter-spacing:1px">...</div><div class="arrow l" style="left:310px;top:465px;width:686px"></div><div class="box cb" style="top:445px;height:39px"><div class="qt" style="top:8px">Tool Call n</div></div></div>
+  <div data-from="5"><div class="arrow blue r" style="left:310px;top:533px;width:686px"></div><div class="box qb" style="top:495px;height:79px"><div class="qt" style="top:5px;font-size:14px;line-height:17.5px">Query<br>Tools ...<br>Tool Call n<br>Tool Response n</div></div></div>
+  <div data-from="6"><div class="arrow l" style="left:310px;top:603px;width:686px"></div><div class="box cb" style="top:585px;height:38px"><div class="qt" style="top:7px">Final Response</div></div></div>
+  <div class="tag">#AndroidDevSummit</div>
+  <style>.qb,.cb{left:527px;width:252px;border-radius:8px;background:#000}.qb{border-color:#3f72f0}.qt{position:absolute;left:0;right:0;text-align:center;font-size:17px;font-weight:500;line-height:20px}</style>
+</section>
+
+<!-- 24. Agentic workflow: AppFunction tools -->
+<section class="slide glow" data-name="Agentic workflow: tool declarations">
+  <div class="title">Agentic workflow</div>
+  <div class="codebox"></div>
+  <div class="hl" style="top:234px;height:32px" data-at="1"></div>
+  <div class="code" style="top:180px;font-size:20.9px;--lh:27px"><span class="l c">/**</span><span class="l c">* Retrieves the itinerary events (ID, title, location) for a trip.</span><span class="l c">* Note: Call getEventDetails(eventId) to retrieve ticket prices or notes.</span><span class="l c">*/</span><span class="l"><span class="k">@AppFunctionDeclaration</span>(isDescribedByKDoc = true)</span><span class="l"><span class="k">@AppFunctionAccessLevel</span>(level = <span class="r">ACCESS_LEVEL_SELF</span>, isCompatEnforcementEnabled = true)</span><span class="l"><span class="k">suspend fun</span> getItinerary(tripId: String): List&lt;EventSummary&gt; { ... }</span><span class="l"></span><span class="l c">/**</span><span class="l c">* Retrieves details for a specific event, including admission ticket prices.</span><span class="l c">*/</span><span class="l"><span class="k">@AppFunctionDeclaration</span>(isDescribedByKDoc = true)</span><span class="l"><span class="k">@AppFunctionAccessLevel</span>(level = <span class="r">ACCESS_LEVEL_SELF</span>, isCompatEnforcementEnabled = true)</span><span class="l"><span class="k">suspend fun</span> getEventDetails(eventId: String): EventDetails { ... }</span></div>
+  <div class="tag">#AndroidDevSummit</div>
+</section>
+
+<!-- 25. Agentic workflow: agent with guardrail -->
+<section class="slide glow" data-name="Agentic workflow: multi-step agent">
+  <div class="title">Agentic workflow</div>
+  <div class="codebox"></div>
+  <div class="hl" style="top:288px;height:30px" data-at="1"></div>
+  <div class="hl" style="top:451px;height:84px" data-at="2"></div>
+  <div class="code" style="top:180px;font-size:21.8px;--lh:27px"><span class="l"><span class="k">val</span> agent = Agent.builder()</span><span class="l"> .setName(<span class="s">"Assistant"</span>)</span><span class="l"> .setInstructions(<span class="s">"You are a helpful travel assistant. Active tripId: </span>$tripId<span class="s">"</span>)</span><span class="l"> .enableAppFunctions()</span><span class="l"> .setMaxTurns(5) <span class="c">// Guardrail against infinite tool loops</span></span><span class="l"> .build()</span><span class="l"><span class="k">val</span> runner = AgentRunner(agent = agent)</span><span class="l c">// Automatically loops through all 3 tool calls in a single user turn!</span><span class="l">runner.runSingleTurnAsync(prompt).collect { event -&gt;</span><span class="l"> <span class="k">when</span> (event) {</span><span class="l">   <span class="k">is</span> AgentEvent.FunctionCall -&gt; showToolRunning(event.name)</span><span class="l">   <span class="k">is</span> AgentEvent.FunctionResponse -&gt; showToolCompleted(event.name)</span><span class="l">   <span class="k">is</span> AgentEvent.TextMessage -&gt; responseMessage += event.text</span><span class="l"> }</span><span class="l">}</span></div>
+  <div class="tag">#AndroidDevSummit</div>
+</section>
+
+<!-- 26. Overview: multi-turn -->
+<section class="slide glow" data-name="Overview: multi-turn sessions">
+  <div class="title">Overview</div>
+  <div class="ov" style="left:45px"><div class="n">1</div><div class="lb">Single-Step</div></div>
+  <div class="ov act" style="left:354px" data-cls="1:-act"><div class="n">2</div><div class="lb">Multi-Step</div></div>
+  <div class="ov act" style="left:662px" data-from="1"><div class="n">3</div><div class="lb">Multi-Turn<br>Sessions</div></div>
+  <div class="tag">#AndroidDevSummit</div>
+</section>
+
+<!-- 27. Demo 3 -->
+<section class="slide" data-name="Demo: multi-turn session" style="background:#000">
+  <img class="abs" src="assets/2026-mlkit-genai-agentic/img/demo-3.jpg" alt="Demo screenshot: multi-turn conversation with the trip assistant" style="left:0;top:0;width:1304px;height:733px">
+</section>
+
+<!-- 28. Agentic workflow: sessions -->
+<section class="slide glow" data-name="Agentic workflow: sessions">
+  <div class="title">Agentic workflow</div>
+  <div class="codebox"></div>
+  <div class="hl" style="top:288px;height:33px" data-at="1"></div>
+  <div class="code" style="top:180px;font-size:21.6px;--lh:27px"><span class="l c">// 1. Get or create an isolated session for the current trip</span><span class="l"><span class="k">val</span> session = runner.getOrCreateSession(tripId)</span><span class="l"></span><span class="l c">// 2. Run a turn (history is preserved automatically across turns)</span><span class="l">session.runAsync(prompt).collect { event -&gt;</span><span class="l">  <span class="k">when</span> (event) {</span><span class="l">    <span class="k">is</span> AgentEvent.FunctionCall -&gt; showToolRunning(event)</span><span class="l">    <span class="k">is</span> AgentEvent.FunctionResponse -&gt; showToolCompleted(event)</span><span class="l">    <span class="k">is</span> AgentEvent.TextMessage -&gt; responseMessage += event.text</span><span class="l">  }</span><span class="l">}</span><span class="l"></span><span class="l c">// 3. Clear history when the user taps "New conversation"</span><span class="l">session.delete()</span></div>
+  <div class="tag">#AndroidDevSummit</div>
+</section>
+
+<!-- 29. Agentic flow vs Direct access -->
+<section class="slide glow-corner" data-name="Agentic flow vs Direct access" id="apis2"></section>
+
+<!-- 30. Customizing conversation history -->
+<section class="slide glow" data-name="Customizing conversation history">
+  <div class="title">Customizing conversation history</div>
+  <div class="codebox"></div>
+  <div class="hl" style="top:207px;height:85px" data-at="0"></div>
+  <div class="hl" style="top:451px;height:108px" data-at="1"></div>
+  <div class="code" style="top:180px;font-size:21.6px;--lh:27px"><span class="l c">// Turn 1: Execute function directly without a second model call</span><span class="l"><span class="k">val</span> turn1 = content(Content.Role.<span class="r">USER</span>) {</span><span class="l">  text(<span class="s">"Change the background to a sunset"</span>)</span><span class="l">}</span><span class="l"><span class="k">val</span> response1 = generativeModel.generateContent(</span><span class="l">  generateContentRequest(turn1) { setTools(tools) }</span><span class="l">)</span><span class="l">executeFunctionCalls(response1)</span><span class="l"></span><span class="turn2" data-cls="0:fade 1:-fade"><span class="l c">// Turn 2: Send only user prompts to save context tokens</span><span class="l"><span class="k">val</span> customHistory = listOf(</span><span class="l">  turn1,</span><span class="l">  content(Content.Role.<span class="r">USER</span>) { text(<span class="s">"Oh no, I meant a beach"</span>) }</span><span class="l">)</span><span class="l"><span class="k">val</span> response2 = generativeModel.generateContent(</span><span class="l">  GenerateContentRequest.Builder(customHistory).setTools(tools).build()</span><span class="l">)</span></span></div>
+  <div class="tag">#AndroidDevSummit</div>
+</section>
+
+<!-- 31. Complex use cases -->
+<section class="slide glow" data-name="Complex use cases">
+  <div class="title">Complex use cases</div>
+  <div class="card cu" style="left:79px" data-from="1">
+    <div class="ci"><svg viewBox="0 0 100 100" style="width:18px;height:18px"><use href="#star" fill="#2fd25a"/></svg></div>
+    <div class="ch">Multi-agent systems</div><div class="cd">Specialized sub-agents that collaborate and delegate tasks to each other</div>
+  </div>
+  <div class="card cu" style="left:475px" data-from="2">
+    <div class="ci"><svg viewBox="0 0 24 24" style="width:16px;height:16px" fill="none" stroke="#2fd25a" stroke-width="2.4"><circle cx="12" cy="12" r="3.2"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1"/></svg></div>
+    <div class="ch">Hybrid routing</div><div class="cd">Dynamically routing between Gemini Nano on-device and cloud models</div>
+  </div>
+  <div class="card cu" style="left:871px" data-from="3">
+    <div class="ci"><svg viewBox="0 0 24 24" style="width:20px;height:20px" fill="#f4a3c0" stroke="#c25a85" stroke-width="1.2"><path d="M8 4c-2.5 0-4 2-4 4-1.5.8-2 2.3-2 3.5 0 1.6 1 3 2.5 3.5.2 2 1.8 3.5 3.8 3.5h.7c.8.9 2 1.5 3 1.5s2.2-.6 3-1.5h.7c2 0 3.6-1.5 3.8-3.5 1.5-.5 2.5-1.9 2.5-3.5 0-1.2-.5-2.7-2-3.5 0-2-1.5-4-4-4-.9-1.2-2.4-2-4-2s-3.1.8-4 2z"/><path d="M12 3v17M8 8c1.5 0 2.5 1 2.5 2.5M16 8c-1.5 0-2.5 1-2.5 2.5M7 14c1.5 0 3 .5 3.5 2M17 14c-1.5 0-3 .5-3.5 2" fill="none"/></svg></div>
+    <div class="ch ch2">Custom memory &amp;<br>context compaction</div><div class="cd">Summarizing or pruning long conversation histories to fit on-device context limits</div>
+  </div>
+  <div class="tag">#AndroidDevSummit</div>
+  <style>.cu{top:160px;width:357px;height:485px}.ci{position:absolute;left:26px;top:33px;width:46px;height:46px;border-radius:50%;background:#1d1e21;border:1px solid #34363a;display:flex;align-items:center;justify-content:center}.ch{position:absolute;left:27px;top:96px;font-size:25px;font-weight:600;line-height:32px;right:20px}.cd{position:absolute;left:27px;right:24px;top:139px;font-size:17px;line-height:21px;color:#c8c8c8}.ch2 + .cd{top:171px}</style>
+</section>
+
+<!-- 32. From In-App Actions to System Assistants (overview) -->
+<section class="slide glow" data-name="From in-app actions to system assistants">
+  <div class="title">From In-App Actions to System Assistants</div>
+  <div class="ov" style="left:45px"><div class="n">1</div><div class="lb">Single-Step</div></div>
+  <div class="ov" style="left:354px"><div class="n">2</div><div class="lb">Multi-Step</div></div>
+  <div class="ov" style="left:662px"><div class="n">3</div><div class="lb">Multi-Turn<br>Sessions</div></div>
+  <div class="ov act" style="left:971px"><div class="n">4</div><div class="lb">System<br>AppFunction</div></div>
+  <div class="tag">#AndroidDevSummit</div>
+</section>
+
+<!-- 33. AppFunctions to in-app and system agents -->
+<section class="slide glow" data-name="AppFunctions access levels">
+  <div class="title">From In-App Actions to System Assistants</div>
+  <div class="abs center" style="left:276px;top:235px;width:297px;height:260px;border:2px solid #22b54f;border-radius:18px;background:#07170b">
+    <div style="margin-top:112px;font-size:26px;font-weight:700;color:#36c35f">AppFunctions</div>
+    <div style="position:absolute;left:0;right:0;top:177px;font-family:GSansCode,monospace;font-size:20px;line-height:26px;color:#e8304f" data-at="1">ACCESS_LEVEL_SELF</div>
+    <div style="position:absolute;left:0;right:0;top:177px;font-family:GSansCode,monospace;font-size:20px;line-height:26px;color:#e8304f" data-from="2">ACCESS_LEVEL_<br>ANDROID_TRUSTED</div>
+  </div>
+  <svg class="abs" viewBox="0 0 170 220" style="left:572px;top:260px;width:170px;height:220px" fill="none" stroke="#22c55a" stroke-width="2.4">
+    <g data-from="1"><path d="M0 105 C60 105 70 30 146 28"/><path d="M144 21 L158 28 L144 35 Z" fill="#22c55a" stroke="none"/></g>
+    <g data-from="2"><path d="M0 105 C60 105 70 181 146 183"/><path d="M144 176 L158 183 L144 190 Z" fill="#22c55a" stroke="none"/></g>
+  </svg>
+  <div class="abs agb" style="top:241px" data-from="1">In-app agent</div>
+  <div class="abs agb" style="top:397px" data-from="2">System agent</div>
+  <div class="tag">#AndroidDevSummit</div>
+  <style>.agb{left:733px;width:233px;height:92px;border-radius:8px;background:#1a1b1d;border:1px solid #333538;font-size:26px;font-weight:600;line-height:90px;text-align:center}</style>
+</section>
+
+<!-- 34. Demo 4 -->
+<section class="slide" data-name="Demo: system assistant" style="background:#000">
+  <img class="abs" src="assets/2026-mlkit-genai-agentic/img/demo-4a.jpg" alt="Demo screenshot: Gemini calls the Jetpacker AppFunction" style="left:0;top:0;width:1304px;height:733px" data-at="0">
+  <img class="abs" src="assets/2026-mlkit-genai-agentic/img/demo-4b.jpg" alt="Demo screenshot: expense list updated by the system assistant" style="left:0;top:0;width:1304px;height:733px" data-from="1">
+</section>
+
+<!-- 35. Integrate your app (related session) -->
+<section class="slide glow-cover" data-name="Related session: Android intelligence system">
+  <div class="abs" style="right:44px;top:42px;font-size:24px;font-weight:500;line-height:26px;letter-spacing:-.5px">Android <svg viewBox="0 0 120 72" style="width:34px;height:20px;vertical-align:-1px"><path d="M8 70 A52 52 0 0 1 112 70 Z" fill="#34c35a"/><path d="M30 26 L20 6" stroke="#34c35a" stroke-width="8" stroke-linecap="round"/><path d="M90 26 L100 6" stroke="#34c35a" stroke-width="8" stroke-linecap="round"/><circle cx="35" cy="48" r="6" fill="#0a0a0a"/><circle cx="85" cy="48" r="6" fill="#0a0a0a"/></svg><br>Dev Summit</div>
+  <div class="abs" style="left:46px;top:108px;font-size:90px;line-height:90px;letter-spacing:-1px;font-weight:500">Integrate your app<br>with the Android<br>intelligence system</div>
+  <img class="abs" src="assets/2026-mlkit-genai-agentic/img/dan-galpin.jpg" alt="Dan Galpin" style="left:45px;top:456px;width:182px;height:182px;border-radius:50%;object-fit:cover">
+  <div class="abs" style="left:275px;top:498px;font-size:27px;font-weight:600">Dan Galpin</div>
+  <div class="abs" style="left:275px;top:534px;font-size:21px;line-height:27px">Developer Relations<br>Engineer</div>
+  <img class="abs" src="assets/2026-mlkit-genai-agentic/img/sarah-shamsie.jpg" alt="Sarah Shamsie" style="left:668px;top:456px;width:182px;height:182px;border-radius:50%;object-fit:cover">
+  <div class="abs" style="left:897px;top:498px;font-size:27px;font-weight:600">Sarah Shamsie</div>
+  <div class="abs" style="left:897px;top:534px;font-size:21px;line-height:27px">Product Manager</div>
+</section>
+
+<!-- 36. Overview: all four -->
+<section class="slide glow" data-name="Overview: recap">
+  <div class="title">Overview</div>
+  <div class="ov plain" style="left:45px"><div class="n">1</div><div class="lb">Single-Step</div></div>
+  <div class="ov plain" style="left:354px"><div class="n">2</div><div class="lb">Multi-Step</div></div>
+  <div class="ov plain" style="left:662px"><div class="n">3</div><div class="lb">Multi-Turn<br>Sessions</div></div>
+  <div class="ov plain" style="left:971px"><div class="n">4</div><div class="lb">System<br>AppFunction</div></div>
+  <div class="tag">#AndroidDevSummit</div>
+</section>
+
+<!-- 37. 3 tips -->
+<section class="slide glow" data-name="3 tips when you try this out">
+  <div class="title" data-from="4">3 tips when you try this out</div>
+  <div class="card tp" style="left:79px" data-from="1">
+    <div class="ti"><svg viewBox="0 0 24 24" style="width:24px;height:24px"><circle cx="11" cy="13" r="8" fill="#fff" stroke="#e33" stroke-width="1"/><circle cx="11" cy="13" r="5.5" fill="#e33"/><circle cx="11" cy="13" r="3" fill="#fff"/><circle cx="11" cy="13" r="1.3" fill="#e33"/><path d="M11 13 L20 4" stroke="#3a9ad9" stroke-width="1.8"/><path d="M18 2 l3 0 0 3 -3 0 z" fill="#3a9ad9"/></svg></div>
+    <div class="th">Keep tool sets<br>focused</div>
+  </div>
+  <div class="card tp" style="left:475px" data-from="2">
+    <div class="ti"><svg viewBox="0 0 24 24" style="width:22px;height:22px"><path d="M12 2 L20 5 V11 C20 16 16.5 20 12 22 C7.5 20 4 16 4 11 V5 Z" fill="#d9d9d9"/><path d="M12 4 L18 6.4 V11 C18 15 15.2 18.3 12 19.8 C8.8 18.3 6 15 6 11 V6.4 Z" fill="#e0384a"/><path d="M12 7 V17" stroke="#fff" stroke-width="2.2"/></svg></div>
+    <div class="th">Set a max-turns<br>guardrail</div>
+  </div>
+  <div class="card tp" style="left:871px" data-from="3">
+    <div class="ti"><svg viewBox="0 0 24 24" style="width:22px;height:22px"><rect x="2" y="2" width="20" height="20" rx="4" fill="#7ea8d8"/><path d="M7 10 A5.5 5.5 0 0 1 16.5 8.5 M17 14 A5.5 5.5 0 0 1 7.5 15.5" fill="none" stroke="#fff" stroke-width="2"/><path d="M17.8 5.5 V9.5 H13.8 Z M6.2 18.5 V14.5 H10.2 Z" fill="#fff"/></svg></div>
+    <div class="th">Check availability<br>&amp; fall back</div>
+  </div>
+  <div class="tag">#AndroidDevSummit</div>
+  <style>.tp{top:194px;width:357px;height:377px}.ti{position:absolute;left:32px;top:40px;width:50px;height:50px;border-radius:50%;background:#1d1e21;border:2px solid #237a3a;display:flex;align-items:center;justify-content:center}.th{position:absolute;left:34px;top:122px;font-size:30px;font-weight:600;line-height:39px}</style>
+</section>
+
+<!-- 38. Start building today -->
+<section class="slide glow-corner" data-name="Start building today">
+  <div class="title">Start building today</div>
+  <img class="abs" src="assets/2026-mlkit-genai-agentic/img/qr-start-building.jpg" alt="QR code" style="left:238px;top:266px;width:266px;height:264px">
+  <div class="abs pill" style="top:292px"><svg viewBox="0 0 24 24"><circle cx="10" cy="10" r="6.5"/><path d="M15 15 L21 21"/></svg>goo.gle/jetpacker</div>
+  <div class="abs pill" style="top:369px"><svg viewBox="0 0 24 24"><circle cx="10" cy="10" r="6.5"/><path d="M15 15 L21 21"/></svg>goo.gle/android-skills</div>
+  <div class="abs pill" style="top:447px"><svg viewBox="0 0 24 24"><circle cx="10" cy="10" r="6.5"/><path d="M15 15 L21 21"/></svg>goo.gle/aicore-dev-preview</div>
+  <div class="tag">#AndroidDevSummit</div>
+  <style>.pill{left:550px;width:491px;height:58px;border:1.5px solid transparent;border-radius:30px;background:linear-gradient(#0a0a0a,#0a0a0a) padding-box,linear-gradient(90deg,#22c55a 0%,#1e7f6a 50%,#2a4fd8 100%) border-box;font-size:27px;font-weight:500;line-height:55px;padding-left:70px}.pill svg{position:absolute;left:28px;top:16px;width:22px;height:22px;fill:none;stroke:#cfcfcf;stroke-width:2.6;stroke-linecap:round}</style>
+</section>
+
+<!-- 39. Android Dev Summit end card -->
+<section class="slide" data-name="Android Dev Summit" style="background:#141214">
+  <div class="abs" style="inset:0;background:radial-gradient(45% 35% at 92% -5%, rgba(60,150,110,.55), transparent 75%), radial-gradient(35% 30% at 70% -8%, rgba(40,120,60,.45), transparent 80%)"></div>
+  <div class="abs" style="left:302px;top:282px;font-size:92px;font-weight:500;letter-spacing:-2.5px;line-height:88px">
+    Android <svg viewBox="0 0 120 72" style="width:112px;height:68px;margin-left:12px;vertical-align:-2px"><path d="M8 70 A52 52 0 0 1 112 70 Z" fill="#34c35a"/><path d="M30 26 L20 6" stroke="#34c35a" stroke-width="7" stroke-linecap="round"/><path d="M90 26 L100 6" stroke="#34c35a" stroke-width="7" stroke-linecap="round"/><circle cx="35" cy="48" r="5.5" fill="#141214"/><circle cx="85" cy="48" r="5.5" fill="#141214"/></svg><br>Dev Summit
+  </div>
+</section>
+
+</div>
+
+<div id="bar"></div>
+<div id="hud"></div>
+
+<template id="apiCards">
+  <div class="abs gb apic agentic" style="left:76px;--fill:#191a1e">
+    <svg class="abs" viewBox="0 0 72 72" style="left:46px;top:40px;width:72px;height:72px" fill="none" stroke="url(#gs)" stroke-width="3" stroke-linejoin="round"><path d="M31 4h10l2 9 6 3 8-5 7 7-5 8 3 6 9 2v10l-9 2-3 6 5 8-7 7-8-5-6 3-2 9H31l-2-9-6-3-8 5-7-7 5-8-3-6-9-2V31l9-2 3-6-5-8 7-7 8 5 6-3z"/><circle cx="36" cy="36" r="7" fill="#22c55a" stroke="none"/></svg>
+    <div class="ah">Agentic flow</div>
+    <div class="ap" style="width:373px">com.mlkit.genai:agent-api</div>
+    <div class="ab" style="top:271px"><span class="nw">NEW</span><span class="g">alpha</span></div>
+    <ul class="al" style="top:337px"><li>Auto-executes functions</li><li>Saves conversation history</li><li>Manages orchestration loop</li><li>Includes automatic guardrails</li></ul>
+  </div>
+  <div class="abs gb apic direct" style="left:577px;--fill:#191a1e">
+    <div class="abs" style="left:46px;top:44px;width:66px;height:66px;border:2px solid #22c55a;border-radius:6px;border-bottom-color:#2a55d8;border-right-color:#2a7aa8"></div>
+    <svg class="abs" viewBox="0 0 66 66" style="left:46px;top:44px;width:66px;height:66px" fill="none" stroke="#22c55a" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M25 25 L17 33 L25 41 M41 25 L49 33 L41 41"/></svg>
+    <div class="ah">Direct access</div>
+    <div class="ap" style="width:373px">com.mlkit.genai:prompt-api</div>
+    <div class="ab" style="top:271px"><span class="nw">NEW</span><span class="g">Function types</span></div>
+    <div class="ab" style="top:304px"><span class="nw">NEW</span><span class="g">Conversation history types</span></div>
+    <ul class="al" style="top:363px"><li>You execute the functions</li><li>You save the call history</li><li>You loop over multiple calls</li><li>You build guardrails</li></ul>
+  </div>
+  <div class="arrow r dbl" style="left:510px;top:367px;width:67px"></div>
+  <div class="arrow r dbl" style="left:1011px;top:367px;width:70px"></div>
+  <div class="gbar" style="left:1081px;top:100px;width:146px;height:535px"><svg viewBox="0 0 100 100"><use href="#star" fill="#0a0a0a"/></svg></div>
+  <div class="tag">#AndroidDevSummit</div>
+</template>
+<style>
+.apic { top: 102px; width: 434px; height: 533px; border-radius: 26px; border-width: 3px; }
+.apic .ah { position: absolute; left: 42px; top: 126px; font-size: 46px; font-weight: 500; letter-spacing: -.3px; }
+.apic .ap { position: absolute; left: 42px; top: 196px; height: 57px; background: #000; border-radius: 4px; font-family: "GSansCode", monospace; font-size: 20.9px; line-height: 57px; padding-left: 15px; }
+.apic .ab { position: absolute; left: 42px; font-size: 22px; display: flex; align-items: center; gap: 14px; }
+.apic .nw { border: 2px solid var(--g); color: var(--g); border-radius: 4px; font-size: 15px; font-weight: 600; letter-spacing: .6px; padding: 2px 12px; }
+.apic .al { position: absolute; left: 42px; margin: 0; padding-left: 20px; font-size: 22.5px; line-height: 35.5px; }
+.apic .al li::marker { font-size: 18px; }
+.arrow.dbl::before { content: ""; position: absolute; left: -2px; top: -6px; border: 7px solid transparent; border-right: 12px solid var(--g); border-left: 0; }
+.apic.off { background: linear-gradient(#191a1e,#191a1e) padding-box, linear-gradient(#5a5b5e,#5a5b5e) border-box; }
+.apic.off > * { opacity: .38; }
+.apic.off .ah, .apic.off .al { opacity: .45; }
+</style>
+
+<script>
+(function () {
+  "use strict";
+
+  // Waveform icon used on the function-call diagrams.
+  document.querySelectorAll("svg.wave").forEach(function (svg) {
+    svg.innerHTML =
+      '<defs><linearGradient id="wv" gradientUnits="userSpaceOnUse" x1="0" y1="2" x2="0" y2="74"><stop offset="0" stop-color="#27c95c"/><stop offset=".6" stop-color="#22c55a"/><stop offset="1" stop-color="#2a55d8"/></linearGradient></defs>' +
+      '<g stroke-width="3" stroke-linecap="round"><path d="M3 32v12" stroke="#27c95c"/><path d="M18 18v40" stroke="#27c95c"/><path d="M34 2v72" stroke="url(#wv)"/><path d="M50 18v40" stroke="#27c95c"/><path d="M65 32v12" stroke="#27c95c"/></g>';
+  });
+
+  // Build the two API card slides from one template.
+  var tpl = document.getElementById("apiCards");
+  function mountCards(id, setup) {
+    var s = document.getElementById(id);
+    s.appendChild(tpl.content.cloneNode(true));
+    setup(s);
+  }
+  // Slide 10: Direct access first, then Agentic flow appears.
+  mountCards("apis1", function (s) {
+    s.querySelector(".agentic").setAttribute("data-from", "1");
+    s.querySelectorAll(".arrow.dbl")[0].setAttribute("data-from", "1");
+  });
+  // Slide 29: Agentic flow emphasized, then Direct access emphasized.
+  mountCards("apis2", function (s) {
+    s.querySelector(".direct").setAttribute("data-cls", "0:off 1:-off");
+    s.querySelector(".agentic").setAttribute("data-cls", "1:off");
+  });
+
+  var slides = Array.prototype.slice.call(document.querySelectorAll(".slide"));
+  var stage = document.getElementById("stage");
+  var hud = document.getElementById("hud");
+  var bar = document.getElementById("bar");
+
+  // Count build steps for every slide.
+  slides.forEach(function (s) {
+    var max = 0;
+    s.querySelectorAll("[data-from],[data-at],[data-cls]").forEach(function (el) {
+      var v = (el.getAttribute("data-from") || "") + " " + (el.getAttribute("data-at") || "") + " " +
+              (el.getAttribute("data-cls") || "").replace(/:[-\w]+/g, "");
+      v.trim().split(/\s+/).forEach(function (n) { if (n !== "") max = Math.max(max, parseInt(n, 10)); });
+    });
+    s._steps = max;
+  });
+
+  function applyStep(s, step) {
+    s.querySelectorAll("[data-from]").forEach(function (el) {
+      el.classList.toggle("hidden-step", step < parseInt(el.getAttribute("data-from"), 10));
+    });
+    s.querySelectorAll("[data-at]").forEach(function (el) {
+      var list = el.getAttribute("data-at").trim().split(/\s+/).map(Number);
+      el.classList.toggle("hidden-step", list.indexOf(step) === -1);
+    });
+    // data-cls="1:dim 2:-dim" adds (or with "-" removes) a class once the step is reached.
+    s.querySelectorAll("[data-cls]").forEach(function (el) {
+      if (!el._base) el._base = el.className;
+      el.className = el._base;
+      el.getAttribute("data-cls").trim().split(/\s+/).forEach(function (rule) {
+        var p = rule.split(":"), n = parseInt(p[0], 10), cls = p[1];
+        if (step >= n) {
+          if (cls.charAt(0) === "-") el.classList.remove(cls.slice(1)); else el.classList.add(cls);
+        }
+      });
+    });
+  }
+
+  var params = new URLSearchParams(location.search);
+  var shot = params.has("shot");
+  if (shot) document.body.classList.add("shot");
+
+  var cur = 0, step = 0;
+  function parseHash() {
+    var m = /^#(\d+)(?:\.(\d+))?$/.exec(location.hash);
+    if (!m) return;
+    cur = Math.min(Math.max(parseInt(m[1], 10) - 1, 0), slides.length - 1);
+    step = Math.min(parseInt(m[2] || "0", 10), slides[cur]._steps);
+  }
+
+  function render() {
+    slides.forEach(function (s, i) { s.classList.toggle("on", i === cur); });
+    applyStep(slides[cur], step);
+    var name = slides[cur].getAttribute("data-name") || "";
+    hud.textContent = (cur + 1) + " / " + slides.length + (slides[cur]._steps ? "  (" + (step + 1) + "/" + (slides[cur]._steps + 1) + ")" : "") + "  " + name;
+    bar.style.width = ((cur + 1) / slides.length * 100) + "%";
+    var h = "#" + (cur + 1) + (step ? "." + step : "");
+    if (location.hash !== h) history.replaceState(null, "", h);
+  }
+
+  function fit() {
+    if (shot) { stage.style.transform = "none"; stage.style.left = "0"; stage.style.top = "0"; return; }
+    var sc = Math.min(window.innerWidth / 1304, window.innerHeight / 733);
+    stage.style.transformOrigin = "50% 50%";
+    stage.style.transform = "translate(-50%, -50%) scale(" + sc + ")";
+  }
+
+  function next() {
+    if (step < slides[cur]._steps) step++;
+    else if (cur < slides.length - 1) { cur++; step = 0; }
+    render();
+  }
+  function prev() {
+    if (step > 0) step--;
+    else if (cur > 0) { cur--; step = slides[cur]._steps; }
+    render();
+  }
+  function go(i) { cur = Math.min(Math.max(i, 0), slides.length - 1); step = 0; render(); }
+
+  document.addEventListener("keydown", function (e) {
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    switch (e.key) {
+      case "ArrowRight": case "ArrowDown": case "PageDown": case " ": case "Enter": e.preventDefault(); next(); break;
+      case "ArrowLeft": case "ArrowUp": case "PageUp": case "Backspace": e.preventDefault(); prev(); break;
+      case "Home": go(0); break;
+      case "End": go(slides.length - 1); break;
+      case "f": case "F":
+        if (!document.fullscreenElement) document.documentElement.requestFullscreen(); else document.exitFullscreen();
+        break;
+    }
+  });
+  document.addEventListener("click", function (e) {
+    if (e.clientX < window.innerWidth / 3) prev(); else next();
+  });
+  var tx = null;
+  document.addEventListener("touchstart", function (e) { tx = e.touches[0].clientX; }, { passive: true });
+  document.addEventListener("touchend", function (e) {
+    if (tx === null) return;
+    var dx = e.changedTouches[0].clientX - tx;
+    if (Math.abs(dx) > 40) { if (dx < 0) next(); else prev(); }
+    tx = null;
+  });
+  window.addEventListener("resize", fit);
+  // Print / Save as PDF: one page per slide, each in its fully built state.
+  window.addEventListener("beforeprint", function () { slides.forEach(function (s) { applyStep(s, s._steps); }); });
+  window.addEventListener("afterprint", function () { slides.forEach(function (s) { applyStep(s, 0); }); render(); });
+  window.addEventListener("hashchange", function () { parseHash(); render(); });
+
+  parseHash();
+  fit();
+  render();
+  window.__deck = { count: slides.length, steps: slides.map(function (s) { return s._steps; }) };
+})();
+</script>
+</body>
+</html>
