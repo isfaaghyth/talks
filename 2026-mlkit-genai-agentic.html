@@ -1115,7 +1115,7 @@
             .vid {
                 position: absolute;
                 left: 340px;
-                top: 90px;
+                top: 135px;
                 width: 920px;
                 height: 518px;
                 border-radius: 24px;
@@ -1153,7 +1153,7 @@
                 position: absolute;
                 left: 0;
                 right: 0;
-                top: 646px;
+                top: 691px;
                 text-align: center;
             }
             .vid-cap .vt {
@@ -1166,21 +1166,6 @@
                 margin-top: 8px;
                 font-size: 20px;
                 color: var(--mute);
-            }
-            .vid-cap .perm {
-                display: inline-flex;
-                align-items: center;
-                gap: 12px;
-                margin-top: 30px;
-                padding: 14px 28px;
-                border-radius: 999px;
-                background: var(--white);
-                font-size: 23px;
-                color: var(--ink-2);
-            }
-            .vid-cap .perm b {
-                font-weight: 600;
-                color: var(--ink);
             }
 
             /* ---------- register for system access ---------- */
@@ -1249,16 +1234,41 @@
                 text-decoration: none;
                 word-break: break-all;
             }
+
+            /* ---------- android intelligence system ---------- */
+            .slide.ais {
+                background: #000;
+                color: #fff;
+            }
+            .ais-bot {
+                position: absolute;
+                left: 50%;
+                top: 0;
+                width: 760px;
+                transform: translateX(-50%);
+            }
+            .ais-title {
+                position: absolute;
+                left: 0;
+                right: 0;
+                top: 50%;
+                transform: translateY(-50%);
+                text-align: center;
+                font-size: 88px;
+                font-weight: 600;
+                letter-spacing: -0.035em;
+            }
             /* ---------- links / QR ---------- */
             .qr {
                 position: absolute;
-                right: 130px;
-                top: 290px;
-                width: 360px;
-                height: 360px;
-                border-radius: 18px;
-                background: #000;
-                padding: 18px;
+                right: 120px;
+                top: 260px;
+                width: 400px;
+                height: 400px;
+                border-radius: 32px;
+                background: #fff;
+                padding: 36px;
+                box-shadow: 0 24px 60px -24px rgba(0, 0, 0, 0.6);
             }
             .qr img {
                 width: 100%;
@@ -1685,7 +1695,6 @@
                 <div class="vid-cap">
                     <div class="vt">Unlock agentic capabilities in your app with ML Kit GenAI</div>
                     <div class="vm">Android Dev Summit 2026 · youtu.be/tAy7IifZXG0</div>
-                    <div class="perm"><span class="green">✓</span><span>Shared with permission from <b>Victoria Lestari</b>, for the Android community in Indonesia</span></div>
                 </div>
             </section>
 
@@ -1970,6 +1979,12 @@
                 </div>
             </section>
 
+            <!-- ================= ANDROID INTELLIGENCE SYSTEM ================= -->
+            <section class="slide ais" data-title="Android Intelligence System">
+                <img class="ais-bot" src="assets/2026-mlkit-genai-agentic/img/android-intelligence.jpg" alt="" />
+                <div class="ais-title">Android Intelligence System</div>
+            </section>
+
             <!-- ================= APPFUNCTION CODE ================= -->
             <section class="slide dark code-slide" data-title="@AppFunction" data-steps="2">
                 <div class="code-file"><b>MoneyAppFunctionService.kt</b> · expose a tool</div>
@@ -2127,6 +2142,36 @@
                 </div>
             </section>
 
+            <!-- ================= RUN SINGLE TURN VS RUN ================= -->
+            <section class="slide" data-title="runSingleTurnAsync vs runAsync" data-steps="1">
+                <div class="ev-corner" data-event-logo><img alt="" /><span></span></div>
+                <div class="h-title">One-shot, <span class="green">or a conversation?</span></div>
+                <div class="abs boxes cmp" style="left: 100px; right: 100px; top: 290px; display: grid; grid-template-columns: 1fr 1fr; gap: 28px">
+                    <div class="box" data-hl="0">
+                        <div class="kicker">Stateless · one turn</div>
+                        <div class="api-name">runSingleTurnAsync()</div>
+                        <div class="dep">runner.runSingleTurnAsync(prompt)</div>
+                        <ul class="dots">
+                            <li>Called on the <b>AgentRunner</b></li>
+                            <li>Starts fresh every call, no memory</li>
+                            <li>Can still chain tools within the turn</li>
+                            <li>Best for one-shot commands</li>
+                        </ul>
+                    </div>
+                    <div class="box" data-hl="1">
+                        <div class="kicker">Stateful · many turns</div>
+                        <div class="api-name">runAsync()</div>
+                        <div class="dep">runner.getOrCreateSession(chatId).runAsync(prompt)</div>
+                        <ul class="dots">
+                            <li>Called on a <b>session</b></li>
+                            <li>Keeps history across turns for you</li>
+                            <li>Agent can ask back, user can correct</li>
+                            <li>Best for chat; reset with <span class="mono">session.delete()</span></li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
             <!-- ================= SESSIONS CODE ================= -->
             <section class="slide dark code-slide" data-title="Sessions" data-steps="1">
                 <div class="code-file"><b>AssistantViewModel.kt</b> · sessions keep history for you</div>
@@ -2251,6 +2296,14 @@
                 </div>
             </section>
 
+            <!-- ================= DEMO TIME ================= -->
+            <section class="slide dark divider" data-title="Demo time">
+                <div class="ev-corner" data-event-logo><img alt="" /><span></span></div>
+                <div class="d-num">Live</div>
+                <div class="d-title">Demo</div>
+                <div class="d-sub">Money Tracker, on device</div>
+            </section>
+
             <!-- ================= RECAP ================= -->
             <section class="slide" data-title="Recap">
                 <div class="ev-corner" data-event-logo><img alt="" /><span></span></div>
@@ -2280,7 +2333,7 @@
                     <a href="https://goo.gle/android-skills" target="_blank" rel="noopener">goo.gle/android-skills<span>agent skills</span></a>
                     <a href="https://goo.gle/aicore-dev-preview" target="_blank" rel="noopener">goo.gle/aicore-dev-preview<span>developer preview</span></a>
                 </div>
-                <div class="qr"><img src="assets/2026-mlkit-genai-agentic/img/qr-start-building.jpg" alt="QR code to the resources" /></div>
+                <div class="qr"><img src="assets/2026-mlkit-genai-agentic/img/qr-deck.png" alt="QR code to this deck at talks.isfa.dev" /></div>
             </section>
 
             <!-- ================= THANKS ================= -->

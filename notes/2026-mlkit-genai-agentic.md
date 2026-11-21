@@ -1,6 +1,6 @@
 # Speaker notes · Unlock agentic capabilities in your app with ML Kit GenAI
 
-Deck: `2026-mlkit-genai-agentic.html` · 41 slide · target ±30–35 menit
+Deck: `2026-mlkit-genai-agentic.html` · 44 slide · target ±30–35 menit
 
 Cara baca:
 - **▶** = klik / tekan panah kanan (ada animasi atau step berikutnya di slide yang sama)
@@ -136,24 +136,29 @@ Mulai dari aplikasi kita.
 ▶ Semua itu didaftarkan ke Android OS, ke sebuah **registry**, tempat pusat yang mencatat kemampuan setiap aplikasi.
 ▶ Hasilnya: pengguna bisa menyelesaikan tugas lewat agent dan interaksi tingkat sistem, tanpa harus membuka aplikasinya satu per satu.
 
-### 18 · @AppFunction (code)
+### 18 · Android Intelligence System
+Dan semua ini adalah bagian dari visi yang lebih besar: **Android Intelligence System**.
+
+Android sekarang bukan cuma sistem operasi yang menjalankan aplikasi, tapi sistem yang *cerdas*, yang bisa memahami maksud pengguna lalu menghubungkannya ke kemampuan aplikasi-aplikasi di dalamnya. AppFunctions adalah cara aplikasi kita ikut masuk ke sistem itu.
+
+### 19 · @AppFunction (code)
 Ini contoh kode untuk mengekspos sebuah tool. Cukup fungsi `suspend` biasa, diberi anotasi `@AppFunction`.
 
 ▶ Yang penting dicatat: **KDoc-nya adalah deskripsi tool yang dibaca model.** Jadi tulis KDoc seperti kita menjelaskan ke rekan kerja: kapan dipakai, satuan nilainya apa (di sini rupiah utuh, "25k" berarti 25000), dan contoh kategorinya.
 
 ▶ Lalu access level, di sini `ACCESS_LEVEL_SELF`, menentukan **siapa yang boleh memanggil** fungsi ini. Nanti kita bahas lagi di bagian System AppFunctions.
 
-### 19 · Agentic workflow building blocks
+### 20 · Agentic workflow building blocks
 Ada empat komponen utama:
 **AppFunctions**: mendaftarkan tool yang bisa dipanggil agent.
 ▶ **Agent**: konfigurasi agent, yaitu nama, instruksi, dan tool-nya.
 ▶ **AgentRunner**: yang menjalankan dan mengelola sesi eksekusi.
 ▶ **AgentEvent**: event yang keluar selama eksekusi, seperti pemanggilan fungsi, responsnya, dan teks.
 
-### 20 · Check support (code)
+### 21 · Check support (code)
 Satu hal yang wajib: **cek dulu apakah perangkatnya mendukung function calling.** Ambil client-nya, cek `getAvailableFeatures()`, kalau ada `FUNCTION_CALLING` baru kita jalankan. Kalau tidak, siapkan fallback yang baik. Ingat, belum semua perangkat punya.
 
-### 21 · Run a single turn (code)
+### 22 · Run a single turn (code)
 Kalau didukung, langkahnya ada empat.
 
 ▶ Pertama, bangun konfigurasi agent pakai `Agent.builder()`:
@@ -170,17 +175,17 @@ Selesai. Itu level satu.
 
 ## Bagian 2 · Multi-step
 
-### 22 · Divider: 02 Multi-step
+### 23 · Divider: 02 Multi-step
 Level dua: model merangkai beberapa tool dalam satu giliran.
 
-### 23 · Demo: Multi-step
+### 24 · Demo: Multi-step
 *Jalankan demo.*
 
 Sekarang saya bilang: "Add 50k lunch on my Jago."
 
 Perhatikan, model belum tahu ID rekening "Jago" itu berapa. Jadi dia **cari dulu** daftar rekening, ketemu Bank Jago, baru menambahkan pengeluarannya. Hasilnya: Rp 50.000 untuk makan siang, dari Bank Jago.
 
-### 24 · The model chains tools on its own
+### 25 · The model chains tools on its own
 Ini jejaknya.
 
 Panggilan pertama: `listBankAccounts()`. Hasilnya BCA dengan ID 1 dan Bank Jago dengan ID 2.
@@ -191,7 +196,7 @@ Panggilan pertama: `listBankAccounts()`. Hasilnya BCA dengan ID 1 dan Bank Jago 
 
 Dua tool call, satu giliran pengguna. Kita nggak menulis logika "cari bank dulu, baru tambah". Modelnya yang merencanakan.
 
-### 25 · Multi-step function calling (diagram)
+### 26 · Multi-step function calling (diagram)
 Secara alur, begini yang terjadi antara aplikasi dan Gemini Nano:
 ▶ Aplikasi mengirim query plus daftar tool.
 ▶ Model membalas dengan tool call pertama.
@@ -202,14 +207,14 @@ Secara alur, begini yang terjadi antara aplikasi dan Gemini Nano:
 
 Perhatikan konteksnya terus bertambah di setiap putaran. Di model kecil on-device, ini penting untuk diingat.
 
-### 26 · Tool descriptions (code)
+### 27 · Tool descriptions (code)
 Kenapa model tahu harus panggil `listBankAccounts` dulu? Karena kita **memberitahunya lewat KDoc.**
 
 ▶ Di `listBankAccounts` kita tulis: pakai ini untuk mengubah nama bank seperti "my Jago" jadi `bankAccountId`. Di `addExpense` kita tulis: kalau pengguna punya beberapa bank, ambil ID-nya dari `listBankAccounts` dulu.
 
 Deskripsi tool yang jelas = rangkaian tool yang benar.
 
-### 27 · Guardrails & events (code)
+### 28 · Guardrails & events (code)
 Dua hal tambahan di level ini.
 
 ▶ Pertama, **guardrail**: `setMaxTurns(5)`. Ini pengaman supaya model tidak terjebak loop memanggil tool terus-menerus. Di instruksi juga kita kasih konteks seperti satuan rupiah dan tanggal hari ini.
@@ -220,32 +225,39 @@ Dua hal tambahan di level ini.
 
 ## Bagian 3 · Multi-turn
 
-### 28 · Divider: 03 Multi-turn
+### 29 · Divider: 03 Multi-turn
 Level tiga: riwayat terbawa antar giliran.
 
-### 29 · Demo: Multi-turn
+### 30 · Demo: Multi-turn
 *Jalankan demo.*
 
 Saya bilang: "Add 25k coffee." Agent-nya **bertanya balik**: "Pakai rekening yang mana?" Saya jawab "BCA." Lalu saya ralat: "Actually make it 30k."
 
 Agent paham bahwa "it" itu kopi yang barusan, dan mengubahnya jadi Rp 30.000. Ini hanya mungkin kalau agent mengingat percakapan sebelumnya.
 
-### 30 · Sessions (code)
+### 31 · runSingleTurnAsync vs runAsync
+Sebelum lihat kodenya, ada dua cara menjalankan agent yang perlu dibedakan.
+
+`runSingleTurnAsync()` dipanggil langsung di `AgentRunner`. Sifatnya **stateless**: setiap panggilan mulai dari nol, tidak ingat apa-apa. Tapi di dalam satu giliran itu model tetap bisa merangkai beberapa tool, seperti demo multi-step tadi. Cocok untuk perintah sekali jalan.
+
+▶ `runAsync()` dipanggil di sebuah **session**. Sifatnya **stateful**: riwayat percakapan disimpan otomatis antar giliran. Inilah yang membuat agent bisa bertanya balik dan pengguna bisa meralat, seperti demo kopi tadi. Cocok untuk chat, dan bisa di-reset dengan `session.delete()`.
+
+### 32 · Sessions (code)
 Caranya dengan **session**.
 
 ▶ Ambil atau buat session per chat dengan `getOrCreateSession(chatId)`. Setiap kali `session.runAsync`, riwayat otomatis tersimpan antar giliran, jadi kita tidak perlu mengelola history sendiri. Dan saat pengguna menekan "New conversation", tinggal `session.delete()`.
 
-### 31 · Need more control? Go direct.
+### 33 · Need more control? Go direct.
 Nah, `agent-api` itu nyaman karena framework yang menjalankan loop-nya.
 
 ▶ Tapi kalau kita butuh kontrol lebih, misalnya mengatur sendiri apa yang masuk ke riwayat, turun ke **direct access** dengan `prompt-api`. Konsekuensinya, semua kita kerjakan sendiri: eksekusi fungsi, simpan riwayat, loop, dan guardrail.
 
-### 32 · Custom history (code)
+### 34 · Custom history (code)
 Contoh kapan direct access berguna.
 
 ▶ Di giliran pertama, kita eksekusi fungsinya langsung tanpa panggilan model kedua. Lalu di giliran kedua, kita kirim **hanya prompt pengguna** sebagai riwayat, tanpa detail tool call dan responsnya. Tujuannya menghemat token konteks, yang di model on-device itu terbatas.
 
-### 33 · Going further: complex use cases
+### 35 · Going further: complex use cases
 Dari sini, kemungkinannya makin luas:
 ▶ **Multi-agent**: sub-agent khusus yang saling bekerja sama dan mendelegasikan tugas.
 ▶ **Hybrid routing**: memilih secara dinamis antara Gemini Nano on-device dan model di cloud.
@@ -255,10 +267,10 @@ Dari sini, kemungkinannya makin luas:
 
 ## Bagian 4 · System AppFunctions
 
-### 34 · Divider: 04 System AppFunctions
+### 36 · Divider: 04 System AppFunctions
 Level terakhir: dari aksi di dalam aplikasi, ke asisten tingkat sistem.
 
-### 35 · One function, two kinds of agents
+### 37 · One function, two kinds of agents
 Ingat access level di anotasi tadi? Di sini dia jadi penting.
 
 ▶ Dengan `ACCESS_LEVEL_SELF`, fungsi kita hanya bisa dipanggil oleh **agent di dalam aplikasi kita sendiri**, dengan UI asisten kita sendiri.
@@ -267,7 +279,7 @@ Ingat access level di anotasi tadi? Di sini dia jadi penting.
 
 Satu fungsi, dua jenis agent.
 
-### 36 · Going system-wide? Register first.
+### 38 · Going system-wide? Register first.
 Tapi ada satu hal yang saya baru tahu dan menurut saya penting.
 
 Langkah pertama memang mengekspos AppFunctions dengan access level `ANDROID_TRUSTED`.
@@ -278,7 +290,7 @@ Langkah pertama memang mengekspos AppFunctions dengan access level `ANDROID_TRUS
 
 *Beri jeda sebentar supaya audiens sempat scan QR.*
 
-### 37 · Demo: System assistant
+### 39 · Demo: System assistant
 Ini contoh hasilnya, dari sample app Jetpacker di sesi aslinya.
 
 Pengguna bilang ke Gemini: "@Jetpacker, tolong tambahkan kopi tujuh dolar ke pengeluaran trip."
@@ -291,7 +303,12 @@ Gemini terhubung ke Jetpacker dan memanggil AppFunction-nya, **tanpa membuka apl
 
 ## Penutup
 
-### 38 · Recap: Four levels of agentic
+### 40 · Demo (live)
+Oke, cukup slide-nya. Sekarang kita lihat langsung Money Tracker jalan di HP, semuanya on-device.
+
+*Pindah ke layar HP. Urutan aman: tanya pengeluaran transport (single-step) → "add 50k lunch on my Jago" (multi-step) → "add 25k coffee", jawab "BCA", lalu "actually make it 30k" (multi-turn). Kalau demo gagal, kembali ke slide demo 15, 24, dan 30.*
+
+### 41 · Recap: Four levels of agentic
 Rangkuman perjalanan kita hari ini:
 1. **Single-step**: satu prompt, satu tool call.
 2. **Multi-step**: model merangkai beberapa tool dalam satu giliran.
@@ -300,21 +317,21 @@ Rangkuman perjalanan kita hari ini:
 
 Teman-teman bisa mulai dari level satu, lalu naik sesuai kebutuhan aplikasinya.
 
-### 39 · TL;DR
+### 42 · TL;DR
 Kalau cuma bisa ingat tiga hal:
 ▶ **Jaga set tool tetap fokus.** Modelnya kecil, jadi kasih sedikit tool saja dengan deskripsi yang jelas.
 ▶ **Pasang guardrail max turns** dengan `setMaxTurns()`, supaya tidak loop tanpa henti.
 ▶ **Cek ketersediaan dan siapkan fallback.** Belum semua perangkat punya kemampuan ini.
 
-### 40 · Start building today
+### 43 · Start building today
 Silakan mulai dari sini:
 - Source code sample app Money Tracker di GitHub,
 - Android agent skills di `goo.gle/android-skills`,
 - dan AICore Developer Preview di `goo.gle/aicore-dev-preview`.
 
-Semuanya juga ada di QR ini. *Beri jeda untuk scan.*
+Scan QR ini untuk membuka slide ini, semua link-nya ada di dalam. *Beri jeda untuk scan.*
 
-### 41 · Thanks!
+### 44 · Thanks!
 Terima kasih banyak, barakallah fiik!
 
 Kalau ada pertanyaan, silakan sekarang, atau sapa saya setelah sesi, atau di X `isfhaani` dan di isfa.dev.
